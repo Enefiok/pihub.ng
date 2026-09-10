@@ -1,0 +1,966 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Apply smooth scrolling to the entire page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* For browsers that support scroll-behavior */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: "poppins", sans-serif;
+  overflow-x: hidden;
+}
+
+:root {
+  --primary-color: #fa7001;
+  --natural-color: white;
+}
+
+section {
+  scroll-margin-top: 80px;
+}
+
+.read {
+  scroll-margin-top: 80px;
+}
+
+.footer {
+  scroll-margin-top: 80px;
+}
+
+.copyright {
+  scroll-margin-top: 80px;
+}
+
+.page-link.active {
+  color: var(--primary-color);
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(
+    to bottom,
+    rgb(17, 15, 14),
+    rgba(40, 38, 36, 0.6) 100%
+  );
+  padding: 10px 7%;
+  box-shadow: 0px 2px 4px rgba(8, 8, 8, 0.8);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  transition:
+    padding 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+nav div {
+  display: flex;
+  gap: clamp(16px, 3vw, 40px);
+}
+
+nav a {
+  text-decoration: none;
+  color: white;
+  font-weight: 400;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  transition: color 0.25s ease;
+}
+
+nav .links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+nav .links a:hover {
+  color: var(--primary-color);
+}
+
+nav .links a:hover::after {
+  width: 100%;
+}
+
+nav #contactUs {
+  background-color: #fa7001;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition:
+    background-color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+nav #contactUs:hover {
+  background-color: #e26400;
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 10px rgba(250, 112, 1, 0.4);
+}
+
+nav span {
+  width: fit-content;
+}
+
+nav img {
+  width: 35px;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+nav a:first-child:hover img {
+  transform: scale(1.08);
+}
+
+nav #menuToggle,
+nav #menuToggle:focus-visible {
+  display: none;
+}
+
+nav #menuToggle {
+  transition:
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+nav #menuToggle:hover {
+  color: var(--primary-color);
+  transform: rotate(90deg);
+}
+
+/* MOBILE MENU (hidden by default, only used under 767px) */
+.mobileMenu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(75vw, 300px);
+  background: rgb(17, 15, 14);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 80px 30px;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 200;
+}
+
+.mobileMenu.open {
+  transform: translateX(0);
+}
+
+.mobileMenu a {
+  text-decoration: none;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.mobileMenu #mobileContactUs {
+  background-color: var(--primary-color);
+  border-radius: 10px;
+  padding: 12px 20px;
+  text-align: center;
+  width: fit-content;
+}
+
+#menuClose {
+  color: white;
+  font-size: 150%;
+  cursor: pointer;
+  align-self: flex-end;
+  margin-bottom: 10px;
+}
+
+.menuOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 150;
+}
+
+.menuOverlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ============================================================ */
+/* SCROLL REVEAL                                                */
+/* ============================================================ */
+
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.scroll-reveal.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================ */
+/* ARTICLE ENTRANCE (loads immediately, above the fold)         */
+/* ============================================================ */
+
+@keyframes articleFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.read {
+  display: flex;
+  flex-direction: column;
+  padding-top: 150px;
+  padding-bottom: 100px;
+  padding-inline: 7%;
+  height: auto;
+}
+
+/* ============================================================ */
+/* DATE - Fade up with stagger                                  */
+/* ============================================================ */
+
+.date {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  place-self: center;
+  opacity: 0;
+  animation: articleFadeUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* ============================================================ */
+/* TOPIC - Fade up with stagger                                 */
+/* ============================================================ */
+
+.topic {
+  font-size: 25px;
+  font-weight: 550;
+  display: flex;
+  place-self: center;
+  margin-top: 10px;
+  opacity: 0;
+  animation: articleFadeUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: 0.15s;
+  transition: color 0.3s ease;
+}
+
+.topic:hover {
+  color: var(--primary-color);
+}
+
+/* ============================================================ */
+/* TOPIC IMAGE - Fade up with zoom on hover                     */
+/* ============================================================ */
+
+.topicImage {
+  width: 100%;
+  margin-top: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  opacity: 0;
+  animation: articleFadeUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: 0.3s;
+}
+
+.topicImage img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  max-height: 450px;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.topicImage:hover img {
+  transform: scale(1.03);
+}
+
+/* ============================================================ */
+/* ARTICLE BODY — staggered paragraph reveal                    */
+/* ============================================================ */
+
+.article {
+  padding-inline: 200px;
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  text-align: justify;
+}
+
+/* Stagger delays for article paragraphs */
+.article > div.scroll-reveal:nth-child(1) {
+  transition-delay: 0s;
+}
+.article > div.scroll-reveal:nth-child(2) {
+  transition-delay: 0.1s;
+}
+.article > div.scroll-reveal:nth-child(3) {
+  transition-delay: 0.2s;
+}
+.article > div.scroll-reveal:nth-child(4) {
+  transition-delay: 0.3s;
+}
+.article > div.scroll-reveal:nth-child(5) {
+  transition-delay: 0.4s;
+}
+.article > div.scroll-reveal:nth-child(6) {
+  transition-delay: 0.5s;
+}
+
+/* ============================================================ */
+/* AUTHOR INFO - Special styling with entrance                  */
+/* ============================================================ */
+
+.author-info {
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: var(--primary-color);
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.author-info.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================ */
+/* ALSO READ - Enhanced with hover effects                      */
+/* ============================================================ */
+
+.alsoRead {
+  display: flex;
+  gap: 10px;
+}
+
+.alsoRead span {
+  font-weight: bold;
+}
+
+.alsoRead a {
+  text-decoration: none;
+  font-weight: bold;
+  color: var(--primary-color);
+  transition: color 0.25s ease, padding-left 0.25s ease, transform 0.2s ease;
+  display: inline-block;
+}
+
+.alsoRead a:hover {
+  color: #e26400;
+  padding-left: 4px;
+  transform: translateX(2px);
+}
+
+/* ============================================================ */
+/* FOOTER - Enhanced animations                                 */
+/* ============================================================ */
+
+.footer {
+  background-color: var(--primary-color);
+  padding-inline: 7%;
+  padding-top: 100px;
+  padding-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 40px;
+  overflow: hidden;
+}
+
+.footer div:nth-child(1) {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 280px;
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.footer div:nth-child(1).show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.footer div:nth-child(1) span:nth-child(1) {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: clamp(10px, 2.5vw, 20px);
+  color: var(--natural-color);
+  flex-wrap: wrap;
+  row-gap: 12px;
+  margin-left: -40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer div:nth-child(1) span:nth-child(1) p:nth-child(1) {
+  background: url("../src/image/white p without background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: clamp(70px, 10vw, 150px);
+  flex-shrink: 0;
+  aspect-ratio: 1;
+}
+
+.footer div:nth-child(1) span:nth-child(1) p:nth-child(2) {
+  width: 1px;
+  height: clamp(50px, 8vw, 100px);
+  border: 1.5px solid white;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.footer div:nth-child(1) span:nth-child(1) p:nth-child(3) {
+  overflow: hidden;
+  position: relative;
+  padding-left: 0;
+}
+
+.footer div:nth-child(1) span:nth-child(1) p:nth-child(3) span:nth-child(1) {
+  font-size: clamp(28px, 6vw, 65px);
+  font-weight: bold;
+  display: block;
+  margin-left: 0px;
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.footer div:nth-child(1) span:nth-child(1) p:nth-child(3) span:nth-child(2) {
+  font-size: clamp(13px, 2vw, 20px);
+  display: block;
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.footer div:nth-child(1).show span:nth-child(1) p:nth-child(3) span:nth-child(1) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.3s;
+}
+
+.footer div:nth-child(1).show span:nth-child(1) p:nth-child(3) span:nth-child(2) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.5s;
+}
+
+.footer div:nth-child(1) span:nth-child(2) {
+  width: 100%;
+  max-width: 400px;
+  display: block;
+  color: var(--natural-color);
+  font-size: 14px;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.footer div:nth-child(1).show span:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.7s;
+}
+
+.footer div:nth-child(1) span:nth-child(3) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.footer div:nth-child(1).show span:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.9s;
+}
+
+.footer div:nth-child(1) span:nth-child(3) a {
+  border: 1.5px solid var(--natural-color);
+  width: 20px;
+  aspect-ratio: 1;
+  border-radius: 5px;
+  display: flex;
+  place-items: center;
+  justify-content: center;
+  color: var(--natural-color);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.footer div:nth-child(1) span:nth-child(3) a:hover {
+  background-color: var(--natural-color);
+  color: var(--primary-color);
+}
+
+.footer div:nth-child(2),
+.footer div:nth-child(3),
+.footer div:nth-child(4) {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.footer div:nth-child(2).show {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.4s;
+}
+
+.footer div:nth-child(3).show {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.55s;
+}
+
+.footer div:nth-child(4).show {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.7s;
+}
+
+.footer div:nth-child(2) span:nth-child(1),
+.footer div:nth-child(3) span:nth-child(1),
+.footer div:nth-child(4) span:nth-child(1) {
+  color: white;
+  font-size: clamp(0.9rem, 1.2vw, 1.125rem);
+  font-weight: 600;
+  opacity: 1;
+  transform: none;
+}
+
+.footer a {
+  text-decoration: none;
+  color: var(--natural-color);
+  font-size: 12px;
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              color 0.25s ease,
+              padding-left 0.25s ease;
+}
+
+.footer div:nth-child(2).show a:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.15s;
+}
+.footer div:nth-child(2).show a:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.25s;
+}
+.footer div:nth-child(2).show a:nth-child(4) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.35s;
+}
+.footer div:nth-child(2).show a:nth-child(5) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.45s;
+}
+
+.footer div:nth-child(3).show a:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.15s;
+}
+.footer div:nth-child(3).show a:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.25s;
+}
+.footer div:nth-child(3).show a:nth-child(4) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.35s;
+}
+.footer div:nth-child(3).show a:nth-child(5) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.45s;
+}
+
+.footer div:nth-child(4).show a:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.15s;
+}
+.footer div:nth-child(4).show a:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.25s;
+}
+
+.footer a:hover {
+  color: black;
+  padding-left: 4px;
+}
+
+.footer div:nth-child(3).show a:nth-child(6) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 1.0s;
+}
+
+/* Force social media links to always show */
+.footer div:nth-child(1) span:nth-child(3) {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.footer div:nth-child(1) span:nth-child(3) a {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  display: inline-flex !important;
+  visibility: visible !important;
+}
+
+/* Alternative - if the parent is hidden, force it */
+.footer div:nth-child(1) {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+.footer div:nth-child(1).scroll-reveal {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+/* ============================================================ */
+/* COPYRIGHT - Enhanced animations                              */
+/* ============================================================ */
+
+.copyright {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 7%;
+  background-color: var(--primary-color);
+  border-top: 1px solid var(--natural-color);
+  color: var(--natural-color);
+  font-size: 12px;
+}
+
+.copyright div:nth-child(1) {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.copyright.show div:nth-child(1) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.3s;
+}
+
+.copyright div:nth-child(2) {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.copyright.show div:nth-child(2) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.5s;
+}
+
+.copyright a {
+  text-decoration: none;
+  color: var(--natural-color);
+  transition: color 0.25s ease;
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              color 0.25s ease;
+}
+
+.copyright.show div:nth-child(2) a:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.6s;
+}
+
+.copyright.show div:nth-child(2) a:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.7s;
+}
+
+.copyright.show div:nth-child(2) a:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.8s;
+}
+
+.copyright.show div:nth-child(2) a:nth-child(4) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.9s;
+}
+
+.copyright a:hover {
+  color: black;
+}
+
+.copyright div:nth-child(2) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* ============================================================ */
+/* RESPONSIVE - Keep your existing media queries with additions */
+/* ============================================================ */
+
+@media (min-width: 768px) {
+  .mobileMenu,
+  .menuOverlay {
+    display: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .footer {
+    padding-top: 70px;
+    gap: 30px;
+  }
+
+  .footer div:nth-child(1) span:nth-child(1) {
+    margin-left: -25px;
+  }
+
+  .article {
+    padding-inline: 100px;
+  }
+
+  .topic {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 899px) {
+  .footer div:nth-child(1) {
+    flex: 1 1 100%;
+  }
+
+  .footer div:nth-child(2),
+  .footer div:nth-child(3),
+  .footer div:nth-child(4) {
+    flex: 1 1 30%;
+  }
+
+  .article {
+    padding-inline: 60px;
+  }
+
+  .read {
+    padding-top: 130px;
+  }
+}
+
+@media (max-width: 767px) {
+  .links {
+    display: none;
+  }
+
+  nav #contactUs {
+    display: none;
+  }
+
+  nav #menuToggle {
+    display: block;
+    color: white;
+    font-size: 200%;
+    cursor: pointer;
+  }
+
+  nav {
+    padding: 10px 5%;
+  }
+
+  .footer {
+    flex-direction: column;
+    padding-top: 50px;
+    row-gap: 30px;
+  }
+
+  .footer div:nth-child(1) span:nth-child(1) {
+    margin-left: -15px;
+  }
+
+  .footer div:nth-child(2),
+  .footer div:nth-child(3),
+  .footer div:nth-child(4) {
+    flex: 1 1 auto;
+  }
+
+  .read {
+    padding-inline: 6%;
+    padding-top: 110px;
+    padding-bottom: 70px;
+  }
+
+  .topic {
+    font-size: 20px;
+    text-align: center;
+    padding-inline: 4%;
+  }
+
+  .date {
+    font-size: 13px;
+  }
+
+  .article {
+    padding-inline: 0;
+    margin-top: 35px;
+    gap: 28px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .topicImage img {
+    max-height: 320px;
+  }
+
+        .footer div:nth-child(3).show a:nth-child(6) { 
+    transition-delay: 0.45s; 
+  }
+}
+
+@media (max-width: 575px) {
+  .footer div:nth-child(1) span:nth-child(1) {
+    margin-left: -20px;
+    gap: 12px;
+  }
+
+  .footer div:nth-child(1) span:nth-child(2) {
+    font-size: 13px;
+  }
+
+  .read {
+    padding-inline: 5%;
+    padding-top: 100px;
+    padding-bottom: 50px;
+  }
+
+  .topic {
+    font-size: 18px;
+  }
+
+  .date {
+    font-size: 12px;
+  }
+
+  .article {
+    margin-top: 28px;
+    gap: 22px;
+    font-size: 13px;
+  }
+
+  .topicImage img {
+    max-height: 240px;
+  }
+
+  .alsoRead {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 424px) {
+  nav img {
+    width: 28px;
+  }
+
+  nav #menuToggle {
+    font-size: 150%;
+  }
+
+  .footer {
+    padding-inline: 6%;
+    padding-top: 40px;
+  }
+
+  .read {
+    padding-inline: 4%;
+  }
+
+  .topic {
+    font-size: 16px;
+  }
+
+  .topicImage img {
+    max-height: 200px;
+  }
+
+  .article {
+    font-size: 12.5px;
+  }
+}
+
+@media (max-width: 319px) {
+  .mobileMenu {
+    width: 100vw;
+  }
+}
