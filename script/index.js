@@ -101,7 +101,7 @@ initHeroIntro();
 
 
 // ============================================================
-// ABOUT SECTION — COOL, DISTINCT ANIMATIONS (ZERO JUMP RISK)
+// ABOUT SECTION — COOL ALTERNATING FEATURES (ZERO JUMP RISK)
 // ============================================================
 
 const aboutSection = document.querySelector(".about");
@@ -163,7 +163,7 @@ if (aboutSection) {
           }, 150 * speedMultiplier);
         }
 
-        // 3. Image: Slides in from the right (Safe 40px distance, NO 100vw)
+        // 3. Image: Slides in from the right (Safe distance, NO 100vw)
         if (image) {
           image.style.willChange = "opacity, transform";
           setTimeout(() => {
@@ -185,9 +185,9 @@ if (aboutSection) {
           }, 450 * speedMultiplier);
         }
 
-        // 5. Features: Cool staggered alternating slide-in (100% Safe)
+        // 5. Features: COOL staggered alternating slide-in (100% Safe from jumps)
         const FEATURES_START = 600 * speedMultiplier;
-        const FEATURE_STAGGER = 100 * speedMultiplier;
+        const FEATURE_STAGGER = 100 * speedMultiplier; // Fast, snappy stagger
 
         if (featuresContainer) {
           featuresContainer.style.opacity = "1";
@@ -196,14 +196,16 @@ if (aboutSection) {
         features.forEach((feature, index) => {
           feature.style.willChange = "opacity, transform";
           feature.style.opacity = "0";
-          // SAFE alternating horizontal offset (30px is too small to ever trigger a scrollbar)
-          feature.style.transform = index % 2 === 0 ? "translateX(-30px)" : "translateX(30px)";
+          
+          // 80px is the sweet spot: noticeable and cool, but safely inside the viewport 
+          // so it NEVER triggers a scrollbar or layout shift like 100vw did.
+          const startTransform = index % 2 === 0 ? "translateX(-80px)" : "translateX(80px)";
+          feature.style.transform = startTransform;
           
           setTimeout(() => {
-            const startTransform = index % 2 === 0 ? "translateX(-30px)" : "translateX(30px)";
             feature.animate(
               [{ opacity: 0, transform: startTransform }, { opacity: 1, transform: "translateX(0)" }],
-              { duration: 700 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
+              { duration: 600 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
             
             // Subtle icon pop for extra polish
@@ -211,10 +213,14 @@ if (aboutSection) {
             if (icon) {
               setTimeout(() => {
                 icon.animate(
-                  [{ transform: "scale(0.8)", opacity: 0.5 }, { transform: "scale(1)", opacity: 1 }],
+                  [
+                    { transform: "scale(0.8)", opacity: 0.5 }, 
+                    { transform: "scale(1.15)", opacity: 1, offset: 0.7 }, 
+                    { transform: "scale(1)", opacity: 1 }
+                  ],
                   { duration: 400 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
                 );
-              }, 300 * speedMultiplier);
+              }, 200 * speedMultiplier);
             }
           }, FEATURES_START + (index * FEATURE_STAGGER));
         });
@@ -245,7 +251,7 @@ if (aboutSection) {
 
 
 // ============================================================
-// OFFER SECTION — ORIGINAL TIMING + MOBILE STACKING EFFECT
+// OFFER SECTION — SPED UP FOR MOBILE + DESKTOP TIMING
 // ============================================================
 
 const offerSection = document.querySelector(".offer");
@@ -272,14 +278,15 @@ if (offerSection) {
           iconDuration: 500
         }
       : {
-          headingDuration: 1400,
-          subtitleDelay: 900,
-          subtitleDuration: 1200,
-          cardsStart: 2200,
-          cardStagger: 850,
-          cardDuration: 1400,
-          iconDelay: 800,
-          iconDuration: 800
+          // 🚀 SPED UP for mobile so it feels snappy and modern, not sluggish
+          headingDuration: 800,
+          subtitleDelay: 400,
+          subtitleDuration: 600,
+          cardsStart: 800,
+          cardStagger: 250,       // Much faster stagger between cards
+          cardDuration: 700,       // Faster card animation
+          iconDelay: 300,
+          iconDuration: 400
         };
   }
 
@@ -579,7 +586,6 @@ function showSubscribeMessage(message, type) {
   const subscribeBox = document.querySelector('.subscribeBox');
   if (!subscribeBox) return;
 
-  // Ensure the container is relatively positioned so the message anchors to it
   subscribeBox.style.position = 'relative';
 
   const existingMsg = document.querySelector('.subscribe-message');
@@ -589,9 +595,8 @@ function showSubscribeMessage(message, type) {
   msgDiv.className = `subscribe-message ${type}`;
   msgDiv.textContent = message;
   
-  // Absolute positioning prevents the container from expanding or shifting layout
   msgDiv.style.position = 'absolute';
-  msgDiv.style.bottom = '-30px'; // Floats just below the box
+  msgDiv.style.bottom = '-30px';
   msgDiv.style.left = '50%';
   msgDiv.style.transform = 'translateX(-50%)';
   msgDiv.style.width = '100%';
@@ -599,13 +604,12 @@ function showSubscribeMessage(message, type) {
   msgDiv.style.fontWeight = '500';
   msgDiv.style.color = type === 'success' ? '#22c55e' : '#ef4444'; 
   msgDiv.style.textAlign = 'center';
-  msgDiv.style.whiteSpace = 'nowrap'; // Prevents text wrapping from affecting layout
+  msgDiv.style.whiteSpace = 'nowrap';
   msgDiv.style.zIndex = '10';
-  msgDiv.style.pointerEvents = 'none'; // Allows clicking through the message if it overlaps anything
+  msgDiv.style.pointerEvents = 'none';
 
   subscribeBox.appendChild(msgDiv);
 
-  // Auto-remove with a smooth fade-out
   setTimeout(() => {
     if (msgDiv.parentNode) {
       msgDiv.style.transition = 'opacity 0.4s ease';
@@ -638,7 +642,6 @@ function initSubscribeForm() {
     submitButton.textContent = 'Subscribing...';
 
     try {
-      // Checks for API_BASE_URL or BASE_API_URL (whichever you defined in config.js)
       const baseUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : (typeof BASE_API_URL !== 'undefined' ? BASE_API_URL : '');
       const apiUrl = `${baseUrl}/api/core/subscribe/`;
       
@@ -655,7 +658,7 @@ function initSubscribeForm() {
 
       if (response.ok) {
         showSubscribeMessage('Successfully subscribed to our newsletter!', 'success');
-        emailInput.value = ''; // Clear input on success
+        emailInput.value = '';
       } else {
         const errorMsg = data.email ? data.email[0] : (data.detail || 'Failed to subscribe. Please try again.');
         showSubscribeMessage(errorMsg, 'error');
@@ -757,22 +760,16 @@ async function loadGalleryImages() {
 
 // ============================================================
 // INFINITE INNOVATION CAROUSEL FIX
-// Ensures the hero carousel is always duplicated for a seamless infinite loop
-// This guarantees it never "finishes" and stays full-width on any device.
 // ============================================================
 function fixInnovationCarousel() {
   const innovationTrack = document.querySelector('.innovation');
   if (!innovationTrack) return;
 
-  // Check if it's already been duplicated by this script to prevent infinite loops
   if (innovationTrack.dataset.duplicated === 'true') return;
 
   const originalItems = Array.from(innovationTrack.children);
   if (originalItems.length === 0) return;
 
-  // Clone the original set and append it to make it exactly 2x the length.
-  // This ensures the CSS animation `transform: translateX(-50%)` loops perfectly
-  // without gaps, regardless of screen width.
   originalItems.forEach(item => {
     innovationTrack.appendChild(item.cloneNode(true));
   });
@@ -780,7 +777,6 @@ function fixInnovationCarousel() {
   innovationTrack.dataset.duplicated = 'true';
 }
 
-// Run on load and resize to guarantee it's always perfect
 document.addEventListener('DOMContentLoaded', fixInnovationCarousel);
 window.addEventListener('resize', fixInnovationCarousel);
 
@@ -793,6 +789,5 @@ document.addEventListener('DOMContentLoaded', function() {
     loadGalleryImages();
   }, 100);
   
-  // Initialize subscription form handler
   initSubscribeForm();
 });
