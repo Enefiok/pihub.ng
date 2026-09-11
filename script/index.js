@@ -101,7 +101,7 @@ initHeroIntro();
 
 
 // ============================================================
-// ABOUT SECTION — DYNAMIC ALTERNATING FEATURES
+// ABOUT SECTION — COOL, DISTINCT ANIMATIONS (ZERO JUMP RISK)
 // ============================================================
 
 const aboutSection = document.querySelector(".about");
@@ -140,94 +140,96 @@ if (aboutSection) {
 
         const speedMultiplier = getScrollSpeedMultiplier();
 
+        // 1. Heading: Smoothly drops down into place
         if (heading) {
+          heading.style.willChange = "opacity, transform";
           heading.animate(
             [
-              { opacity: 0, transform: "translateY(45px) scale(0.9)" },
-              { opacity: 1, transform: "translateY(0) scale(1.03)", offset: 0.75 },
-              { opacity: 1, transform: "translateY(0) scale(1)" }
+              { opacity: 0, transform: "translateY(-30px)" },
+              { opacity: 1, transform: "translateY(0)" }
             ],
-            { duration: 900 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
+            { duration: 800 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
           );
         }
 
+        // 2. Intro: Fades and slides up slightly
         if (intro) {
+          intro.style.willChange = "opacity, transform";
           setTimeout(() => {
             intro.animate(
-              [{ opacity: 0, transform: "translateY(30px)" }, { opacity: 1, transform: "translateY(0)" }],
+              [{ opacity: 0, transform: "translateY(25px)" }, { opacity: 1, transform: "translateY(0)" }],
               { duration: 800 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
-          }, 500 * speedMultiplier);
+          }, 150 * speedMultiplier);
         }
 
+        // 3. Image: Slides in from the right (Safe 40px distance, NO 100vw)
         if (image) {
+          image.style.willChange = "opacity, transform";
           setTimeout(() => {
             image.animate(
-              [{ opacity: 0, transform: "translateX(70px) scale(0.92) rotate(2deg)" }, { opacity: 1, transform: "translateX(0) scale(1) rotate(0deg)" }],
-              { duration: 1100 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
-            );
-            image.style.willChange = "opacity, transform";
-          }, 1050 * speedMultiplier);
-        }
-
-        if (description) {
-          setTimeout(() => {
-            description.animate(
-              [{ opacity: 0, transform: "translateY(28px)" }, { opacity: 1, transform: "translateY(0)" }],
-              { duration: 800 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
-            );
-          }, 1700 * speedMultiplier);
-        }
-
-        // --- FEATURES: ALTERNATING LEFT/RIGHT + FAST STAGGER ---
-        const FEATURES_START = 2350 * speedMultiplier;
-        const FAST_FEATURE_STAGGER = 120 * speedMultiplier; // Much faster stagger
-
-        // Setup initial hidden states with alternating directions
-        features.forEach((feature, index) => {
-          feature.style.opacity = "0";
-          feature.style.transform = index % 2 === 0 ? "translateX(-100vw)" : "translateX(100vw)";
-        });
-
-        if (featuresContainer) {
-          setTimeout(() => { featuresContainer.style.opacity = "1"; }, FEATURES_START);
-        }
-
-        features.forEach((feature, index) => {
-          const startAt = FEATURES_START + index * FAST_FEATURE_STAGGER;
-          const startTransform = index % 2 === 0 ? "translateX(-100vw)" : "translateX(100vw)";
-          
-          setTimeout(() => {
-            feature.animate(
-              [{ opacity: 0, transform: startTransform }, { opacity: 1, transform: "translateX(0)" }],
+              [{ opacity: 0, transform: "translateX(40px)" }, { opacity: 1, transform: "translateX(0)" }],
               { duration: 900 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
+          }, 300 * speedMultiplier);
+        }
+
+        // 4. Description: Fades and slides up
+        if (description) {
+          description.style.willChange = "opacity, transform";
+          setTimeout(() => {
+            description.animate(
+              [{ opacity: 0, transform: "translateY(25px)" }, { opacity: 1, transform: "translateY(0)" }],
+              { duration: 800 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
+            );
+          }, 450 * speedMultiplier);
+        }
+
+        // 5. Features: Cool staggered alternating slide-in (100% Safe)
+        const FEATURES_START = 600 * speedMultiplier;
+        const FEATURE_STAGGER = 100 * speedMultiplier;
+
+        if (featuresContainer) {
+          featuresContainer.style.opacity = "1";
+        }
+
+        features.forEach((feature, index) => {
+          feature.style.willChange = "opacity, transform";
+          feature.style.opacity = "0";
+          // SAFE alternating horizontal offset (30px is too small to ever trigger a scrollbar)
+          feature.style.transform = index % 2 === 0 ? "translateX(-30px)" : "translateX(30px)";
+          
+          setTimeout(() => {
+            const startTransform = index % 2 === 0 ? "translateX(-30px)" : "translateX(30px)";
+            feature.animate(
+              [{ opacity: 0, transform: startTransform }, { opacity: 1, transform: "translateX(0)" }],
+              { duration: 700 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
+            );
+            
+            // Subtle icon pop for extra polish
             const icon = feature.querySelector("i");
             if (icon) {
               setTimeout(() => {
                 icon.animate(
-                  [
-                    { transform: "scale(0.5)", opacity: 0 }, 
-                    { transform: "scale(1.15)", opacity: 1, offset: 0.7 }, 
-                    { transform: "scale(1)", opacity: 1 }
-                  ],
-                  { duration: 500 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
+                  [{ transform: "scale(0.8)", opacity: 0.5 }, { transform: "scale(1)", opacity: 1 }],
+                  { duration: 400 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
                 );
-              }, 500 * speedMultiplier);
+              }, 300 * speedMultiplier);
             }
-          }, startAt);
+          }, FEATURES_START + (index * FEATURE_STAGGER));
         });
 
-        const buttonStart = FEATURES_START + features.length * FAST_FEATURE_STAGGER + 900 * speedMultiplier + 200 * speedMultiplier;
+        // 6. Button: Subtle pop-in with bounce
         if (button) {
+          button.style.willChange = "opacity, transform";
+          const buttonStart = FEATURES_START + (features.length * FEATURE_STAGGER) + 200 * speedMultiplier;
           setTimeout(() => {
             button.animate(
               [
-                { opacity: 0, transform: "translateY(24px) scale(0.9)" },
-                { opacity: 1, transform: "translateY(-3px) scale(1.04)", offset: 0.7 },
+                { opacity: 0, transform: "translateY(15px) scale(0.95)" },
                 { opacity: 1, transform: "translateY(0) scale(1)" }
               ],
-              { duration: 700 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
+              { duration: 600 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
             );
           }, buttonStart);
         }
@@ -235,7 +237,7 @@ if (aboutSection) {
         aboutObserver.unobserve(entry.target);
       });
     },
-    { threshold: 0.2 }
+    { threshold: 0.15 }
   );
 
   aboutObserver.observe(aboutSection);
