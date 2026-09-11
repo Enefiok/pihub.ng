@@ -259,10 +259,11 @@ const panels = {
 };
 const heroSection = document.querySelector(".heronav");
 
+// ✅ FIXED: Now correctly activates the button that matches the clicked panelId
 function updateOptionButtonState(panelId) {
   optionBtns.forEach((btn) => {
     btn.classList.remove("active");
-    if (btn.dataset.panel === "workspace" && panelId === "workspace") btn.classList.add("active");
+    if (btn.dataset.panel === panelId) btn.classList.add("active");
   });
 }
 
@@ -344,16 +345,19 @@ optionBtns.forEach((btn) => {
   });
 });
 
+// ✅ UPDATED: Always defaults to "workspace" unless a hash is in the URL
 document.addEventListener("DOMContentLoaded", function () {
   loadWorkspacePlans();
   loadCourses(); 
   
   const hashTarget = window.location.hash.replace("#", "");
-  let storedTarget = "workspace";
-  try { const saved = localStorage.getItem("targetPanel"); if (saved && panels[saved]) storedTarget = saved; } catch (e) {}
-  let initialPanel = "workspace";
-  if (hashTarget && panels[hashTarget]) { initialPanel = hashTarget; try { localStorage.setItem("targetPanel", initialPanel); } catch (e) {} } 
-  else { initialPanel = storedTarget; }
+  let initialPanel = "workspace"; // ALWAYS default to workspace
+  
+  // Only use hash if it's explicitly provided and valid
+  if (hashTarget && panels[hashTarget]) { 
+    initialPanel = hashTarget; 
+  }
+  
   switchToPanel(initialPanel);
 });
 
