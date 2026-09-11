@@ -8,29 +8,33 @@ const mobileMenu = document.getElementById("mobileMenu");
 const menuOverlay = document.getElementById("menuOverlay");
 
 function openMenu() {
+  if (!mobileMenu || !menuOverlay) return;
   mobileMenu.classList.add("open");
   menuOverlay.classList.add("open");
   document.body.style.overflow = "hidden";
 }
 
 function closeMenu() {
+  if (!mobileMenu || !menuOverlay) return;
   mobileMenu.classList.remove("open");
   menuOverlay.classList.remove("open");
   document.body.style.overflow = "";
 }
 
-menuToggle.addEventListener("click", openMenu);
-menuClose.addEventListener("click", closeMenu);
-menuOverlay.addEventListener("click", closeMenu);
+if (menuToggle) menuToggle.addEventListener("click", openMenu);
+if (menuClose) menuClose.addEventListener("click", closeMenu);
+if (menuOverlay) menuOverlay.addEventListener("click", closeMenu);
 
-mobileMenu.querySelectorAll("a").forEach((link) => {
-  link.addEventListener("click", (event) => {
-    if (!link.getAttribute("href")) {
-      event.preventDefault();
-    }
-    closeMenu();
+if (mobileMenu) {
+  mobileMenu.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      if (!link.getAttribute("href") || link.getAttribute("href") === "#") {
+        event.preventDefault();
+      }
+      closeMenu();
+    });
   });
-});
+}
 
 // ============================================================
 // SCROLL REVEAL
@@ -47,7 +51,7 @@ const revealObserver = new IntersectionObserver(
       }
     });
   },
-  { threshold: 0.15 },
+  { threshold: 0.15 }
 );
 
 scrollRevealElements.forEach((el) => revealObserver.observe(el));
@@ -73,12 +77,10 @@ if (ourArticles) {
 }
 
 // ============================================================
-// SUBSCRIBE SECTION ANIMATION & API Integration
+// SUBSCRIBE SECTION ANIMATION & IMPROVED API INTEGRATION
 // ============================================================
 
-const subscribeElement = document.querySelector('.subscribe > div');
-const newsletterEmail = document.getElementById('newsletter-email');
-const newsletterBtn = document.getElementById('newsletter-btn');
+const subscribeElement = document.querySelector('.subscribe > div') || document.querySelector('.subscribeBox');
 
 if (subscribeElement) {
   const subscribeObserver = new IntersectionObserver((entries) => {
@@ -95,44 +97,127 @@ if (subscribeElement) {
   subscribeObserver.observe(subscribeElement);
 }
 
-// Newsletter Subscription Handler
-if (newsletterBtn && newsletterEmail) {
-  newsletterBtn.addEventListener('click', async (e) => {
+// --- IMPROVED NEWSLETTER SUBSCRIPTION HANDLER (No alerts, no container expansion) ---
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+function showSubscribeMessage(message, type) {
+  const box = document.querySelector('.subscribeBox') || document.querySelector('.subscribe > div');
+  if (!box) return;
+
+  // Ensure the container is relatively positioned so the message anchors to it
+  box.style.position = 'relative';
+
+  const existingMsg = document.querySelector('.subscribe-message');
+  if (existingMsg) existingMsg.remove();
+
+  const msgDiv = document.createElement('div');
+  msgDiv.className = `subscribe-message ${type}`;
+  msgDiv.textContent = message;
+  
+  // Absolute positioning prevents the container from expanding or shifting layout
+  msgDiv.style.position = 'absolute';
+  msgDiv.style.bottom = '-30px'; // Floats just below the box
+  msgDiv.style.left = '50%';
+  msgDiv.style.transform = 'translateX(-50%)';
+  msgDiv.style.width = '100%';
+  msgDiv.style.fontSize = '13px';
+  msgDiv.style.fontWeight = '500';
+  msgDiv.style.color = type === 'success' ? '#22c55e' : '#ef4444'; 
+  msgDiv.style.textAlign = 'center';
+  msgDiv.style.whiteSpace = 'nowrap'; // Prevents text wrapping from affecting layout
+  msgDiv.style.zIndex = '10';
+  msgDiv.style.pointerEvents = 'none'; // Allows clicking through the message if it overlaps anything
+
+  box.appendChild(msgDiv);
+
+  // Auto-remove with a smooth fade-out
+  setTimeout(() => {
+    if (msgDiv.parentNode) {
+      msgDiv.style.transition = 'opacity 0.4s ease';
+      msgDiv.style.opacity = '0';
+      setTimeout(() => {
+        if (msgDiv.parentNode) msgDiv.remove();
+      }, 400);
+    }
+  }, 4000);
+}
+
+function initSubscribeForm() {
+  // Try to find the form by class first, then fallback to specific IDs if they exist
+  const form = document.querySelector('.subscribeForm') || 
+               (document.getElementById('newsletter-email') ? document.getElementById('newsletter-email').closest('form') : null);
+  
+  if (!form) return;
+  
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = newsletterEmail.value.trim();
+    
+    const emailInput = form.querySelector('input[type="email"]') || form.querySelector('input') || document.getElementById('newsletter-email');
+    const submitButton = form.querySelector('button[type="submit"]') || form.querySelector('button') || document.getElementById('newsletter-btn');
+    const email = emailInput ? emailInput.value.trim() : '';
     
     if (!email || !email.includes('@')) {
-      alert('Please enter a valid email address.');
+      showSubscribeMessage('Please enter a valid email address.', 'error');
       return;
     }
 
-    const originalText = newsletterBtn.textContent;
-    newsletterBtn.textContent = 'Subscribing...';
-    newsletterBtn.disabled = true;
+    const originalText = submitButton ? submitButton.textContent : 'Submit';
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Subscribing...';
+    }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/core/subscribe/`, {
+      const baseUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '';
+      const apiUrl = `${baseUrl}/api/core/subscribe/`;
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken') 
+        },
         body: JSON.stringify({ email: email })
       });
 
-      const result = await response.json();
+      const data = await response.json();
+
       if (response.ok) {
-        alert('Successfully subscribed to our newsletter!');
-        newsletterEmail.value = '';
+        showSubscribeMessage('Successfully subscribed to our newsletter!', 'success');
+        if (emailInput) emailInput.value = ''; // Clear input on success
       } else {
-        alert(result.error || result.message || 'Failed to subscribe. This email might already be subscribed.');
+        const errorMsg = data.email ? data.email[0] : (data.detail || data.error || data.message || 'Failed to subscribe. Please try again.');
+        showSubscribeMessage(errorMsg, 'error');
       }
     } catch (error) {
       console.error('Subscription error:', error);
-      alert('An error occurred. Please try again later.');
+      showSubscribeMessage('A network error occurred. Please try again later.', 'error');
     } finally {
-      newsletterBtn.textContent = originalText;
-      newsletterBtn.disabled = false;
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+      }
     }
   });
 }
+
+// Initialize subscription form handler
+initSubscribeForm();
+
 
 // ============================================================
 // FOOTER ANIMATIONS
@@ -255,7 +340,7 @@ function renderCategories(categories) {
 // Render Blog Posts
 function renderBlogPosts(posts) {
   if (!blogContainer) {
-    console.error('❌ Blog container not found! Cannot render posts.');
+    console.error(' Blog container not found! Cannot render posts.');
     return;
   }
 
@@ -295,7 +380,7 @@ function renderBlogPosts(posts) {
     const excerpt = tempDiv.textContent.substring(0, 120) + '...';
     
     return `
-      <div class="scroll-reveal article-card" data-category="${categoryName}">
+      <div class="scroll-reveal article-card" data-category="${categoryName}" data-title="${post.title.toLowerCase()}" data-author="${authorName.toLowerCase()}" data-content="${post.content.toLowerCase()}">
         <span><img src="${imageUrl}" alt="${post.title}" onerror="this.src='src/image/heroImage.jpg'" /></span>
         <span class="card-title">${post.title}</span>
         <span class="card-desc">${excerpt}</span>
@@ -384,6 +469,91 @@ function filterBlogPosts(category) {
 }
 
 // ============================================================
+// SEARCH FUNCTIONALITY - NEW!
+// ============================================================
+
+const searchInput = document.querySelector('input[type="text"][placeholder*="Search"]') || 
+                    document.querySelector('input[placeholder*="search" i]') ||
+                    document.getElementById('searchInput');
+
+if (searchInput) {
+  console.log('🔍 Search input found, initializing search functionality...');
+  
+  let searchTimeout;
+  
+  searchInput.addEventListener('input', (e) => {
+    // Clear previous timeout
+    clearTimeout(searchTimeout);
+    
+    const searchTerm = e.target.value.toLowerCase().trim();
+    
+    // Debounce search - wait 300ms after user stops typing
+    searchTimeout = setTimeout(() => {
+      console.log('🔍 Searching for:', searchTerm);
+      
+      if (!searchTerm) {
+        // If search is empty, show all posts
+        const articleCards = document.querySelectorAll(".article-card");
+        articleCards.forEach(card => {
+          card.classList.remove("hidden");
+          card.style.display = "";
+        });
+        applySeeMoreLimit();
+        return;
+      }
+      
+      const articleCards = document.querySelectorAll(".article-card");
+      let visibleCount = 0;
+      
+      articleCards.forEach((card) => {
+        const title = card.dataset.title || '';
+        const author = card.dataset.author || '';
+        const content = card.dataset.content || '';
+        const cardDesc = card.querySelector('.card-desc')?.textContent.toLowerCase() || '';
+        
+        // Search in title, author, content, and description
+        const matchesSearch = title.includes(searchTerm) || 
+                             author.includes(searchTerm) || 
+                             content.includes(searchTerm) ||
+                             cardDesc.includes(searchTerm);
+        
+        if (matchesSearch) {
+          card.classList.remove("hidden");
+          card.style.display = "";
+          visibleCount++;
+        } else {
+          card.classList.add("hidden");
+          card.style.display = "none";
+        }
+      });
+      
+      console.log(`📊 Search results: ${visibleCount} articles found`);
+      
+      // Show message if no results
+      if (visibleCount === 0) {
+        const existingNoResults = blogContainer.querySelector('.no-results-message');
+        if (!existingNoResults) {
+          const noResultsMsg = document.createElement('p');
+          noResultsMsg.className = 'no-results-message';
+          noResultsMsg.style.cssText = 'text-align:center; padding: 40px; color: #666; grid-column: 1/-1;';
+          noResultsMsg.textContent = `No articles found matching "${e.target.value}"`;
+          blogContainer.appendChild(noResultsMsg);
+        }
+      } else {
+        const existingNoResults = blogContainer.querySelector('.no-results-message');
+        if (existingNoResults) {
+          existingNoResults.remove();
+        }
+      }
+      
+      applySeeMoreLimit();
+    }, 300);
+  });
+} else {
+  console.warn('⚠️ Search input not found. Make sure your search input has placeholder="Search articles..."');
+}
+
+// ============================================================
 // SEE MORE / SEE LESS — blog articles
 // ============================================================
 
@@ -403,7 +573,7 @@ function getCurrentLimit() {
 function applySeeMoreLimit() {
   const articleCards = document.querySelectorAll(".article-card");
   const visibleCards = Array.from(articleCards).filter(
-    (card) => !card.classList.contains("hidden")
+    (card) => !card.classList.contains("hidden") && card.style.display !== "none"
   );
 
   const limit = getCurrentLimit();
@@ -414,26 +584,33 @@ function applySeeMoreLimit() {
     card.classList.toggle("overLimit", overLimit);
   });
 
-  seeMoreBtn.classList.toggle("visible", needsButton);
-  seeMoreBtn.textContent = seeMoreExpanded ? "See Less" : "See More";
-  seeMoreBtn.setAttribute("aria-expanded", seeMoreExpanded);
+  if (seeMoreBtn) {
+    seeMoreBtn.classList.toggle("visible", needsButton);
+    seeMoreBtn.textContent = seeMoreExpanded ? "See Less" : "See More";
+    seeMoreBtn.setAttribute("aria-expanded", seeMoreExpanded);
+  }
 
   if (!needsButton) {
     seeMoreExpanded = false;
   }
 }
 
-seeMoreBtn.addEventListener("click", () => {
-  seeMoreExpanded = !seeMoreExpanded;
-  applySeeMoreLimit();
+if (seeMoreBtn) {
+  seeMoreBtn.addEventListener("click", () => {
+    seeMoreExpanded = !seeMoreExpanded;
+    applySeeMoreLimit();
 
-  if (!seeMoreExpanded) {
-    document.querySelector(".blogArticles").scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }
-});
+    if (!seeMoreExpanded) {
+      const blogArticles = document.querySelector(".blogArticles");
+      if (blogArticles) {
+        blogArticles.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }
+  });
+}
 
 window.addEventListener("resize", () => {
   applySeeMoreLimit();

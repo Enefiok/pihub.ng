@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Certificate - PIHUB</title>
+    <!-- Link to your new CSS file -->
+    <link rel="stylesheet" href="style/certificate.css">
+    <!-- Optional: Add your main global CSS here if you have one -->
+    <!-- <link rel="stylesheet" href="style/index.css"> -->
+</head>
+<body>
+
+    <!-- Main Container -->
+    <div class="page-wrapper">
+        
+        <!-- Loading State -->
+        <div id="loading-state" class="status-container">
+            <div class="spinner"></div>
+            <p>Verifying certificate...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="status-container hidden">
+            <div class="error-icon">⚠️</div>
+            <h2>Invalid Certificate</h2>
+            <p id="error-message">We could not verify this certificate. Please check the URL or contact support.</p>
+        </div>
+
+        <!-- Certificate Display (Hidden by default) -->
+        <div id="certificate-view" class="hidden">
+            
+            <!-- Action Buttons (Hidden when printing) -->
+            <div class="action-bar no-print">
+                <button id="print-btn" class="btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    Print / Save as PDF
+                </button>
+                <a href="/" class="btn-secondary">← Back to Home</a>
+            </div>
+
+            <!-- The Actual Certificate Design -->
+            <div class="certificate-card">
+                <div class="cert-border">
+                    <div class="cert-content">
+                        
+                        <div class="cert-header">
+                            <h1 class="cert-title">Certificate of Completion</h1>
+                            <p class="cert-subtitle">This is to certify that</p>
+                        </div>
+
+                        <div class="cert-body">
+                            <h2 id="student-name" class="student-name">Loading...</h2>
+                            <p class="cert-subtitle" style="margin-top: 20px;">has successfully completed the course</p>
+                            <h3 id="course-title" class="course-name">Loading Course...</h3>
+                        </div>
+
+                        <div class="cert-footer">
+                            <div class="footer-item">
+                                <p class="footer-label">Date of Issue</p>
+                                <p id="issue-date" class="footer-value">--</p>
+                            </div>
+                            <div class="footer-item">
+                                <p class="footer-label">Issued By</p>
+                                <p id="issued-by" class="footer-value">--</p>
+                            </div>
+                        </div>
+
+                        <div class="cert-id-badge">
+                            <span class="verified-badge">✓ Verified</span>
+                            <p class="cert-uuid">ID: <span id="cert-uuid">--</span></p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Link to your new JS file -->
+    <script src="script/certificate.js"></script>
+</body>
+</html>

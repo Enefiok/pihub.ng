@@ -3,11 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PIHUB</title>
-     <base href="/pihubng/">
+    <title>PIHUB - Article</title>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="src/Fontawesome/css/all.min.css" />
+    <!-- READ PAGE CSS -->
     <link rel="stylesheet" href="style/read.css" />
   </head>
+
   <body>
     <!-- NAVBAR -->
     <nav>
@@ -16,20 +18,24 @@
           src="src/image/logo on black background without background11.png"
           alt="PIHUB logo"
       /></a>
+
       <div class="links">
         <a href="index.html" class="page-link">Home</a>
         <a href="about.html" class="page-link">About</a>
         <a href="offer.html" class="page-link">Services</a>
         <a href="blog.html" class="page-link">Blog</a>
       </div>
-      <a href="contactus.html" id="contactUs" class="page-link">Contact Us</a>
-      <i
-        class="fas fa-bars"
-        id="menuToggle"
-        aria-label="Open menu"
-        role="button"
-        tabindex="0"
-      ></i>
+
+      <div class="navActions">
+        <a href="contactus.html" id="contactUs" class="page-link">Contact Us</a>
+        <i
+          class="fas fa-bars"
+          id="menuToggle"
+          aria-label="Open menu"
+          role="button"
+          tabindex="0"
+        ></i>
+      </div>
     </nav>
 
     <!-- MOBILE MENU -->
@@ -45,168 +51,128 @@
       <a href="about.html" class="page-link">About</a>
       <a href="offer.html" class="page-link">Services</a>
       <a href="blog.html" class="page-link">Blog</a>
-      <a href="contactus.html" id="mobileContactUs" class="page-link"
-        >Contact Us</a
-      >
     </div>
     <div class="menuOverlay" id="menuOverlay"></div>
     <!-- MOBILE MENU -->
-    <!-- NAVBAR -->
 
-    <!-- READ ARTICLE -->
-
+    <!-- READ ARTICLE (Single Wide Card Layout) -->
     <section class="read">
-      <div class="date" id="readDate">August 27, 2026</div>
-      <div class="topic" id="readTopic">Virtual Business Card</div>
-      <div class="topicImage">
-        <img
-          id="readImage"
-          src="src/image/heroImage.jpg"
-          alt="Article Topic"
-        />
-      </div>
-      <section class="article" id="readArticleContent">
-        <div
-          class="author-info scroll-reveal"
-          id="readAuthor"
-          style="font-weight: bold; margin-bottom: 15px; color: #fa7001"
-        >
-          By Victor Enefiok
+      <div class="article-wrapper">
+        
+        <!-- The Image (Top part) -->
+        <div class="topicImage">
+          <img id="readImage" src="src/image/heroImage.jpg" alt="Article Topic" />
         </div>
-        <div class="scroll-reveal">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat,
-          corporis ea! Alias commodi enim amet in at exercitationem debitis
-          laudantium doloribus incidunt. Necessitatibus nemo, a atque expedita
-          magnam perferendis fugit reprehenderit consequuntur, delectus sint,
-          voluptate in excepturi consectetur deleniti soluta nesciunt ipsum odit
-          voluptatibus. Eum voluptatibus repudiandae error. Soluta obcaecati,
-          eum sequi fugiat impedit, quod maiores quidem alias hic saepe
-          deleniti, porro velit repudiandae! Itaque vero, illum corrupti,
-          facilis similique placeat quas, perferendis doloribus expedita
-          consequatur magni. Corrupti, illum deserunt!
-        </div>
-        <div class="scroll-reveal">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur
-          laudantium itaque quas amet iure quia ea consequuntur omnis voluptatem
-          animi quaerat nemo qui molestiae earum commodi, incidunt dignissimos
-          numquam. Consectetur, autem mollitia nemo minus sapiente, libero
-          voluptatibus pariatur, suscipit aperiam reprehenderit obcaecati
-          laudantium unde dicta. Recusandae eaque dolores aperiam atque dicta
-          aut consequuntur id saepe quibusdam repudiandae totam placeat vitae
-          iure iusto, natus eius accusamus cupiditate incidunt asperiores
-          laborum laboriosam eveniet. Quaerat sunt, suscipit temporibus hic
-          nobis delectus aliquam fugiat!
-        </div>
-        <div class="scroll-reveal">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque
-          incidunt maiores in aliquam quia minima reprehenderit placeat numquam
-          repellendus dolor earum consectetur totam, reiciendis unde odio culpa
-          minus dolorem ipsam officiis facilis animi magni id deserunt.
-          Assumenda voluptate itaque fugit. Iure quibusdam amet consequatur
-          molestias praesentium voluptas nam, labore odio earum ad quae velit
-          molestiae aspernatur. Tempore fugiat totam necessitatibus, ipsum sequi
-          eius nihil veniam inventore adipisci explicabo dolores. Doloribus
-          accusamus voluptatum explicabo dolorum tempora omnis dolor earum nulla
-          repudiandae.
-        </div>
-        <div class="alsoRead scroll-reveal">
-          <span>Also Read:</span>
-          <a href=""
-            >Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-            Temporibus, odit.</a
-          >
-        </div>
-        <div class="scroll-reveal">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque
-          voluptates corrupti porro iure delectus vero ipsam doloribus fugiat
-          deserunt ad dicta aut aliquid voluptatum quia magni obcaecati, beatae
-          architecto! Similique voluptates quas expedita repudiandae eum
-          dolorem, nam eius quia sapiente odit dolore suscipit rem amet tempore!
-          Commodi aut eveniet sapiente ducimus rerum, quod consequuntur
-          accusantium natus doloribus corporis, tenetur necessitatibus
-          consequatur voluptatem. Mollitia eligendi ipsum provident quo, beatae
-          nemo necessitatibus accusantium odio earum ea fuga voluptates illo
-          repellat inventore delectus?
-        </div>
-      </section>
-    </section>
 
+        <!-- The White Card (Contains EVERYTHING else) -->
+        <div class="article-card">
+          
+          <!-- Meta Info -->
+          <div class="article-meta">
+            <span class="date" id="readDate">August 27, 2026</span>
+            <span class="category">Technology</span>
+          </div>
+
+          <!-- Title -->
+          <h1 class="topic" id="readTopic">My First PIHUB Post</h1>
+
+          <!-- Source / Company -->
+          <div class="article-source">
+            <span class="source-icon"><i class="fas fa-newspaper"></i></span>
+            <span class="source-name">PIHUB News</span>
+          </div>
+
+          <hr class="divider">
+
+          <!-- ALL Article Content is now inside here -->
+          <div class="article-body">
+            <div class="author-info" id="readAuthor">By Victor Enefiok</div>
+            
+            <p class="scroll-reveal">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat, corporis ea! Alias commodi enim amet in at exercitationem debitis laudantium doloribus incidunt. Necessitatibus nemo, a atque expedita magnam perferendis fugit reprehenderit consequuntur, delectus sint, voluptate in excepturi consectetur deleniti soluta nesciunt ipsum odit voluptatibus. Eum voluptatibus repudiandae error. Soluta obcaecati, eum sequi fugiat impedit, quod maiores quidem alias hic saepe deleniti, porro velit repudiandae! Itaque vero, illum corrupti, facilis similique placeat quas, perferendis doloribus expedita consequatur magni. Corrupti, illum deserunt!
+            </p>
+            
+            <p class="scroll-reveal">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur laudantium itaque quas amet iure quia ea consequuntur omnis voluptatem animi quaerat nemo qui molestiae earum commodi, incidunt dignissimos numquam. Consectetur, autem mollitia nemo minus sapiente, libero voluptatibus pariatur, suscipit aperiam reprehenderit obcaecati laudantium unde dicta. Recusandae eaque dolores aperiam atque dicta aut consequuntur id saepe quibusdam repudiandae totam placeat vitae iure iusto, natus eius accusamus cupiditate incidunt asperiores laborum laboriosam eveniet. Quaerat sunt, suscipit temporibus hic nobis delectus aliquam fugiat!
+            </p>
+            
+            <p class="scroll-reveal">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque incidunt maiores in aliquam quia minima reprehenderit placeat numquam repellendus dolor earum consectetur totam, reiciendis unde odio culpa minus dolorem ipsam officiis facilis animi magni id deserunt. Assumenda voluptate itaque fugit. Iure quibusdam amet consequatur molestias praesentium voluptas nam, labore odio earum ad quae velit molestiae aspernatur. Tempore fugiat totam necessitatibus, ipsum sequi eius nihil veniam inventore adipisci explicabo dolores. Doloribus accusamus voluptatum explicabo dolorum tempora omnis dolor earum nulla repudiandae.
+            </p>
+
+            <div class="alsoRead scroll-reveal">
+              <span>Also Read:</span>
+              <a href="#">Check out our latest updates on workspace innovation.</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
     <!-- READ ARTICLE -->
 
-    <!-- FOOTER -->
-    <section class="footer">
-      <div class="scroll-reveal">
-        <span>
-          <p></p>
-          <p></p>
-          <p>
-            <span>PIHUB</span>
-            <span>Built for What's Next</span>
-          </p>
-        </span>
-        <span>
-          Your all-in-one hub for co-working spaces, professional courses and
-          conference facilities. Book a workspace, grow your skills, and bring
-          your ideas to life
-        </span>
-     <span>
-          <a href=""><i class="fab fa-linkedin"></i></a>
-          <a
-            href="https://www.facebook.com/profile.php?id=61593336062853&mibextid=rS40aB7S9Ucbxw6v"
-            target="_blank"
-            rel="noopener noreferrer"
-            ><i class="fab fa-facebook-f"></i
-          ></a>
-          <a
-            href="https://www.instagram.com/prestigeinnovationhub?igsi=MWZza2JqZzE3ZjJrdQ=="
-            target="_blank"
-            rel="noopener noreferrer"
-            ><i class="fab fa-instagram"></i
-          ></a>
-          <a
-            href="https://www.tiktok.com/@prestige.innovati7?_r=1&_t=ZS-99HHmDOISmr"
-            target="_blank"
-            rel="noopener noreferrer"
-            ><i class="fab fa-tiktok"></i
-          ></a>
-        </span>
-      </div>
-      <div class="scroll-reveal">
-        <span>Links</span>
-        <a href="index.html">Home</a>
-        <a href="about.html">About</a>
-        <a href="blog.html">Blog</a>
-        <a href="offer.html">Services</a>
-      </div>
-       <div class="scroll-reveal">
-        <span>Services</span>
-        <a href="">Workspace</a>
-        <a href="">Private Office</a>
-        <a href="">Conference</a>
-        <a href="">ShowRoom</a>
-        <a href="">Courses</a>
-      </div>
-      <div class="scroll-reveal">
-        <span>Contact</span>
-        <a href="tel:+2349054637265">+2349054637265</a>
-        <a href="mailto:prestigeinnovationhub@gmail.com"
-          >prestigeinnovationhub@gmail.com</a
-        >
+    <!-- SUBSCRIBE -->
+    <section class="subscribe">
+      <div class="subscribeBox">
+        <p class="subscribeHeading">Keep Updated About Our Product</p>
+        <form class="subscribeForm">
+          <input type="email" name="email" placeholder="Your email address" required />
+          <button type="submit">Submit</button>
+        </form>
       </div>
     </section>
+    <!-- SUBSCRIBE -->
 
-    <section class="copyright scroll-reveal">
-      <div>&copy 2026. All right reserved</div>
-      <div>
-        <a href="">Privacy Policy</a>
-        <a href="">Terms of security</a>
-        <a href="">Security</a>
-        <a href="">Privacy policy</a>
-      </div>
-    </section>
     <!-- FOOTER -->
-     <script src="script/config.js"></script>
-      <script src="script/navigation.js"></script>
+    <footer class="footer">
+      <div class="footerTop">
+        <div class="footerBrand">
+          <img src="src/image/logo on black background without background11.png" alt="PIHUB logo" />
+          <div class="footerApps">
+            <a href="#" aria-label="Apple"><i class="fab fa-apple"></i></a>
+            <a href="#" aria-label="Google Play"><i class="fab fa-google-play"></i></a>
+            <a href="#" aria-label="App Store"><i class="fab fa-app-store-ios"></i></a>
+          </div>
+        </div>
+
+        <div class="footerCol">
+          <span class="footerHeading">Other Pages</span>
+          <a href="index.html">Home</a>
+          <a href="about.html">About Us</a>
+          <a href="offer.html">Services</a>
+          <a href="contactus.html">Contact</a>
+          <a href="#">Project</a>
+        </div>
+
+        <div class="footerCol">
+          <span class="footerHeading">Quick Links</span>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Term of Service</a>
+          <a href="#">Disclaimer</a>
+          <a href="#">Credits</a>
+          <a href="#">FAQ</a>
+        </div>
+
+        <div class="footerCol footerSocial">
+          <span class="footerHeading">Social Media</span>
+          <p>Our Support and Sales team is available 24/7 to answer your queries</p>
+          <div class="footerSocialIcons">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="copyright">
+        <p>&copy; 2026 PIHUB. All rights reserved.</p>
+      </div>
+    </footer>
+    <!-- FOOTER -->
+
+    <script src="script/config.js"></script>
+    <script src="script/navigation.js"></script>
     <script src="script/read.js"></script>
   </body>
 </html>

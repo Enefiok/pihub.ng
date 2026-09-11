@@ -1,13 +1,5 @@
 // ============================================================
 // GLOBAL SCROLL SPEED TRACKER
-//
-// Measures how fast the user is scrolling (in pixels per
-// millisecond) so each section's entrance animation can adapt:
-// slow/normal scroll -> full cinematic timing, fast scroll ->
-// compressed timing, very fast flick -> instant snap to end
-// state (skip animation entirely).
-//
-// This must be defined ONCE, before any section script uses it.
 // ============================================================
 
 let lastScrollY = window.scrollY;
@@ -29,13 +21,9 @@ window.addEventListener(
   { passive: true }
 );
 
-// Tune these two by testing on your own trackpad/mouse wheel/phone
-const FAST_SCROLL_THRESHOLD = 1.5; // px/ms - compress timing above this
-const INSTANT_THRESHOLD = 3; // px/ms - skip animation, snap to end state
+const FAST_SCROLL_THRESHOLD = 1.5;
+const INSTANT_THRESHOLD = 3;
 
-// Returns a multiplier to apply to every delay/duration in a
-// section's animation sequence, based on scroll speed AT THE
-// MOMENT the section's observer fires.
 function getScrollSpeedMultiplier() {
   if (currentScrollSpeed > FAST_SCROLL_THRESHOLD) return 0.15;
   return 1;
@@ -45,9 +33,6 @@ function isInstantScroll() {
   return currentScrollSpeed > INSTANT_THRESHOLD;
 }
 
-// Immediately sets an element to its animation's end state,
-// with no transition, for use when the user scrolled too fast
-// to realistically see an animated entrance play out.
 function snapToEndState(el, endStyles) {
   if (!el) return;
   Object.assign(el.style, endStyles);
@@ -55,103 +40,52 @@ function snapToEndState(el, endStyles) {
 
 
 // ============================================================
-// HERO SEQUENTIAL INTRO
+// HERO SEQUENTIAL INTRO - SPED UP
 // ============================================================
 
-function typeTextSequential(el, speed = 22, startDelay = 1000) {
+function typeTextSequential(el, speed = 15, startDelay = 500) {
   if (!el) return Promise.resolve();
 
   const fullText = el.textContent.trim();
-
-  // Clear paragraph before typing
   el.textContent = "";
 
   return new Promise((resolve) => {
     setTimeout(() => {
       el.style.opacity = "1";
-
       let i = 0;
 
       function step() {
         if (i < fullText.length) {
           el.textContent += fullText.charAt(i);
           i++;
-
           setTimeout(step, speed);
         } else {
-          // Typing is COMPLETELY finished
           resolve();
         }
       }
-
       step();
     }, startDelay);
   });
 }
 
-
-// ============================================================
-// HERO INTRO SEQUENCE
-// ============================================================
-
 async function initHeroIntro() {
-
   const heroText = document.getElementById("heroText");
-
   if (!heroText) {
     console.warn("Hero text #heroText was not found.");
     return;
   }
 
-  // ----------------------------------------------------------
-  // Find the hero button
-  //
-  // FIX: this previously fell back to `.about-btn` when
-  // `.hero-btn` wasn't found, which always matched the About
-  // section's "Learn more" button instead. Only ever target
-  // `.hero-btn`, no fallback. Add class="hero-btn" to the
-  // hero's "Explore" link in the HTML.
-  // ----------------------------------------------------------
-
   const heroButton = document.querySelector(".hero-btn");
-
-
-  // ----------------------------------------------------------
-  // Make sure paragraph starts hidden
-  // ----------------------------------------------------------
-
   heroText.style.opacity = "0";
 
-
-  // ----------------------------------------------------------
-  // TYPE PARAGRAPH
-  //
-  // Nothing after this happens until typing is 100% complete.
-  // Hero intro runs once on page load, before any scrolling can
-  // happen, so it does not need scroll-speed adaptation.
-  // ----------------------------------------------------------
-
-  await typeTextSequential(heroText, 22, 1000);
-
-
-  // ----------------------------------------------------------
-  // PARAGRAPH IS FINISHED
-  // Now introduce the button.
-  // ----------------------------------------------------------
+  await typeTextSequential(heroText, 15, 500);
 
   if (heroButton) {
-
     await new Promise((resolve) => {
       heroButton.animate(
         [
-          {
-            opacity: 0,
-            transform: "translateY(20px) scale(0.96)"
-          },
-          {
-            opacity: 1,
-            transform: "translateY(0) scale(1)"
-          }
+          { opacity: 0, transform: "translateY(20px) scale(0.96)" },
+          { opacity: 1, transform: "translateY(0) scale(1)" }
         ],
         {
           duration: 650,
@@ -160,29 +94,19 @@ async function initHeroIntro() {
         }
       ).finished.then(resolve).catch(resolve);
     });
-
   }
 }
-
-
-// ============================================================
-// START HERO
-// ============================================================
 
 initHeroIntro();
 
 
-
 // ============================================================
-// ABOUT SECTION — DRAMATIC SEQUENTIAL ENTRANCE
-// Now scroll-speed adaptive: fast scroll compresses timing,
-// very fast scroll snaps straight to the end state.
+// ABOUT SECTION — DYNAMIC ALTERNATING FEATURES
 // ============================================================
 
 const aboutSection = document.querySelector(".about");
 
 if (aboutSection) {
-
   const heading = aboutSection.querySelector(".about-heading");
   const intro = aboutSection.querySelector(".about-intro");
   const image = aboutSection.querySelector(".aboutPic");
@@ -196,42 +120,26 @@ if (aboutSection) {
 
   const aboutObserver = new IntersectionObserver(
     (entries) => {
-
       entries.forEach((entry) => {
-
         if (!entry.isIntersecting) return;
 
-        // ------------------------------------------------
-        // VERY FAST SCROLL — skip animation, snap to final
-        // ------------------------------------------------
-
         if (isInstantScroll()) {
-
           snapToEndState(heading, { opacity: "1", transform: "none" });
           snapToEndState(intro, { opacity: "1", transform: "none" });
           snapToEndState(image, { opacity: "1", transform: "none" });
           snapToEndState(description, { opacity: "1", transform: "none" });
-
           if (featuresContainer) featuresContainer.style.opacity = "1";
           features.forEach((feature) => {
             feature.style.opacity = "1";
             feature.style.transform = "none";
           });
-
           snapToEndState(button, { opacity: "1", transform: "none" });
-
           aboutObserver.unobserve(entry.target);
           return;
         }
 
-        // ------------------------------------------------
-        // NORMAL OR FAST SCROLL — play animation, timing
-        // compressed by speedMultiplier when scrolling fast
-        // ------------------------------------------------
-
         const speedMultiplier = getScrollSpeedMultiplier();
 
-        // 1. HEADING
         if (heading) {
           heading.animate(
             [
@@ -239,124 +147,78 @@ if (aboutSection) {
               { opacity: 1, transform: "translateY(0) scale(1.03)", offset: 0.75 },
               { opacity: 1, transform: "translateY(0) scale(1)" }
             ],
-            {
-              duration: 900 * speedMultiplier,
-              easing: EASE_BOUNCE,
-              fill: "forwards"
-            }
+            { duration: 900 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
           );
         }
 
-        // 2. INTRO TEXT
         if (intro) {
           setTimeout(() => {
             intro.animate(
-              [
-                { opacity: 0, transform: "translateY(30px)" },
-                { opacity: 1, transform: "translateY(0)" }
-              ],
-              {
-                duration: 800 * speedMultiplier,
-                easing: EASE_OUT,
-                fill: "forwards"
-              }
+              [{ opacity: 0, transform: "translateY(30px)" }, { opacity: 1, transform: "translateY(0)" }],
+              { duration: 800 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
           }, 500 * speedMultiplier);
         }
 
-        // 3. IMAGE
         if (image) {
           setTimeout(() => {
             image.animate(
-              [
-                { opacity: 0, transform: "translateX(70px) scale(0.92) rotate(2deg)" },
-                { opacity: 1, transform: "translateX(0) scale(1) rotate(0deg)" }
-              ],
-              {
-                duration: 1100 * speedMultiplier,
-                easing: EASE_OUT,
-                fill: "forwards"
-              }
+              [{ opacity: 0, transform: "translateX(70px) scale(0.92) rotate(2deg)" }, { opacity: 1, transform: "translateX(0) scale(1) rotate(0deg)" }],
+              { duration: 1100 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
+            image.style.willChange = "opacity, transform";
           }, 1050 * speedMultiplier);
-
-          image.style.willChange = "opacity, transform";
         }
 
-        // 4. DESCRIPTION
         if (description) {
           setTimeout(() => {
             description.animate(
-              [
-                { opacity: 0, transform: "translateY(28px)" },
-                { opacity: 1, transform: "translateY(0)" }
-              ],
-              {
-                duration: 800 * speedMultiplier,
-                easing: EASE_OUT,
-                fill: "forwards"
-              }
+              [{ opacity: 0, transform: "translateY(28px)" }, { opacity: 1, transform: "translateY(0)" }],
+              { duration: 800 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
           }, 1700 * speedMultiplier);
         }
 
-        // 5. FEATURES
+        // --- FEATURES: ALTERNATING LEFT/RIGHT + FAST STAGGER ---
         const FEATURES_START = 2350 * speedMultiplier;
-        const FEATURE_STAGGER = 650 * speedMultiplier;
+        const FAST_FEATURE_STAGGER = 120 * speedMultiplier; // Much faster stagger
 
-        features.forEach((feature) => {
+        // Setup initial hidden states with alternating directions
+        features.forEach((feature, index) => {
           feature.style.opacity = "0";
-          feature.style.transform = "translateX(-100vw)";
+          feature.style.transform = index % 2 === 0 ? "translateX(-100vw)" : "translateX(100vw)";
         });
 
         if (featuresContainer) {
-          setTimeout(() => {
-            featuresContainer.style.opacity = "1";
-          }, FEATURES_START);
+          setTimeout(() => { featuresContainer.style.opacity = "1"; }, FEATURES_START);
         }
 
         features.forEach((feature, index) => {
-          const startAt = FEATURES_START + index * FEATURE_STAGGER;
-
+          const startAt = FEATURES_START + index * FAST_FEATURE_STAGGER;
+          const startTransform = index % 2 === 0 ? "translateX(-100vw)" : "translateX(100vw)";
+          
           setTimeout(() => {
             feature.animate(
-              [
-                { opacity: 0, transform: "translateX(-100vw)" },
-                { opacity: 1, transform: "translateX(0)" }
-              ],
-              {
-                duration: 1300 * speedMultiplier,
-                easing: EASE_OUT,
-                fill: "forwards"
-              }
+              [{ opacity: 0, transform: startTransform }, { opacity: 1, transform: "translateX(0)" }],
+              { duration: 900 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
-
             const icon = feature.querySelector("i");
             if (icon) {
               setTimeout(() => {
                 icon.animate(
                   [
-                    { transform: "scale(0.7)", opacity: 0 },
+                    { transform: "scale(0.5)", opacity: 0 }, 
+                    { transform: "scale(1.15)", opacity: 1, offset: 0.7 }, 
                     { transform: "scale(1)", opacity: 1 }
                   ],
-                  {
-                    duration: 400 * speedMultiplier,
-                    easing: EASE_OUT,
-                    fill: "forwards"
-                  }
+                  { duration: 500 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
                 );
-              }, 900 * speedMultiplier);
+              }, 500 * speedMultiplier);
             }
           }, startAt);
         });
 
-        // 6. LEARN MORE BUTTON
-        const buttonStart =
-          FEATURES_START +
-          (features.length - 1) * FEATURE_STAGGER +
-          1300 * speedMultiplier +
-          200 * speedMultiplier;
-
+        const buttonStart = FEATURES_START + features.length * FAST_FEATURE_STAGGER + 900 * speedMultiplier + 200 * speedMultiplier;
         if (button) {
           setTimeout(() => {
             button.animate(
@@ -365,37 +227,28 @@ if (aboutSection) {
                 { opacity: 1, transform: "translateY(-3px) scale(1.04)", offset: 0.7 },
                 { opacity: 1, transform: "translateY(0) scale(1)" }
               ],
-              {
-                duration: 700 * speedMultiplier,
-                easing: EASE_BOUNCE,
-                fill: "forwards"
-              }
+              { duration: 700 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
             );
           }, buttonStart);
         }
 
         aboutObserver.unobserve(entry.target);
-
       });
-
     },
-    {
-      threshold: 0.2
-    }
+    { threshold: 0.2 }
   );
 
   aboutObserver.observe(aboutSection);
 }
 
+
 // ============================================================
-// OFFER SECTION — SEQUENTIAL ENTRANCE
-// Desktop/mobile speed profile PLUS scroll-speed adaptation.
+// OFFER SECTION — ORIGINAL TIMING + MOBILE STACKING EFFECT
 // ============================================================
 
 const offerSection = document.querySelector(".offer");
 
 if (offerSection) {
-
   const heading = offerSection.querySelector(".offer1");
   const subtitle = offerSection.querySelector(".offer2");
   const cards = offerSection.querySelectorAll(".offerCard");
@@ -405,7 +258,6 @@ if (offerSection) {
 
   function getTimingProfile() {
     const isLargeScreen = window.innerWidth >= 1024;
-
     return isLargeScreen
       ? {
           headingDuration: 900,
@@ -431,23 +283,17 @@ if (offerSection) {
 
   const offerObserver = new IntersectionObserver(
     (entries) => {
-
       entries.forEach((entry) => {
-
         if (!entry.isIntersecting) return;
 
-        // VERY FAST SCROLL — snap to final state
         if (isInstantScroll()) {
-
           snapToEndState(heading, { opacity: "1", transform: "none" });
           snapToEndState(subtitle, { opacity: "1", transform: "none" });
-
           cards.forEach((card) => {
             snapToEndState(card, { opacity: "1", transform: "none" });
             const icon = card.querySelector("span:first-child");
             snapToEndState(icon, { opacity: "1", transform: "none" });
           });
-
           offerObserver.unobserve(entry.target);
           return;
         }
@@ -455,7 +301,6 @@ if (offerSection) {
         const timing = getTimingProfile();
         const speedMultiplier = getScrollSpeedMultiplier();
 
-        // 1. HEADING
         if (heading) {
           heading.animate(
             [
@@ -463,62 +308,31 @@ if (offerSection) {
               { opacity: 1, transform: "translateY(0) scale(1.02)", offset: 0.75 },
               { opacity: 1, transform: "translateY(0) scale(1)" }
             ],
-            {
-              duration: timing.headingDuration * speedMultiplier,
-              easing: EASE_BOUNCE,
-              fill: "forwards"
-            }
+            { duration: timing.headingDuration * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
           );
         }
 
-        // 2. SUBTITLE
         if (subtitle) {
           setTimeout(() => {
             subtitle.animate(
-              [
-                { opacity: 0, transform: "translateY(26px)" },
-                { opacity: 1, transform: "translateY(0)" }
-              ],
-              {
-                duration: timing.subtitleDuration * speedMultiplier,
-                easing: EASE_OUT,
-                fill: "forwards"
-              }
+              [{ opacity: 0, transform: "translateY(26px)" }, { opacity: 1, transform: "translateY(0)" }],
+              { duration: timing.subtitleDuration * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
           }, timing.subtitleDelay * speedMultiplier);
         }
 
-        // 3. CARDS
         cards.forEach((card, index) => {
-
-          const startAt =
-            timing.cardsStart * speedMultiplier +
-            index * timing.cardStagger * speedMultiplier;
-
+          const startAt = timing.cardsStart * speedMultiplier + index * timing.cardStagger * speedMultiplier;
           setTimeout(() => {
-
             card.animate(
               [
-                {
-                  opacity: 0,
-                  transform:
-                    "perspective(1400px) rotateX(-45deg) translateY(70px) scale(0.85)"
-                },
-                {
-                  opacity: 1,
-                  transform:
-                    "perspective(1400px) rotateX(0deg) translateY(0) scale(1)"
-                }
+                { opacity: 0, transform: "perspective(1400px) rotateX(-45deg) translateY(70px) scale(0.85)" },
+                { opacity: 1, transform: "perspective(1400px) rotateX(0deg) translateY(0) scale(1)" }
               ],
-              {
-                duration: timing.cardDuration * speedMultiplier,
-                easing: EASE_OUT,
-                fill: "forwards"
-              }
+              { duration: timing.cardDuration * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
 
             const icon = card.querySelector("span:first-child");
-
             if (icon) {
               setTimeout(() => {
                 icon.animate(
@@ -527,40 +341,30 @@ if (offerSection) {
                     { transform: "scale(1.15) rotate(4deg)", opacity: 1, offset: 0.7 },
                     { transform: "scale(1) rotate(0deg)", opacity: 1 }
                   ],
-                  {
-                    duration: timing.iconDuration * speedMultiplier,
-                    easing: EASE_BOUNCE,
-                    fill: "forwards"
-                  }
+                  { duration: timing.iconDuration * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
                 );
               }, timing.iconDelay * speedMultiplier);
             }
-
           }, startAt);
-
         });
 
         offerObserver.unobserve(entry.target);
-
       });
-
     },
-    {
-      threshold: 0.15
-    }
+    { threshold: 0.15 }
   );
 
   offerObserver.observe(offerSection);
 }
 
+
 // ============================================================
-// GALLERY SECTION — SEQUENTIAL ENTRANCE (scroll-speed adaptive)
+// GALLERY SECTION — ORIGINAL TIMING RESTORED
 // ============================================================
 
 const gallerySection = document.querySelector(".gallery");
 
 if (gallerySection) {
-
   const heading = gallerySection.querySelector(".gallery > div:nth-child(1)");
   const subtitle = gallerySection.querySelector(".gallery > div:nth-child(2)");
   const wrap = gallerySection.querySelector(".galleryWrap");
@@ -570,23 +374,19 @@ if (gallerySection) {
 
   const galleryObserver = new IntersectionObserver(
     (entries) => {
-
       entries.forEach((entry) => {
-
         if (!entry.isIntersecting) return;
 
         if (isInstantScroll()) {
           snapToEndState(heading, { opacity: "1", transform: "none" });
           snapToEndState(subtitle, { opacity: "1", transform: "none" });
           snapToEndState(wrap, { opacity: "1", transform: "none" });
-
           galleryObserver.unobserve(entry.target);
           return;
         }
 
         const speedMultiplier = getScrollSpeedMultiplier();
 
-        // 1. HEADING
         if (heading) {
           heading.animate(
             [
@@ -594,56 +394,32 @@ if (gallerySection) {
               { opacity: 1, transform: "translateY(0) scale(1.02)", offset: 0.75 },
               { opacity: 1, transform: "translateY(0) scale(1)" }
             ],
-            {
-              duration: 900 * speedMultiplier,
-              easing: EASE_BOUNCE,
-              fill: "forwards"
-            }
+            { duration: 900 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
           );
         }
 
-        // 2. SUBTITLE
         if (subtitle) {
           setTimeout(() => {
             subtitle.animate(
-              [
-                { opacity: 0, transform: "translateY(26px)" },
-                { opacity: 1, transform: "translateY(0)" }
-              ],
-              {
-                duration: 800 * speedMultiplier,
-                easing: EASE_OUT,
-                fill: "forwards"
-              }
+              [{ opacity: 0, transform: "translateY(26px)" }, { opacity: 1, transform: "translateY(0)" }],
+              { duration: 800 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
           }, 500 * speedMultiplier);
         }
 
-        // 3. GALLERY STRIP
         if (wrap) {
           setTimeout(() => {
             wrap.animate(
-              [
-                { opacity: 0, transform: "translateY(35px) scale(0.97)" },
-                { opacity: 1, transform: "translateY(0) scale(1)" }
-              ],
-              {
-                duration: 1000 * speedMultiplier,
-                easing: EASE_OUT,
-                fill: "forwards"
-              }
+              [{ opacity: 0, transform: "translateY(35px) scale(0.97)" }, { opacity: 1, transform: "translateY(0) scale(1)" }],
+              { duration: 1000 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
           }, 1050 * speedMultiplier);
         }
 
         galleryObserver.unobserve(entry.target);
-
       });
-
     },
-    {
-      threshold: 0.15
-    }
+    { threshold: 0.15 }
   );
 
   galleryObserver.observe(gallerySection);
@@ -651,13 +427,12 @@ if (gallerySection) {
 
 
 // ============================================================
-// FOOTER SECTION — SEQUENTIAL ENTRANCE (scroll-speed adaptive)
+// FOOTER SECTION — CREATIVE ALTERNATING ENTRANCES
 // ============================================================
 
 const footerSection = document.querySelector(".footer");
 
 if (footerSection) {
-
   const brand = footerSection.querySelector(".footerBrand");
   const columns = footerSection.querySelectorAll(".footerCol");
   const copyright = document.querySelector(".copyright");
@@ -667,110 +442,87 @@ if (footerSection) {
 
   const footerObserver = new IntersectionObserver(
     (entries) => {
-
       entries.forEach((entry) => {
-
         if (!entry.isIntersecting) return;
 
         if (isInstantScroll()) {
-          snapToEndState(brand, { opacity: "1", transform: "none" });
+          snapToEndState(brand, { opacity: "1", transform: "none", filter: "none" });
           columns.forEach((col) => snapToEndState(col, { opacity: "1", transform: "none" }));
           snapToEndState(copyright, { opacity: "1", transform: "none" });
-
           footerObserver.unobserve(entry.target);
           return;
         }
 
         const speedMultiplier = getScrollSpeedMultiplier();
 
-        // 1. BRAND
+        // Brand drops in with a bounce and blur
         if (brand) {
           brand.animate(
             [
-              { opacity: 0, transform: "translateX(-40px)" },
-              { opacity: 1, transform: "translateX(0)" }
+              { opacity: 0, transform: "translateY(-40px) scale(0.85)", filter: "blur(5px)" },
+              { opacity: 1, transform: "translateY(8px) scale(1.02)", filter: "blur(0px)", offset: 0.6 },
+              { opacity: 1, transform: "translateY(0) scale(1)", filter: "blur(0px)" }
             ],
-            {
-              duration: 900 * speedMultiplier,
-              easing: EASE_OUT,
-              fill: "forwards"
-            }
+            { duration: 950 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
           );
         }
 
-        // 2. COLUMNS
-        const COLUMNS_START = 400 * speedMultiplier;
-        const COLUMN_STAGGER = 250 * speedMultiplier;
+        const COLUMNS_START = 500 * speedMultiplier;
+        const COLUMN_STAGGER = 150 * speedMultiplier; 
 
+        // Columns alternate entering from left and right with a slight scale/translation
         columns.forEach((col, index) => {
           const startAt = COLUMNS_START + index * COLUMN_STAGGER;
-
           setTimeout(() => {
             col.animate(
               [
-                { opacity: 0, transform: "translateY(30px)" },
-                { opacity: 1, transform: "translateY(0)" }
+                { opacity: 0, transform: `${index % 2 === 0 ? "translateX(-40px)" : "translateX(40px)"} translateY(20px) scale(0.9)` },
+                { opacity: 1, transform: "translateX(0) translateY(0) scale(1)" }
               ],
-              {
-                duration: 700 * speedMultiplier,
-                easing: EASE_OUT,
-                fill: "forwards"
-              }
+              { duration: 800 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
           }, startAt);
         });
 
-        // 3. COPYRIGHT
-        const copyrightStart =
-          COLUMNS_START + columns.length * COLUMN_STAGGER + 300 * speedMultiplier;
+        const copyrightStart = COLUMNS_START + columns.length * COLUMN_STAGGER + 400 * speedMultiplier;
 
+        // Copyright smoothly pops up with a slight bounce
         if (copyright) {
           setTimeout(() => {
             copyright.animate(
               [
-                { opacity: 0, transform: "translateY(14px) scale(0.98)" },
-                { opacity: 1, transform: "translateY(0) scale(1.01)", offset: 0.7 },
+                { opacity: 0, transform: "translateY(20px) scale(0.95)" },
+                { opacity: 1, transform: "translateY(-4px) scale(1.02)", offset: 0.6 },
                 { opacity: 1, transform: "translateY(0) scale(1)" }
               ],
-              {
-                duration: 600 * speedMultiplier,
-                easing: EASE_BOUNCE,
-                fill: "forwards"
-              }
+              { duration: 700 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
             );
           }, copyrightStart);
         }
 
         footerObserver.unobserve(entry.target);
-
       });
-
     },
-    {
-      threshold: 0.1
-    }
+    { threshold: 0.1 }
   );
 
   footerObserver.observe(footerSection);
 }
 
+
 // ============================================================
-// SUBSCRIBE SECTION — ENTRANCE (scroll-speed adaptive)
+// SUBSCRIBE SECTION — ORIGINAL TIMING RESTORED
 // ============================================================
 
 const subscribeSection = document.querySelector(".subscribe");
 
 if (subscribeSection) {
-
   const box = subscribeSection.querySelector(".subscribeBox");
-
   const EASE_BOUNCE = "cubic-bezier(0.34, 1.56, 0.64, 1)";
 
   const subscribeObserver = new IntersectionObserver(
     (entries) => {
-
       entries.forEach((entry) => {
-
         if (!entry.isIntersecting) return;
 
         if (isInstantScroll()) {
@@ -788,23 +540,257 @@ if (subscribeSection) {
               { opacity: 1, transform: "translateY(0) scale(1.02)", offset: 0.75 },
               { opacity: 1, transform: "translateY(0) scale(1)" }
             ],
-            {
-              duration: 900 * speedMultiplier,
-              easing: EASE_BOUNCE,
-              fill: "forwards"
-            }
+            { duration: 900 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
           );
         }
 
         subscribeObserver.unobserve(entry.target);
-
       });
-
     },
-    {
-      threshold: 0.2
-    }
+    { threshold: 0.2 }
   );
 
   subscribeObserver.observe(subscribeSection);
 }
+
+
+// ============================================================
+// NEWSLETTER SUBSCRIPTION API INTEGRATION
+// ============================================================
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+function showSubscribeMessage(message, type) {
+  const subscribeBox = document.querySelector('.subscribeBox');
+  if (!subscribeBox) return;
+
+  // Ensure the container is relatively positioned so the message anchors to it
+  subscribeBox.style.position = 'relative';
+
+  const existingMsg = document.querySelector('.subscribe-message');
+  if (existingMsg) existingMsg.remove();
+
+  const msgDiv = document.createElement('div');
+  msgDiv.className = `subscribe-message ${type}`;
+  msgDiv.textContent = message;
+  
+  // Absolute positioning prevents the container from expanding or shifting layout
+  msgDiv.style.position = 'absolute';
+  msgDiv.style.bottom = '-30px'; // Floats just below the box
+  msgDiv.style.left = '50%';
+  msgDiv.style.transform = 'translateX(-50%)';
+  msgDiv.style.width = '100%';
+  msgDiv.style.fontSize = '13px';
+  msgDiv.style.fontWeight = '500';
+  msgDiv.style.color = type === 'success' ? '#22c55e' : '#ef4444'; 
+  msgDiv.style.textAlign = 'center';
+  msgDiv.style.whiteSpace = 'nowrap'; // Prevents text wrapping from affecting layout
+  msgDiv.style.zIndex = '10';
+  msgDiv.style.pointerEvents = 'none'; // Allows clicking through the message if it overlaps anything
+
+  subscribeBox.appendChild(msgDiv);
+
+  // Auto-remove with a smooth fade-out
+  setTimeout(() => {
+    if (msgDiv.parentNode) {
+      msgDiv.style.transition = 'opacity 0.4s ease';
+      msgDiv.style.opacity = '0';
+      setTimeout(() => {
+        if (msgDiv.parentNode) msgDiv.remove();
+      }, 400);
+    }
+  }, 4000);
+}
+
+function initSubscribeForm() {
+  const subscribeForm = document.querySelector('.subscribeForm');
+  if (!subscribeForm) return;
+  
+  subscribeForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const emailInput = subscribeForm.querySelector('input[name="email"]');
+    const submitButton = subscribeForm.querySelector('button[type="submit"]');
+    const email = emailInput.value.trim();
+    
+    if (!email) {
+      showSubscribeMessage('Please enter a valid email address.', 'error');
+      return;
+    }
+
+    const originalButtonText = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = 'Subscribing...';
+
+    try {
+      // Checks for API_BASE_URL or BASE_API_URL (whichever you defined in config.js)
+      const baseUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : (typeof BASE_API_URL !== 'undefined' ? BASE_API_URL : '');
+      const apiUrl = `${baseUrl}/api/core/subscribe/`;
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken') 
+        },
+        body: JSON.stringify({ email: email })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showSubscribeMessage('Successfully subscribed to our newsletter!', 'success');
+        emailInput.value = ''; // Clear input on success
+      } else {
+        const errorMsg = data.email ? data.email[0] : (data.detail || 'Failed to subscribe. Please try again.');
+        showSubscribeMessage(errorMsg, 'error');
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      showSubscribeMessage('A network error occurred. Please try again later.', 'error');
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = originalButtonText;
+    }
+  });
+}
+
+
+// ============================================================
+// GALLERY API INTEGRATION
+// ============================================================
+
+async function loadGalleryImages() {
+  const trackLeft = document.getElementById('gallery-track-left');
+  const trackRight = document.getElementById('gallery-track-right');
+  
+  if (!trackLeft || !trackRight) {
+    console.warn('Gallery tracks not found');
+    return;
+  }
+
+  const apiUrl = typeof BASE_API_URL !== 'undefined' ? BASE_API_URL : 'http://127.0.0.1:8000';
+  const galleryEndpoint = `${apiUrl}/api/core/gallery/`;
+
+  trackLeft.innerHTML = '<span style="padding: 20px; color: #777;">Loading gallery...</span>';
+  trackRight.innerHTML = '';
+
+  try {
+    const response = await fetch(galleryEndpoint);
+    if (!response.ok) throw new Error(`API returned ${response.status}`);
+    
+    const images = await response.json();
+    
+    if (images.length === 0) {
+      trackLeft.innerHTML = '<span style="padding: 20px; color: #777;">No gallery images available</span>';
+      trackRight.innerHTML = '';
+      return;
+    }
+
+    trackLeft.innerHTML = '';
+    trackRight.innerHTML = '';
+
+    const createImageSpan = (imageUrl, title) => {
+      const span = document.createElement('span');
+      const img = document.createElement('img');
+      img.src = imageUrl;
+      img.alt = title || 'Gallery image';
+      img.loading = 'lazy';
+      
+      img.onerror = function() {
+        this.src = 'src/image/download (4).jpg';
+      };
+      
+      span.appendChild(img);
+      return span;
+    };
+
+    const MIN_IMAGES = 7;
+    const repeatCount = Math.ceil(MIN_IMAGES / images.length);
+    
+    const extendedImages = [];
+    for (let i = 0; i < repeatCount; i++) {
+      extendedImages.push(...images);
+    }
+    
+    const imagesForTrack = extendedImages.slice(0, MIN_IMAGES);
+
+    imagesForTrack.forEach((image) => {
+      trackLeft.appendChild(createImageSpan(image.image, image.title));
+    });
+    imagesForTrack.forEach((image) => {
+      trackLeft.appendChild(createImageSpan(image.image, image.title));
+    });
+
+    const reversedImages = [...imagesForTrack].reverse();
+    reversedImages.forEach((image) => {
+      trackRight.appendChild(createImageSpan(image.image, image.title));
+    });
+    reversedImages.forEach((image) => {
+      trackRight.appendChild(createImageSpan(image.image, image.title));
+    });
+
+    console.log(`Gallery loaded: ${images.length} unique images, repeated to get ${MIN_IMAGES} per track`);
+
+  } catch (error) {
+    console.error('Error loading gallery:', error);
+    trackLeft.innerHTML = '<span style="padding: 20px; color: #d32f2f;">Failed to load gallery</span>';
+    trackRight.innerHTML = '';
+  }
+}
+
+
+// ============================================================
+// INFINITE INNOVATION CAROUSEL FIX
+// Ensures the hero carousel is always duplicated for a seamless infinite loop
+// This guarantees it never "finishes" and stays full-width on any device.
+// ============================================================
+function fixInnovationCarousel() {
+  const innovationTrack = document.querySelector('.innovation');
+  if (!innovationTrack) return;
+
+  // Check if it's already been duplicated by this script to prevent infinite loops
+  if (innovationTrack.dataset.duplicated === 'true') return;
+
+  const originalItems = Array.from(innovationTrack.children);
+  if (originalItems.length === 0) return;
+
+  // Clone the original set and append it to make it exactly 2x the length.
+  // This ensures the CSS animation `transform: translateX(-50%)` loops perfectly
+  // without gaps, regardless of screen width.
+  originalItems.forEach(item => {
+    innovationTrack.appendChild(item.cloneNode(true));
+  });
+  
+  innovationTrack.dataset.duplicated = 'true';
+}
+
+// Run on load and resize to guarantee it's always perfect
+document.addEventListener('DOMContentLoaded', fixInnovationCarousel);
+window.addEventListener('resize', fixInnovationCarousel);
+
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(() => {
+    loadGalleryImages();
+  }, 100);
+  
+  // Initialize subscription form handler
+  initSubscribeForm();
+});

@@ -2011,6 +2011,123 @@ if (meetTrack && meetPrev && meetNext && meetDotsContainer) {
 
 
 // ============================================================
+// NEWSLETTER SUBSCRIPTION API INTEGRATION
+// ============================================================
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+function showSubscribeMessage(message, type) {
+  const box = document.querySelector('.subscribeBox');
+  if (!box) return;
+
+  // Ensure the container is relatively positioned so the message anchors to it
+  box.style.position = 'relative';
+
+  const existingMsg = document.querySelector('.subscribe-message');
+  if (existingMsg) existingMsg.remove();
+
+  const msgDiv = document.createElement('div');
+  msgDiv.className = `subscribe-message ${type}`;
+  msgDiv.textContent = message;
+  
+  // Absolute positioning prevents the container from expanding or shifting layout
+  msgDiv.style.position = 'absolute';
+  msgDiv.style.bottom = '-30px'; // Floats just below the box
+  msgDiv.style.left = '50%';
+  msgDiv.style.transform = 'translateX(-50%)';
+  msgDiv.style.width = '100%';
+  msgDiv.style.fontSize = '13px';
+  msgDiv.style.fontWeight = '500';
+  msgDiv.style.color = type === 'success' ? '#22c55e' : '#ef4444'; 
+  msgDiv.style.textAlign = 'center';
+  msgDiv.style.whiteSpace = 'nowrap'; // Prevents text wrapping from affecting layout
+  msgDiv.style.zIndex = '10';
+  msgDiv.style.pointerEvents = 'none'; // Allows clicking through the message if it overlaps anything
+
+  box.appendChild(msgDiv);
+
+  // Auto-remove with a smooth fade-out
+  setTimeout(() => {
+    if (msgDiv.parentNode) {
+      msgDiv.style.transition = 'opacity 0.4s ease';
+      msgDiv.style.opacity = '0';
+      setTimeout(() => {
+        if (msgDiv.parentNode) msgDiv.remove();
+      }, 400);
+    }
+  }, 4000);
+}
+
+function initSubscribeForm() {
+  const form = document.querySelector('.subscribeForm');
+  if (!form) return;
+  
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const emailInput = form.querySelector('input[name="email"]') || form.querySelector('input');
+    const submitButton = form.querySelector('button[type="submit"]') || form.querySelector('button');
+    const email = emailInput.value.trim();
+    
+    if (!email) {
+      showSubscribeMessage('Please enter a valid email address.', 'error');
+      return;
+    }
+
+    const originalButtonText = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = 'Subscribing...';
+
+    try {
+      const baseUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : (typeof BASE_API_URL !== 'undefined' ? BASE_API_URL : '');
+      const apiUrl = `${baseUrl}/api/core/subscribe/`;
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken') 
+        },
+        body: JSON.stringify({ email: email })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showSubscribeMessage('Successfully subscribed to our newsletter!', 'success');
+        emailInput.value = ''; // Clear input on success
+      } else {
+        const errorMsg = data.email ? data.email[0] : (data.detail || 'Failed to subscribe. Please try again.');
+        showSubscribeMessage(errorMsg, 'error');
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      showSubscribeMessage('A network error occurred. Please try again later.', 'error');
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = originalButtonText;
+    }
+  });
+}
+
+// Initialize subscription form handler
+initSubscribeForm();
+
+
+// ============================================================
 // DONE
 // ============================================================
 

@@ -1,0 +1,233 @@
+/* --- Base Styles --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f3f4f6;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+/* --- Status Containers (Loading/Error) --- */
+.status-container {
+    text-align: center;
+    background: white;
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e5e7eb;
+    border-top: 4px solid #2563eb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* --- Action Buttons --- */
+.action-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: #2563eb;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-secondary {
+    background-color: white;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+    background-color: #f9fafb;
+}
+
+/* --- Certificate Design --- */
+.certificate-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    max-width: 900px;
+    width: 100%;
+}
+
+.cert-border {
+    border: 8px double #1e3a8a; /* Dark Blue Double Border */
+    padding: 3rem 2rem;
+    position: relative;
+    background: linear-gradient(to bottom, #ffffff, #f8fafc);
+}
+
+.cert-content {
+    text-align: center;
+}
+
+.cert-title {
+    font-family: 'Georgia', serif;
+    font-size: 3rem;
+    color: #1e3a8a;
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+}
+
+.cert-subtitle {
+    font-size: 1.25rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.student-name {
+    font-family: 'Georgia', serif;
+    font-size: 2.5rem;
+    color: #111827;
+    margin: 1.5rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+    display: inline-block;
+    min-width: 300px;
+}
+
+.course-name {
+    font-size: 2rem;
+    color: #2563eb;
+    margin: 1rem 0 2rem;
+    font-weight: 700;
+}
+
+.cert-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.footer-item {
+    text-align: center;
+    flex: 1;
+}
+
+.footer-label {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+}
+
+.footer-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.cert-id-badge {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.verified-badge {
+    background-color: #d1fae5;
+    color: #065f46;
+    padding: 0.25rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.cert-uuid {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+/* --- PRINT STYLES (Crucial for PDF) --- */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+    .page-wrapper {
+        padding: 0;
+        min-height: auto;
+    }
+    .no-print {
+        display: none !important;
+    }
+    .certificate-card {
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+    }
+    .cert-border {
+        border: 6px double #1e3a8a;
+        page-break-inside: avoid;
+    }
+    /* Force background colors to print */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
