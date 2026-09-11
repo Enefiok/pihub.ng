@@ -6,12 +6,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMessage = document.getElementById('error-message');
     const printBtn = document.getElementById('print-btn');
 
+    // 🌟 AUTOMATIC ENVIRONMENT DETECTION 🌟
+    // Checks if the site is running locally or in production
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    // Automatically sets the correct base URL
+    const API_BASE_URL = isLocalhost 
+        ? 'http://127.0.0.1:8000' 
+        : 'https://pihub-backend.onrender.com';
+
     // 1. Extract UUID from the URL
     const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
     const match = window.location.href.match(uuidRegex);
     const certId = match ? match[0] : null;
 
     console.log("Extracted Certificate ID:", certId); // Debug log
+    console.log("Using API Base URL:", API_BASE_URL); // Debug log to confirm environment
 
     // 2. Fetch Certificate Data
     async function fetchCertificate() {
@@ -21,13 +31,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            // Using string concatenation instead of template literals
-            const baseUrl = 'http://127.0.0.1:8000/api/certificates/verify/';
-            const apiUrl = baseUrl + certId + '/';
+            // Clean template literal construction for the API URL
+            const apiUrl = `${API_BASE_URL}/api/certificates/verify/${certId}/`;
             
             console.log("Fetching from:", apiUrl); // Debug log
             
             const response = await fetch(apiUrl);
+            
+            // Check if the response is actually OK before parsing JSON
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const data = await response.json();
 
             console.log("API Response:", data); // Debug log
@@ -39,7 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error("Fetch error:", error);
-            showError("Failed to connect to the server. Please check your internet connection or ensure the Django server is running.");
+            // Show a user-friendly error message
+            showError("Failed to connect to the server. Please check your internet connection or ensure the backend server is running.");
         }
     }
 

@@ -4,7 +4,7 @@
 const BASE_API_URL = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : "http://127.0.0.1:8000"; 
 
 // ============================================================
-// INJECT DYNAMIC STYLES (Modals & Courses)
+// INJECT DYNAMIC STYLES (Modals, Courses & Scroll Animations)
 // ============================================================
 if (!document.getElementById("dynamic-styles")) {
   const style = document.createElement("style");
@@ -43,11 +43,20 @@ if (!document.getElementById("dynamic-styles")) {
     .course-actions { margin: auto 18px 20px; padding: 20px 0; width: calc(100% - 36px); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .course-enquiry-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; background-color: #2e8b57; color: #fff; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background-color 0.25s ease, transform 0.25s ease; }
     .course-enquiry-btn:hover { background-color: #256e46; transform: translateY(-2px); }
-    
-    /* NEW: Prevent hover effects on disabled/coming soon buttons */
-    .courseCard.disabled-course .course-enquiry-btn:hover { 
-      transform: none !important; 
-    }
+    .courseCard.disabled-course .course-enquiry-btn:hover { transform: none !important; }
+
+    /* 🚀 SCROLL-TRIGGERED SEQUENTIAL ANIMATIONS */
+    .anim-fade-up { animation: animFadeUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+    .anim-fade-left { animation: animFadeLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+    .anim-fade-right { animation: animFadeRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+    .anim-scale-pop { animation: animScalePop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    .anim-blur-in { animation: animBlurIn 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+
+    @keyframes animFadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes animFadeLeft { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes animFadeRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes animScalePop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes animBlurIn { from { opacity: 0; filter: blur(12px); transform: scale(1.05); } to { opacity: 1; filter: blur(0); transform: scale(1); } }
   `;
   document.head.appendChild(style);
 }
@@ -205,45 +214,69 @@ if (mobileMenu) {
 }
 
 // ============================================================
-// SCROLL REVEAL & ANIMATIONS
+// 🚀 SCROLL-TRIGGERED SEQUENTIAL ANIMATIONS (NO NAVBAR)
 // ============================================================
-const scrollRevealElements = document.querySelectorAll(".scroll-reveal");
-if (scrollRevealElements.length > 0) {
-  const revealObserver = new IntersectionObserver((entries) => {
+function setupScrollReveal() {
+  const observerOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
+  const animations = ['anim-fade-up', 'anim-scale-pop', 'anim-fade-left', 'anim-fade-right'];
+  
+  const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      if (entry.isIntersecting) { entry.target.classList.add("visible"); revealObserver.unobserve(entry.target); }
-    });
-  }, { threshold: 0.15 });
-  scrollRevealElements.forEach((element) => revealObserver.observe(element));
-}
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        // Prevent re-animating if already triggered
+        if (el.classList.contains('anim-triggered')) return;
+        el.classList.add('anim-triggered');
 
-const subscribeElement = document.querySelector(".subscribe > div");
-if (subscribeElement) {
-  const subscribeObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) { entry.target.classList.add("visible"); subscribeObserver.unobserve(entry.target); }
-    });
-  }, { threshold: 0.3, rootMargin: "0px 0px -30px 0px" });
-  subscribeObserver.observe(subscribeElement);
-}
+        let animClass = 'anim-fade-up';
+        let delay = 0;
 
-document.querySelectorAll(".footer > div").forEach((el, index) => {
-  const footerObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) { setTimeout(() => entry.target.classList.add("visible"), index * 100); footerObserver.unobserve(entry.target); }
-    });
-  }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
-  footerObserver.observe(el);
-});
+        // 1. Hero Section (Blur in)
+        if (el.classList.contains('hero')) {
+          animClass = 'anim-blur-in';
+          delay = 200;
+        } 
+        // 2. Tab Options Container
+        else if (el.classList.contains('options')) {
+          animClass = 'anim-fade-up';
+          delay = 300;
+        } 
+        // 3. Footer Columns (Sequential Stagger)
+        else if (el.parentElement && el.parentElement.classList.contains('footerTop')) {
+          const siblings = Array.from(el.parentElement.children);
+          const index = siblings.indexOf(el);
+          delay = index * 150; // 150ms stagger per column
+        } 
+        // 4. Copyright
+        else if (el.classList.contains('copyright')) {
+          delay = 600;
+        } 
+        // 5. Subscribe Box
+        else if (el.classList.contains('subscribeBox')) {
+          animClass = 'anim-scale-pop';
+          delay = 100;
+        }
 
-const copyrightElement = document.querySelector(".copyright");
-if (copyrightElement) {
-  const copyrightObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) { entry.target.classList.add("visible"); copyrightObserver.unobserve(entry.target); }
+        // Apply animation
+        el.style.opacity = '0'; // Ensure it starts hidden to prevent FOUC
+        el.classList.add(animClass);
+        el.style.animationDelay = `${delay}ms`;
+        
+        observer.unobserve(el);
+      }
     });
-  }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
-  copyrightObserver.observe(copyrightElement);
+  }, observerOptions);
+
+  // Targets for scroll animation (EXPLICITLY EXCLUDING NAVBAR)
+  const targets = document.querySelectorAll(`
+    .hero, 
+    .options, 
+    .subscribeBox, 
+    .footerTop > div, 
+    .copyright
+  `);
+  
+  targets.forEach(el => observer.observe(el));
 }
 
 // ============================================================
@@ -259,7 +292,6 @@ const panels = {
 };
 const heroSection = document.querySelector(".heronav");
 
-// ✅ FIXED: Now correctly activates the button that matches the clicked panelId
 function updateOptionButtonState(panelId) {
   optionBtns.forEach((btn) => {
     btn.classList.remove("active");
@@ -267,21 +299,45 @@ function updateOptionButtonState(panelId) {
   });
 }
 
+// 🚀 Sequential animations when switching tabs
 function revealPanelContents(panelId, panel) {
   if (!panel) return;
-  if (panelId === "workspace") { initWorkspaceObservers(); return; }
+  
+  // Reset animations for the new panel to allow re-triggering
+  const animatedElements = panel.querySelectorAll('.planCard, .courseCard, .options2-title, .options2-desc, .options2 > span');
+  animatedElements.forEach(el => {
+    el.style.opacity = '0';
+    el.classList.remove('anim-fade-up', 'anim-scale-pop', 'anim-fade-left', 'anim-fade-right', 'anim-blur-in', 'anim-triggered');
+  });
+
   panel.classList.remove("visible");
+  
   const panelObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        panel.classList.add("visible"); panelObserver.unobserve(entry.target);
-        if (panelId === "courses") {
-          const cards = panel.querySelectorAll(".courseCard");
-          cards.forEach((card, index) => { card.classList.remove("visible"); setTimeout(() => card.classList.add("visible"), index * 150 + 200); });
-        }
+        panel.classList.add("visible");
+        panelObserver.unobserve(entry.target);
+
+        const title = panel.querySelector('.options2-title, .options2 > span:nth-child(1)');
+        const desc = panel.querySelector('.options2-desc, .options2 > span:nth-child(2)');
+        
+        if (title) { title.style.opacity = '0'; title.classList.add('anim-fade-up'); title.style.animationDelay = '0ms'; }
+        if (desc) { desc.style.opacity = '0'; desc.classList.add('anim-fade-up'); desc.style.animationDelay = '100ms'; }
+
+        // Sequential mixed animations for cards
+        const cards = panel.querySelectorAll(".planCard, .courseCard");
+        const cardAnimations = ['anim-fade-up', 'anim-scale-pop', 'anim-fade-right', 'anim-fade-left'];
+        cards.forEach((card, index) => {
+          card.style.opacity = '0';
+          // Deterministic "random" mix so it looks organic but not chaotic
+          const randomAnim = cardAnimations[(index * 7 + 3) % cardAnimations.length]; 
+          card.classList.add(randomAnim);
+          card.style.animationDelay = `${200 + (index * 120)}ms`; // 120ms stagger
+        });
       }
     });
   }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+  
   panelObserver.observe(panel);
 }
 
@@ -305,35 +361,31 @@ function switchToPanel(panelId) {
   setTimeout(() => revealPanelContents(panelId, targetPanel), 100);
 }
 
-function initWorkspaceObservers() {
+// 🚀 Sequential animations for the default loaded Workspace panel
+function initWorkspaceAnimations() {
   const workspacePanel = panels.workspace;
   if (!workspacePanel) return;
-  const planCards = workspacePanel.querySelectorAll(".planCard.scroll-reveal");
-  planCards.forEach((card, index) => {
-    card.classList.remove("visible");
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) { setTimeout(() => entry.target.classList.add("visible"), index * 150); observer.unobserve(entry.target); }
-      });
-    }, { threshold: 0.15, rootMargin: "0px 0px -30px 0px" });
-    observer.observe(card);
+  
+  // Reset
+  workspacePanel.querySelectorAll('.planCard, .options2-title, .options2-desc').forEach(el => {
+    el.style.opacity = '0';
+    el.classList.remove('anim-fade-up', 'anim-scale-pop', 'anim-fade-left', 'anim-fade-right', 'anim-triggered');
   });
+
   const title = workspacePanel.querySelector(".options2-title");
-  if (title) {
-    title.classList.remove("visible");
-    const titleObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add("visible"); titleObserver.unobserve(entry.target); } });
-    }, { threshold: 0.1 });
-    titleObserver.observe(title);
-  }
   const desc = workspacePanel.querySelector(".options2-desc");
-  if (desc) {
-    desc.classList.remove("visible");
-    const descObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add("visible"); descObserver.unobserve(entry.target); } });
-    }, { threshold: 0.1 });
-    descObserver.observe(desc);
-  }
+  const planCards = workspacePanel.querySelectorAll(".planCard");
+  const cardAnimations = ['anim-fade-up', 'anim-scale-pop', 'anim-fade-right', 'anim-fade-left'];
+
+  if (title) { title.style.opacity = '0'; title.classList.add('anim-fade-up'); title.style.animationDelay = '0ms'; }
+  if (desc) { desc.style.opacity = '0'; desc.classList.add('anim-fade-up'); desc.style.animationDelay = '100ms'; }
+
+  planCards.forEach((card, index) => {
+    card.style.opacity = '0';
+    const randomAnim = cardAnimations[(index * 7 + 3) % cardAnimations.length];
+    card.classList.add(randomAnim);
+    card.style.animationDelay = `${200 + (index * 120)}ms`;
+  });
 }
 
 optionBtns.forEach((btn) => {
@@ -351,14 +403,16 @@ document.addEventListener("DOMContentLoaded", function () {
   loadCourses(); 
   
   const hashTarget = window.location.hash.replace("#", "");
-  let initialPanel = "workspace"; // ALWAYS default to workspace
+  let initialPanel = "workspace"; 
   
-  // Only use hash if it's explicitly provided and valid
   if (hashTarget && panels[hashTarget]) { 
     initialPanel = hashTarget; 
   }
   
   switchToPanel(initialPanel);
+  
+  // 🚀 Trigger scroll-based animations (NO NAVBAR)
+  setupScrollReveal();
 });
 
 window.addEventListener("hashchange", function () {
@@ -697,12 +751,9 @@ document.querySelectorAll('.footer a[href^="#"]').forEach((link) => {
   });
 });
 
-optionBtns.forEach((btn) => { if (btn.dataset.panel !== "workspace") btn.classList.remove("active"); });
-
 // ============================================================
 // NEWSLETTER SUBSCRIPTION (UPDATED: No Alerts, Non-Expanding UI)
 // ============================================================
-
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== '') {

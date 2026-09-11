@@ -207,11 +207,6 @@ nav #menuToggle:hover {
 /* ============================================================
    HERO
    ============================================================ */
-/* overlay lightened from near-opaque black (#000000 / rgba(8,8,8,.9), which
-   fully hid the photo on every device — that was the "black hero" bug) to a
-   translucent dark wash so the background photo shows through, matching the
-   Figma reference. background-color is a fallback paint layer so the
-   section still reads as intentionally dark if the image path 404s. */
 .heroNavbar {
   background-color: var(--bg-black);
   background-image: linear-gradient(135deg, rgba(0, 0, 0, 0.88), rgba(17, 15, 14, 0.75)),
@@ -250,12 +245,6 @@ nav #menuToggle:hover {
   }
 }
 
-/* ------------------------------
-   LOGO — dramatic entrance
-   Starts oversized, blurred, and slightly rotated off-axis, then
-   snaps into place with a small overshoot/settle instead of a
-   plain fade-up. Runs once on load.
-   ------------------------------ */
 .logo {
   width: 20%;
   max-width: 230px;
@@ -307,13 +296,6 @@ nav #menuToggle:hover {
   animation-delay: 0.28s;
 }
 
-/* ------------------------------
-   HERO TEXT — typewriter target
-   No CSS entrance animation here anymore: opacity starts at 0 and
-   is flipped to 1 by JS the instant the typing effect begins, then
-   characters are revealed progressively (see script.js typeText()).
-   No blinking cursor is added.
-   ------------------------------ */
 #heroText {
   font-size: clamp(0.9rem, 1.6vw, 1.05rem);
   font-weight: 400;
@@ -436,16 +418,6 @@ nav #menuToggle:hover {
   transform: translateY(-2px);
 }
 
-
-/* ------------------------------
-   DESKTOP DOWNSCALE + BOTTOM-ANCHORED CAROUSEL
-
-   Desktop:
-   - Main hero content remains vertically centered but is
-     shifted slightly downward for better visual balance.
-   - Carousel is anchored to the bottom of the full hero.
-   ------------------------------ */
-
 @media (min-width: 1025px) {
 
   .heroNavbar {
@@ -455,20 +427,8 @@ nav #menuToggle:hover {
     position: relative;
   }
 
-  /*
-     IMPORTANT:
-     Keep .hero-image-container static on desktop.
-
-     This prevents it from becoming the containing block
-     for the absolute carousel.
-  */
   .hero-image-container {
     position: static !important;
-
-    /*
-       Slight downward adjustment for the main content.
-       The carousel remains independent at the bottom.
-    */
     padding: 110px 7% 0;
   }
 
@@ -493,10 +453,6 @@ nav #menuToggle:hover {
     flex: 0 1 140px;
   }
 
-  /*
-     Carousel is anchored to the bottom of
-     .heroNavbar — the full desktop hero.
-  */
   .heroNavbar .carousel {
     position: absolute;
     left: 0;
@@ -509,9 +465,8 @@ nav #menuToggle:hover {
   }
 }
 
-
 /* ============================================================
-   SCROLL REVEAL (single, restrained entrance)
+   SCROLL REVEAL
    ============================================================ */
 
 .scroll-reveal {
@@ -525,23 +480,9 @@ nav #menuToggle:hover {
   transform: translateY(0);
 }
 
-/* stagger siblings that reveal together, set via JS custom property */
 .scroll-reveal {
   transition-delay: calc(var(--reveal-i, 0) * 90ms);
 }
-
-
-/* ============================================================
-   SCROLL REVEAL — DISABLED FOR NOW
-   All non-hero sections are visible immediately.
-   Animations can be added to each section later.
-   ============================================================ */
-
-/*.scroll-reveal {
-  opacity: 1;
-  transform: none;
-  transition: none;
-}* this will be fallback */
 
 /* ============================================================
    ABOUT
@@ -551,13 +492,6 @@ nav #menuToggle:hover {
   background-color: var(--bg-cream);
 }
 
-/* ------------------------------
-   ABOUT ENTRANCE — initial hidden state
-   scroll-reveal was removed from these 6 elements in the HTML
-   (about.js now owns their entrance individually via the Web
-   Animations API), so they need their own opacity:0 starting
-   point here instead.
-   ------------------------------ */
 .about-heading,
 .about-intro,
 .aboutPic,
@@ -567,70 +501,42 @@ nav #menuToggle:hover {
   opacity: 0;
 }
 
-
-/* ------------------------------
-   ABOUT CONTAINER
-   ------------------------------ */
-
 .aboutInfo {
   width: 100%;
   max-width: 1200px;
-
   margin-inline: auto;
-
   padding-inline: 5%;
   padding-block: 70px;
-
   display: flex;
   align-items: center;
-
   gap: 55px;
-
   box-sizing: border-box;
 }
-
-
-/* ------------------------------
-   ABOUT TEXT
-   ------------------------------ */
 
 .aboutText {
   flex: 1 1 56%;
   min-width: 0;
 }
 
-
-/* ------------------------------
-   HEADING
-   ------------------------------ */
-
 .about-heading {
   display: flex;
   align-items: center;
-
   gap: 10px;
-
   font-weight: 700;
   font-size: clamp(1.4rem, 3vw, 1.9rem);
-
   color: var(--text-dark);
 }
 
 .about-heading span {
   background-color: var(--primary-color);
   color: white;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   border-radius: 10px;
-
   width: 50px;
   height: 40px;
-
   font-size: clamp(1.1rem, 2.2vw, 1.5rem);
-
   transition: transform 0.3s ease;
 }
 
@@ -638,64 +544,35 @@ nav #menuToggle:hover {
   transform: rotate(-6deg) scale(1.05);
 }
 
-
-/* ------------------------------
-   INTRO
-   ------------------------------ */
-
 .about-intro {
   margin-top: 18px;
-
   max-width: 650px;
-
   font-weight: 500;
   font-style: italic;
-
   font-size: clamp(1rem, 1.6vw, 1.2rem);
-
   line-height: 1.55;
-
   color: var(--text-medium);
 }
 
-
-/* ------------------------------
-   DESCRIPTION
-   ------------------------------ */
-
 .about-desc {
   margin-top: 20px;
-
   max-width: 650px;
-
   font-size: clamp(0.9rem, 1.2vw, 1.05rem);
-
   line-height: 1.7;
-
   color: var(--text-light);
 }
-
-
-/* ------------------------------
-   FEATURES
-   ------------------------------ */
 
 .about-features {
   display: flex;
   flex-direction: column;
-
   gap: 11px;
-
   margin-top: 23px;
 }
 
 .about-features span {
   display: flex;
-
   gap: 12px;
-
   align-items: center;
-
   transition: transform 0.3s ease;
 }
 
@@ -705,23 +582,15 @@ nav #menuToggle:hover {
 
 .about-features span i {
   background-color: var(--primary-color);
-
   display: grid;
   place-items: center;
-
   border-radius: 50%;
-
   width: 30px;
   height: 30px;
-
   flex-shrink: 0;
-
   color: white;
-
   font-weight: 800;
-
   font-size: clamp(0.7rem, 1vw, 0.8rem);
-
   transition: transform 0.3s ease;
 }
 
@@ -731,43 +600,24 @@ nav #menuToggle:hover {
 
 .about-features span p {
   font-size: clamp(0.85rem, 1.1vw, 1rem);
-
   line-height: 1.45;
-
   color: var(--text-medium);
 }
 
-
-/* ------------------------------
-   BUTTON
-   ------------------------------ */
-
 .about-btn {
   background-color: var(--primary-color);
-
   border-radius: 10px;
-
   color: var(--natural-color);
-
   display: inline-flex;
-
   justify-content: center;
   align-items: center;
-
   width: fit-content;
-
   padding: 12px 32px;
-
   margin-top: 27px;
-
   cursor: pointer;
-
   text-decoration: none;
-
   font-size: clamp(0.9rem, 1vw, 1rem);
-
   font-weight: 500;
-
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease,
@@ -776,48 +626,31 @@ nav #menuToggle:hover {
 
 .about-btn:hover {
   transform: translateY(-3px);
-
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-
   background-color: var(--primary-color-dark);
 }
 
 .about-btn:active {
   transform: translateY(0);
-
   box-shadow: none;
 }
 
-
-/* ------------------------------
-   ABOUT IMAGE
-   ------------------------------ */
-
 .aboutPic {
   flex: 0 1 40%;
-
   width: 100%;
   max-width: 430px;
-
   align-self: center;
-
   border-radius: var(--radius-lg);
-
   overflow: hidden;
-
   aspect-ratio: 1.2 / 1;
-
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
 }
 
 .aboutPic img {
   width: 100%;
   height: 100%;
-
   display: block;
-
   object-fit: cover;
-
   transition: transform 0.6s ease;
 }
 
@@ -825,15 +658,8 @@ nav #menuToggle:hover {
   transform: scale(1.06);
 }
 
-
-
 /* ============================================================
    OFFER
-   ============================================================ */
-
-/* ============================================================
-   OFFER — INITIAL HIDDEN STATE
-   offer.js controls the entrance animation
    ============================================================ */
 
 .offer1,
@@ -912,6 +738,7 @@ nav #menuToggle:hover {
   color: var(--natural-color);
 }
 
+/* ✅ FIXED: Icon starts hidden and animates in with the card */
 .offerCard span:nth-child(1) {
   background-color: var(--primary-color);
   border-radius: 10px;
@@ -921,7 +748,20 @@ nav #menuToggle:hover {
   aspect-ratio: 1;
   color: var(--natural-color);
   font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+  /* Hide icon initially */
+  opacity: 0;
+  transform: translateY(10px);
+  /* Only transition transform & color on hover (fast, no lag) */
   transition: transform 0.3s ease, background-color 0.25s ease, color 0.25s ease;
+}
+
+/* When card becomes visible, animate the icon in with a slight delay */
+.offerCard.visible span:nth-child(1),
+.offerCard.show span:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  /* Separate transition just for the entrance (doesn't affect hover) */
+  transition: opacity 0.5s ease 0.15s, transform 0.5s ease 0.15s;
 }
 
 .offerCard:hover span:nth-child(1) {
@@ -975,16 +815,11 @@ nav #menuToggle:hover {
   opacity: 1;
   transform: translateX(0);
 }
+
 /* ============================================================
    GALLERY
    ============================================================ */
 
-/* ------------------------------
-   GALLERY ENTRANCE — initial hidden state
-   gallery.js now owns these elements' entrance individually via
-   the Web Animations API, so they need their own opacity:0
-   starting point here, same as About and Offer above.
-   ------------------------------ */
 .gallery > div:nth-child(1),
 .gallery > div:nth-child(2),
 .galleryWrap {
@@ -1087,11 +922,6 @@ nav #menuToggle:hover {
    SUBSCRIBE
    ============================================================ */
 
-/* ------------------------------
-   SUBSCRIBE ENTRANCE — initial hidden state
-   subscribe.js now owns this element's entrance via the Web
-   Animations API, same pattern as About, Offer, Gallery, Footer.
-   ------------------------------ */
 .subscribeBox {
   opacity: 0;
 }
@@ -1102,6 +932,7 @@ nav #menuToggle:hover {
   position: relative;
   z-index: 2;
 }
+
 .subscribeBox {
   background-color: var(--primary-color);
   border-radius: 16px;
@@ -1118,6 +949,7 @@ nav #menuToggle:hover {
   flex-wrap: wrap;
   position: relative;
 }
+
 .subscribeHeading {
   color: var(--natural-color);
   font-weight: 700;
@@ -1125,6 +957,7 @@ nav #menuToggle:hover {
   line-height: 1.35;
   max-width: 360px;
 }
+
 .subscribeForm {
   display: flex;
   align-items: center;
@@ -1135,6 +968,7 @@ nav #menuToggle:hover {
   flex: 1 1 360px;
   max-width: 460px;
 }
+
 .subscribeForm input {
   flex: 1;
   border: none;
@@ -1145,9 +979,11 @@ nav #menuToggle:hover {
   color: var(--text-dark);
   min-width: 0;
 }
+
 .subscribeForm input::placeholder {
   color: var(--text-muted);
 }
+
 .subscribeForm button {
   background-color: var(--primary-color-dark);
   color: var(--natural-color);
@@ -1161,19 +997,15 @@ nav #menuToggle:hover {
   white-space: nowrap;
   transition: background-color 0.25s ease;
 }
+
 .subscribeForm button:hover {
   background-color: #b35700;
 }
+
 /* ============================================================
    FOOTER
    ============================================================ */
 
-/* ------------------------------
-   FOOTER ENTRANCE — initial hidden state
-   footer.js now owns these elements' entrance individually via
-   the Web Animations API, so they need their own opacity:0
-   starting point here, same as About, Offer, and Gallery above.
-   ------------------------------ */
 .footerBrand,
 .footerCol,
 .copyright {
@@ -1189,20 +1021,24 @@ nav #menuToggle:hover {
   position: relative;
   z-index: 1;
 }
+
 .footerTop {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
   gap: 24px;
   padding-bottom: 20px;
 }
+
 .footerBrand img {
   width: 46px;
 }
+
 .footerApps {
   display: flex;
   gap: 8px;
   margin-top: 10px;
 }
+
 .footerApps a {
   width: 26px;
   height: 26px;
@@ -1214,20 +1050,24 @@ nav #menuToggle:hover {
   font-size: 0.72rem;
   transition: background-color 0.25s ease;
 }
+
 .footerApps a:hover {
   background-color: var(--primary-color);
 }
+
 .footerCol {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+
 .footerHeading {
   color: #b35700;
   font-weight: 600;
   font-size: 0.92rem;
   margin-bottom: 2px;
 }
+
 .footerCol a {
   text-decoration: none;
   color: rgba(255, 255, 255, 0.65);
@@ -1235,20 +1075,24 @@ nav #menuToggle:hover {
   transition: color 0.25s ease;
   width: fit-content;
 }
+
 .footerCol a:hover {
   color: var(--primary-color);
 }
+
 .footerSocial p {
   font-size: 0.78rem;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.55);
   margin-top: -2px;
 }
+
 .footerSocialIcons {
   display: flex;
   gap: 10px;
   margin-top: 2px;
 }
+
 .footerSocialIcons a {
   width: 28px;
   height: 28px;
@@ -1260,9 +1104,11 @@ nav #menuToggle:hover {
   font-size: 0.72rem;
   transition: background-color 0.25s ease;
 }
+
 .footerSocialIcons a:hover {
   background-color: var(--primary-color);
 }
+
 .copyright {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding: 14px var(--container-pad);
@@ -1270,25 +1116,17 @@ nav #menuToggle:hover {
   display: flex;
   justify-content: center;
 }
+
 .copyright p {
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.45);
 }
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-
 
 /* ============================================================
-   TABLET + MOBILE
-   1024px and below
+   RESPONSIVE — TABLET + MOBILE (1024px and below)
    ============================================================ */
 
 @media (max-width: 1024px) {
-
-  /* ------------------------------
-     NAVBAR
-     ------------------------------ */
 
   nav {
     padding: 10px 5%;
@@ -1320,55 +1158,32 @@ nav #menuToggle:hover {
     gap: 10px;
   }
 
-
-  /* ------------------------------
-     HERO
-     ------------------------------ */
-
   .heroNavbar {
     position: relative;
-
     width: 100%;
     height: 100svh;
     min-height: 100svh;
-
     padding-top: 0;
-
     display: flex;
     flex-direction: column;
-
     overflow: hidden;
   }
 
-
   .hero-image-container {
     position: static;
-
     width: 100%;
     height: 100%;
     min-height: 100svh;
-
     flex: 1 1 auto;
-
     display: flex;
     flex-direction: column;
-
     align-items: center;
     justify-content: center;
-
     box-sizing: border-box;
-
     padding: 0 6%;
-
     gap: 8px;
-
     text-align: center;
   }
-
-
-  /* ------------------------------
-     HERO CONTENT
-     ------------------------------ */
 
   .logo {
     width: 32%;
@@ -1387,54 +1202,30 @@ nav #menuToggle:hover {
     font-size: 0.78rem;
   }
 
-
-  /* ------------------------------
-     BUTTONS
-     ------------------------------ */
-
   .buttons {
     width: 100%;
     max-width: 360px;
-
     display: flex;
     flex-direction: row;
-
     gap: 10px;
   }
 
   .buttons a {
     flex: 1 1 0;
-
     padding: 11px 8px;
-
     font-size: 0.8rem;
   }
 
-
-  /* ------------------------------
-     HERO CAROUSEL
-     ------------------------------ */
-
   .heroNavbar .carousel {
     position: absolute !important;
-
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
-
     width: 100% !important;
-
     margin: 0 !important;
-
     padding-block: 8px;
-
     z-index: 10;
   }
-
-
-  /* ------------------------------
-     ABOUT
-     ------------------------------ */
 
   .aboutInfo {
     gap: 40px;
@@ -1448,11 +1239,6 @@ nav #menuToggle:hover {
     grid-column: span 2;
   }
 
-
-  /* ------------------------------
-     FOOTER
-     ------------------------------ */
-
   .footerBrand {
     display: none;
   }
@@ -1465,10 +1251,8 @@ nav #menuToggle:hover {
   }
 }
 
-
 /* ============================================================
-   TABLET / NARROW TABLET
-   899px and below
+   TABLET / NARROW TABLET (899px and below)
    ============================================================ */
 
 @media (max-width: 899px) {
@@ -1493,17 +1277,11 @@ nav #menuToggle:hover {
   }
 }
 
-
 /* ============================================================
-   MOBILE
-   767px and below
+   MOBILE (767px and below)
    ============================================================ */
 
 @media (max-width: 767px) {
-
-  /* ------------------------------
-     NAVBAR
-     ------------------------------ */
 
   nav {
     padding: 10px 5%;
@@ -1531,46 +1309,27 @@ nav #menuToggle:hover {
     gap: 10px;
   }
 
-
-  /* ------------------------------
-     HERO
-     ------------------------------ */
-
   .heroNavbar {
     height: 100svh;
     min-height: 100svh;
-
     padding-top: 0;
-
     overflow: hidden;
   }
 
   .hero-image-container {
     position: static;
-
     width: 100%;
     height: 100%;
     min-height: 100svh;
-
     flex: 1 1 auto;
-
     padding: 0 6%;
-
     display: flex;
     flex-direction: column;
-
     align-items: center;
     justify-content: center;
-
     gap: 8px;
-
     text-align: center;
   }
-
-
-  /* ------------------------------
-     HERO CONTENT
-     ------------------------------ */
 
   .logo {
     width: 32%;
@@ -1589,53 +1348,29 @@ nav #menuToggle:hover {
     font-size: 0.78rem;
   }
 
-
-  /* ------------------------------
-     BUTTONS
-     ------------------------------ */
-
   .buttons {
     width: 100%;
     max-width: 360px;
-
     flex-direction: row;
-
     gap: 10px;
   }
 
   .buttons a {
     flex: 1 1 0;
-
     padding: 11px 8px;
-
     font-size: 0.8rem;
   }
 
-
-  /* ------------------------------
-     HERO CAROUSEL
-     ------------------------------ */
-
   .heroNavbar .carousel {
     position: absolute !important;
-
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
-
     width: 100% !important;
-
     margin: 0 !important;
-
     padding-block: 8px;
-
     z-index: 10;
   }
-
-
-  /* ------------------------------
-     ABOUT
-     ------------------------------ */
 
   .aboutInfo {
     padding-inline: 6%;
@@ -1647,11 +1382,6 @@ nav #menuToggle:hover {
     text-align: left;
   }
 
-
-  /* ------------------------------
-     OFFER
-     ------------------------------ */
-
   .offer {
     padding-block: 60px;
     padding-inline: 6%;
@@ -1659,9 +1389,7 @@ nav #menuToggle:hover {
 
   .offer3 {
     grid-template-columns: 1fr;
-
     margin-top: 40px;
-
     gap: 16px;
   }
 
@@ -1669,16 +1397,9 @@ nav #menuToggle:hover {
     grid-column: span 1;
   }
 
-
-  /* ------------------------------
-     GALLERY
-     MOBILE CAROUSEL
-     ------------------------------ */
-
   .gallery {
     padding-block: 60px;
     padding-inline: 0;
-
     overflow: hidden;
   }
 
@@ -1687,69 +1408,39 @@ nav #menuToggle:hover {
     padding-inline: 6%;
   }
 
-
-  /* Carousel container */
-
   .galleryWrap {
     width: 100%;
-
     margin-top: 42px;
-
     padding-block: 8px;
-
     overflow: hidden;
   }
-
-
-  /* Keep only ONE moving row */
 
   .galleryWrap .galleryTrack:nth-child(2) {
     display: none;
   }
 
-
-  /* Bigger mobile carousel */
-
   .galleryTrack {
     display: flex;
-
     gap: 14px;
-
     width: max-content;
-
     padding-inline: 6%;
-
     will-change: transform;
   }
-
-
-  /* Large carousel cards */
 
   .galleryTrack span {
     width: 170px;
     flex: 0 0 170px;
-
     aspect-ratio: 1 / 1;
-
     border-radius: 14px;
-
     overflow: hidden;
   }
-
 
   .galleryTrack span img {
     width: 100%;
     height: 100%;
-
     object-fit: cover;
-
     display: block;
   }
-
-
-  /* ------------------------------
-     SUBSCRIBE
-     ------------------------------ */
 
   .subscribe {
     padding: 0 6% 30px;
@@ -1786,18 +1477,13 @@ nav #menuToggle:hover {
     font-size: 0.68rem;
   }
 
-
-  /* ------------------------------
-     FOOTER
-     ------------------------------ */
-
   .footer {
     padding-top: 40px;
     padding-inline: 6%;
   }
 
   .footerBrand {
-    display: none; /* drop logo/tagline/app-icons column on mobile */
+    display: none;
   }
 
   .footerTop {
@@ -1829,10 +1515,8 @@ nav #menuToggle:hover {
   }
 }
 
-
 /* ============================================================
-   SMALL PHONES
-   480px and below
+   SMALL PHONES (480px and below)
    ============================================================ */
 
 @media (max-width: 480px) {
@@ -1844,16 +1528,9 @@ nav #menuToggle:hover {
 
   .innovation span {
     height: 40px;
-
     padding-inline: 16px;
-
     font-size: 0.55rem;
   }
-
-
-  /* ------------------------------
-     MOBILE GALLERY CAROUSEL
-     ------------------------------ */
 
   .gallery {
     padding-block: 55px;
@@ -1861,29 +1538,20 @@ nav #menuToggle:hover {
 
   .galleryWrap {
     margin-top: 38px;
-
     padding-block: 8px;
   }
 
   .galleryTrack {
     gap: 12px;
-
     padding-inline: 6%;
   }
 
   .galleryTrack span {
     width: 165px;
     flex: 0 0 165px;
-
     aspect-ratio: 1 / 1;
-
     border-radius: 14px;
   }
-
-
-  /* ------------------------------
-     NAVBAR
-     ------------------------------ */
 
   nav img {
     width: 22px;
@@ -1901,11 +1569,6 @@ nav #menuToggle:hover {
   nav #menuToggle {
     font-size: 1.1rem;
   }
-
-
-  /* ------------------------------
-     HERO
-     ------------------------------ */
 
   #motto {
     font-size: clamp(1rem, 6.5vw, 1.3rem);
@@ -1925,10 +1588,8 @@ nav #menuToggle:hover {
   }
 }
 
-
 /* ============================================================
-   DESKTOP
-   1025px and above
+   DESKTOP (1025px and above)
    ============================================================ */
 
 @media (min-width: 1025px) {
@@ -1941,7 +1602,6 @@ nav #menuToggle:hover {
     position: relative;
   }
 }
-
 
 /* ============================================================
    LARGE DESKTOP
@@ -1958,7 +1618,6 @@ nav #menuToggle:hover {
   }
 }
 
-
 /* ============================================================
    ABOUT — FINAL MOBILE LAYOUT
    ============================================================ */
@@ -1968,119 +1627,65 @@ nav #menuToggle:hover {
   .aboutInfo {
     width: 100%;
     max-width: none;
-
     padding-inline: 6%;
     padding-top: 45px;
     padding-bottom: 60px;
-
     display: grid;
     grid-template-columns: 1fr;
-
     gap: 0;
-
     align-items: start;
   }
-
 
   .aboutText {
     display: contents;
   }
 
-
-  /* ------------------------------
-     HEADING
-     ------------------------------ */
-
   .about-heading {
     order: 1;
-
     margin: 0;
-
     width: 100%;
   }
-
-
-  /* ------------------------------
-     INTRO
-     ------------------------------ */
 
   .about-intro {
     order: 2;
-
     margin-top: 16px;
     margin-bottom: 28px;
-
     max-width: 100%;
-
     font-size: 1rem;
     line-height: 1.5;
-
     width: 100%;
   }
-
-
-  /* ------------------------------
-     IMAGE
-     ------------------------------ */
 
   .aboutPic {
     order: 3;
-
     width: 100%;
     max-width: 460px;
-
     margin: 0 auto 30px;
-
     aspect-ratio: 16 / 10;
-
     align-self: center;
   }
 
-
-  /* ------------------------------
-     DESCRIPTION
-     ------------------------------ */
-
   .about-desc {
     order: 4;
-
     margin-top: 0;
-
     max-width: 100%;
-
     font-size: 0.9rem;
     line-height: 1.65;
-
     width: 100%;
   }
-
-
-  /* ------------------------------
-     FEATURES
-     ------------------------------ */
 
   .about-features {
     order: 5;
-
     margin-top: 22px;
-
     gap: 12px;
-
     width: 100%;
   }
 
-
-  /* ------------------------------
-     BUTTON
-     ------------------------------ */
-
   .about-btn {
     order: 6;
-
     margin-top: 25px;
   }
 }
-
 
 /* ============================================================
    ABOUT — SMALL PHONES
@@ -2101,16 +1706,13 @@ nav #menuToggle:hover {
   .about-heading span {
     width: 48px;
     height: 38px;
-
     border-radius: 9px;
-
     font-size: 1.1rem;
   }
 
   .about-intro {
     font-size: 0.98rem;
     line-height: 1.5;
-
     margin-top: 15px;
     margin-bottom: 25px;
   }
@@ -2118,11 +1720,8 @@ nav #menuToggle:hover {
   .aboutPic {
     width: 100%;
     max-width: 460px;
-
     aspect-ratio: 16 / 10;
-
     margin-bottom: 28px;
-
     border-radius: var(--radius-lg);
   }
 
@@ -2154,5 +1753,3 @@ nav #menuToggle:hover {
     padding: 11px 28px;
   }
 }
-
-
