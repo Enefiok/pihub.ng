@@ -1,4 +1,16 @@
 // ============================================================
+// DISABLE BROWSER SCROLL ANCHORING GLOBALLY
+// Scroll anchoring is a browser feature that silently adjusts scrollTop
+// to "compensate" for layout shifts near the viewport. It's the actual
+// cause of the jump — even small, transform-only shifts can trigger it.
+// Turning it off here removes the entire category of jump, regardless
+// of what causes the underlying shift.
+// ============================================================
+document.documentElement.style.overflowAnchor = "none";
+document.body.style.overflowAnchor = "none";
+
+
+// ============================================================
 // GLOBAL SCROLL SPEED TRACKER
 // ============================================================
 
@@ -101,7 +113,7 @@ initHeroIntro();
 
 
 // ============================================================
-// ABOUT SECTION — COOL ALTERNATING FEATURES (ZERO JUMP RISK)
+// ABOUT SECTION — DYNAMIC ALTERNATING FEATURES
 // ============================================================
 
 const aboutSection = document.querySelector(".about");
@@ -117,6 +129,14 @@ if (aboutSection) {
 
   const EASE_OUT = "cubic-bezier(0.16, 1, 0.3, 1)";
   const EASE_BOUNCE = "cubic-bezier(0.34, 1.56, 0.64, 1)";
+
+  // Belt-and-suspenders: prevent this section and its features container
+  // from ever producing a scrollable overflow area that could shift layout.
+  aboutSection.style.overflowAnchor = "none";
+  if (featuresContainer) {
+    featuresContainer.style.overflow = "hidden";
+    featuresContainer.style.overflowAnchor = "none";
+  }
 
   const aboutObserver = new IntersectionObserver(
     (entries) => {
@@ -140,102 +160,107 @@ if (aboutSection) {
 
         const speedMultiplier = getScrollSpeedMultiplier();
 
-        // 1. Heading: Smoothly drops down into place
         if (heading) {
-          heading.style.willChange = "opacity, transform";
           heading.animate(
             [
-              { opacity: 0, transform: "translateY(-30px)" },
-              { opacity: 1, transform: "translateY(0)" }
+              { opacity: 0, transform: "translateY(45px) scale(0.9)" },
+              { opacity: 1, transform: "translateY(0) scale(1.03)", offset: 0.75 },
+              { opacity: 1, transform: "translateY(0) scale(1)" }
             ],
-            { duration: 800 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
+            { duration: 900 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
           );
         }
 
-        // 2. Intro: Fades and slides up slightly
         if (intro) {
-          intro.style.willChange = "opacity, transform";
           setTimeout(() => {
             intro.animate(
-              [{ opacity: 0, transform: "translateY(25px)" }, { opacity: 1, transform: "translateY(0)" }],
+              [{ opacity: 0, transform: "translateY(30px)" }, { opacity: 1, transform: "translateY(0)" }],
               { duration: 800 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
-          }, 150 * speedMultiplier);
+          }, 500 * speedMultiplier);
         }
 
-        // 3. Image: Slides in from the right (Safe distance, NO 100vw)
         if (image) {
-          image.style.willChange = "opacity, transform";
           setTimeout(() => {
             image.animate(
-              [{ opacity: 0, transform: "translateX(40px)" }, { opacity: 1, transform: "translateX(0)" }],
-              { duration: 900 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
+              [{ opacity: 0, transform: "translateX(70px) scale(0.92) rotate(2deg)" }, { opacity: 1, transform: "translateX(0) scale(1) rotate(0deg)" }],
+              { duration: 1100 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
-          }, 300 * speedMultiplier);
+            image.style.willChange = "opacity, transform";
+          }, 1050 * speedMultiplier);
         }
 
-        // 4. Description: Fades and slides up
         if (description) {
-          description.style.willChange = "opacity, transform";
           setTimeout(() => {
             description.animate(
-              [{ opacity: 0, transform: "translateY(25px)" }, { opacity: 1, transform: "translateY(0)" }],
+              [{ opacity: 0, transform: "translateY(28px)" }, { opacity: 1, transform: "translateY(0)" }],
               { duration: 800 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
-          }, 450 * speedMultiplier);
+          }, 1700 * speedMultiplier);
         }
 
-        // 5. Features: COOL staggered alternating slide-in (100% Safe from jumps)
-        const FEATURES_START = 600 * speedMultiplier;
-        const FEATURE_STAGGER = 100 * speedMultiplier; // Fast, snappy stagger
+        // --- FEATURES: ALTERNATING LEFT/RIGHT + FAST STAGGER ---
+        // FIX: previously these used translateX(-100vw)/translateX(100vw) as the
+        // starting position. A transform that large still contributes to the
+        // element's layout box for scroll-anchoring/overflow purposes, so the
+        // page's scrollable area briefly ballooned out to ~2x viewport width
+        // right as this section entered view. The browser's scroll anchoring
+        // then "corrected" for that shift, which is what caused the jump back
+        // up the page. Using a small, container-relative offset (60px) keeps
+        // the same slide-in effect without blowing out the layout bounds.
+        const FEATURES_START = 2350 * speedMultiplier;
+        const FAST_FEATURE_STAGGER = 120 * speedMultiplier; // Much faster stagger
+        const FEATURE_SLIDE_DISTANCE = 40; // px, was 100vw
+
+        // Setup initial hidden states with alternating directions
+        features.forEach((feature, index) => {
+          feature.style.opacity = "0";
+          feature.style.transform = index % 2 === 0
+            ? `translateX(-${FEATURE_SLIDE_DISTANCE}px)`
+            : `translateX(${FEATURE_SLIDE_DISTANCE}px)`;
+        });
 
         if (featuresContainer) {
-          featuresContainer.style.opacity = "1";
+          setTimeout(() => { featuresContainer.style.opacity = "1"; }, FEATURES_START);
         }
 
         features.forEach((feature, index) => {
-          feature.style.willChange = "opacity, transform";
-          feature.style.opacity = "0";
-          
-          // 80px is the sweet spot: noticeable and cool, but safely inside the viewport 
-          // so it NEVER triggers a scrollbar or layout shift like 100vw did.
-          const startTransform = index % 2 === 0 ? "translateX(-80px)" : "translateX(80px)";
-          feature.style.transform = startTransform;
-          
+          const startAt = FEATURES_START + index * FAST_FEATURE_STAGGER;
+          const startTransform = index % 2 === 0
+            ? `translateX(-${FEATURE_SLIDE_DISTANCE}px)`
+            : `translateX(${FEATURE_SLIDE_DISTANCE}px)`;
+
           setTimeout(() => {
             feature.animate(
               [{ opacity: 0, transform: startTransform }, { opacity: 1, transform: "translateX(0)" }],
-              { duration: 600 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
+              { duration: 900 * speedMultiplier, easing: EASE_OUT, fill: "forwards" }
             );
-            
-            // Subtle icon pop for extra polish
             const icon = feature.querySelector("i");
             if (icon) {
               setTimeout(() => {
                 icon.animate(
                   [
-                    { transform: "scale(0.8)", opacity: 0.5 }, 
+                    { transform: "scale(0.5)", opacity: 0 }, 
                     { transform: "scale(1.15)", opacity: 1, offset: 0.7 }, 
                     { transform: "scale(1)", opacity: 1 }
                   ],
-                  { duration: 400 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
+                  { duration: 500 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
                 );
-              }, 200 * speedMultiplier);
+              }, 500 * speedMultiplier);
             }
-          }, FEATURES_START + (index * FEATURE_STAGGER));
+          }, startAt);
         });
 
-        // 6. Button: Subtle pop-in with bounce
+        const buttonStart = FEATURES_START + features.length * FAST_FEATURE_STAGGER + 900 * speedMultiplier + 200 * speedMultiplier;
         if (button) {
-          button.style.willChange = "opacity, transform";
-          const buttonStart = FEATURES_START + (features.length * FEATURE_STAGGER) + 200 * speedMultiplier;
           setTimeout(() => {
             button.animate(
               [
-                { opacity: 0, transform: "translateY(15px) scale(0.95)" },
+                { opacity: 0, transform: "translateY(24px) scale(0.9)" },
+                { opacity: 1, transform: "translateY(-3px) scale(1.04)", offset: 0.7 },
                 { opacity: 1, transform: "translateY(0) scale(1)" }
               ],
-              { duration: 600 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
+              { duration: 700 * speedMultiplier, easing: EASE_BOUNCE, fill: "forwards" }
             );
           }, buttonStart);
         }
@@ -243,7 +268,7 @@ if (aboutSection) {
         aboutObserver.unobserve(entry.target);
       });
     },
-    { threshold: 0.15 }
+    { threshold: 0.2 }
   );
 
   aboutObserver.observe(aboutSection);
@@ -251,7 +276,7 @@ if (aboutSection) {
 
 
 // ============================================================
-// OFFER SECTION — SPED UP FOR MOBILE + DESKTOP TIMING
+// OFFER SECTION — ORIGINAL TIMING + MOBILE STACKING EFFECT
 // ============================================================
 
 const offerSection = document.querySelector(".offer");
@@ -263,6 +288,8 @@ if (offerSection) {
 
   const EASE_OUT = "cubic-bezier(0.16, 1, 0.3, 1)";
   const EASE_BOUNCE = "cubic-bezier(0.34, 1.56, 0.64, 1)";
+
+  offerSection.style.overflowAnchor = "none";
 
   function getTimingProfile() {
     const isLargeScreen = window.innerWidth >= 1024;
@@ -278,15 +305,14 @@ if (offerSection) {
           iconDuration: 500
         }
       : {
-          // 🚀 SPED UP for mobile so it feels snappy and modern, not sluggish
-          headingDuration: 800,
-          subtitleDelay: 400,
-          subtitleDuration: 600,
-          cardsStart: 800,
-          cardStagger: 250,       // Much faster stagger between cards
-          cardDuration: 700,       // Faster card animation
-          iconDelay: 300,
-          iconDuration: 400
+          headingDuration: 1400,
+          subtitleDelay: 900,
+          subtitleDuration: 1200,
+          cardsStart: 2200,
+          cardStagger: 850,
+          cardDuration: 1400,
+          iconDelay: 800,
+          iconDuration: 800
         };
   }
 
@@ -381,6 +407,8 @@ if (gallerySection) {
   const EASE_OUT = "cubic-bezier(0.16, 1, 0.3, 1)";
   const EASE_BOUNCE = "cubic-bezier(0.34, 1.56, 0.64, 1)";
 
+  gallerySection.style.overflowAnchor = "none";
+
   const galleryObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -448,6 +476,8 @@ if (footerSection) {
 
   const EASE_OUT = "cubic-bezier(0.16, 1, 0.3, 1)";
   const EASE_BOUNCE = "cubic-bezier(0.34, 1.56, 0.64, 1)";
+
+  footerSection.style.overflowAnchor = "none";
 
   const footerObserver = new IntersectionObserver(
     (entries) => {
@@ -529,6 +559,8 @@ if (subscribeSection) {
   const box = subscribeSection.querySelector(".subscribeBox");
   const EASE_BOUNCE = "cubic-bezier(0.34, 1.56, 0.64, 1)";
 
+  subscribeSection.style.overflowAnchor = "none";
+
   const subscribeObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -586,6 +618,7 @@ function showSubscribeMessage(message, type) {
   const subscribeBox = document.querySelector('.subscribeBox');
   if (!subscribeBox) return;
 
+  // Ensure the container is relatively positioned so the message anchors to it
   subscribeBox.style.position = 'relative';
 
   const existingMsg = document.querySelector('.subscribe-message');
@@ -595,8 +628,9 @@ function showSubscribeMessage(message, type) {
   msgDiv.className = `subscribe-message ${type}`;
   msgDiv.textContent = message;
   
+  // Absolute positioning prevents the container from expanding or shifting layout
   msgDiv.style.position = 'absolute';
-  msgDiv.style.bottom = '-30px';
+  msgDiv.style.bottom = '-30px'; // Floats just below the box
   msgDiv.style.left = '50%';
   msgDiv.style.transform = 'translateX(-50%)';
   msgDiv.style.width = '100%';
@@ -604,12 +638,13 @@ function showSubscribeMessage(message, type) {
   msgDiv.style.fontWeight = '500';
   msgDiv.style.color = type === 'success' ? '#22c55e' : '#ef4444'; 
   msgDiv.style.textAlign = 'center';
-  msgDiv.style.whiteSpace = 'nowrap';
+  msgDiv.style.whiteSpace = 'nowrap'; // Prevents text wrapping from affecting layout
   msgDiv.style.zIndex = '10';
-  msgDiv.style.pointerEvents = 'none';
+  msgDiv.style.pointerEvents = 'none'; // Allows clicking through the message if it overlaps anything
 
   subscribeBox.appendChild(msgDiv);
 
+  // Auto-remove with a smooth fade-out
   setTimeout(() => {
     if (msgDiv.parentNode) {
       msgDiv.style.transition = 'opacity 0.4s ease';
@@ -642,6 +677,7 @@ function initSubscribeForm() {
     submitButton.textContent = 'Subscribing...';
 
     try {
+      // Checks for API_BASE_URL or BASE_API_URL (whichever you defined in config.js)
       const baseUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : (typeof BASE_API_URL !== 'undefined' ? BASE_API_URL : '');
       const apiUrl = `${baseUrl}/api/core/subscribe/`;
       
@@ -658,7 +694,7 @@ function initSubscribeForm() {
 
       if (response.ok) {
         showSubscribeMessage('Successfully subscribed to our newsletter!', 'success');
-        emailInput.value = '';
+        emailInput.value = ''; // Clear input on success
       } else {
         const errorMsg = data.email ? data.email[0] : (data.detail || 'Failed to subscribe. Please try again.');
         showSubscribeMessage(errorMsg, 'error');
@@ -760,16 +796,22 @@ async function loadGalleryImages() {
 
 // ============================================================
 // INFINITE INNOVATION CAROUSEL FIX
+// Ensures the hero carousel is always duplicated for a seamless infinite loop
+// This guarantees it never "finishes" and stays full-width on any device.
 // ============================================================
 function fixInnovationCarousel() {
   const innovationTrack = document.querySelector('.innovation');
   if (!innovationTrack) return;
 
+  // Check if it's already been duplicated by this script to prevent infinite loops
   if (innovationTrack.dataset.duplicated === 'true') return;
 
   const originalItems = Array.from(innovationTrack.children);
   if (originalItems.length === 0) return;
 
+  // Clone the original set and append it to make it exactly 2x the length.
+  // This ensures the CSS animation `transform: translateX(-50%)` loops perfectly
+  // without gaps, regardless of screen width.
   originalItems.forEach(item => {
     innovationTrack.appendChild(item.cloneNode(true));
   });
@@ -777,6 +819,7 @@ function fixInnovationCarousel() {
   innovationTrack.dataset.duplicated = 'true';
 }
 
+// Run on load and resize to guarantee it's always perfect
 document.addEventListener('DOMContentLoaded', fixInnovationCarousel);
 window.addEventListener('resize', fixInnovationCarousel);
 
@@ -789,5 +832,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadGalleryImages();
   }, 100);
   
+  // Initialize subscription form handler
   initSubscribeForm();
 });
