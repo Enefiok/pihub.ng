@@ -241,10 +241,9 @@ nav #menuToggle:hover {
   background-color: var(--bg-black);
   background-image:
     linear-gradient(135deg, rgba(0, 0, 0, 0.88), rgba(17, 15, 14, 0.75)),
-    url("../src/image/profesional coders.jpg");
+    url("../src/image/profesional.jpg");
   background-repeat: no-repeat;
   background-size: cover;
-  background-attachment: fixed;
   background-position: center;
   height: 450px;
   width: 100%;
@@ -394,11 +393,12 @@ nav #menuToggle:hover {
 }
 
 .aboutinfo > div:nth-child(1) .aboutinfo1 span:nth-child(2) {
-  display: flex;
-  flex-direction: column;
-  font-size: 13px;
-  gap: 10px;
-  text-align: justify;
+     display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    gap: 10px;
+    text-align: justify;
+    line-height: clamp(20px, 1vh, 50px);
 }
 
 .aboutinfo > div:nth-child(1) .aboutinfo1 span:nth-child(2) p {
@@ -497,7 +497,7 @@ nav #menuToggle:hover {
 .aboutinfo > div:nth-child(4) span:nth-child(3) p {
   display: flex;
   gap: 20px;
-  font-size: 12px;
+  font-size: 16px;
   align-items: center;
   transition: transform 0.25s ease;
   opacity: 1;
@@ -593,7 +593,7 @@ nav #menuToggle:hover {
   padding: 5px 5px 5px 22px;
   gap: 10px;
   flex: 1 1 360px;
-  max-width: 460px;
+  /* max-width: 460px; */
 }
 
 .subscribeForm input {
@@ -681,7 +681,7 @@ nav #menuToggle:hover {
   margin-top: 60px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  /* gap: 16px; */
 }
 
 .meetTrack {
@@ -773,8 +773,8 @@ nav #menuToggle:hover {
 
 .meetArrow {
   flex-shrink: 0;
-  width: 44px;
-  height: 44px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.1);
   background-color: var(--natural-color);
@@ -1185,7 +1185,7 @@ nav #menuToggle:hover {
   }
 
   .subscribeForm {
-    max-width: none;
+    max-width: 100%;
     flex: 1 1 auto;
     padding: 3px 3px 3px 14px;
   }
@@ -1283,7 +1283,7 @@ nav #menuToggle:hover {
   }
 
   .hero span {
-    width: 60px;
+    width: 40px;
   }
 
   .aboutinfo {
@@ -1352,6 +1352,14 @@ nav #menuToggle:hover {
   .meet2.scroll-reveal:nth-child(4) { transition-delay: 0.14s; }
   .meet2.scroll-reveal:nth-child(5) { transition-delay: 0.18s; }
   .meet2.scroll-reveal:nth-child(6) { transition-delay: 0.22s; }
+
+  .heronav {
+    min-height: 250px;
+}
+
+.hero{
+    font-weight: 750;
+}
 }
 
 @media (max-width: 480px) {
@@ -1376,10 +1384,6 @@ nav #menuToggle:hover {
 @media (max-width: 424px) {
   .heronav {
     height: 220px;
-  }
-
-  .hero {
-    font-size: 18px;
   }
 
   .aboutinfo > div:nth-child(2),
@@ -1441,5 +1445,18 @@ nav #menuToggle:hover {
 
   .meet > div:nth-child(2) .meet1 p {
     width: 56px;
+  }
+}
+
+/* @media (max-width:320px) {
+  .meetImgWrap{
+      width: 60%;
+}
+} */
+
+
+@media(min-width:768px){
+  .heronav{
+  background-attachment: fixed;
   }
 }

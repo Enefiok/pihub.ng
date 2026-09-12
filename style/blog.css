@@ -10,6 +10,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
@@ -238,12 +239,11 @@ nav #menuToggle:hover {
 
 .heronav {
   background:
-    linear-gradient(135deg, #000000, rgba(8, 8, 8, 0.9)),
+    linear-gradient(135deg, rgba(0, 0, 0, 0.88), rgba(17, 15, 14, 0.75)),
     url("../src/image/Blog.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
   height: 450px;
   width: 100%;
 }
@@ -349,7 +349,7 @@ nav #menuToggle:hover {
 }
 
 .search-input {
-  width: 320px;
+  width: 100%;
   padding: 14px 20px 14px 48px;
   border: 2px solid #e5e5e5;
   border-radius: 50px;
@@ -690,7 +690,7 @@ nav #menuToggle:hover {
   padding: 5px 5px 5px 22px;
   gap: 10px;
   flex: 1 1 360px;
-  max-width: 460px;
+  /* max-width: 460px; */
 }
 
 .subscribeForm input {
@@ -937,7 +937,7 @@ nav #menuToggle:hover {
 
 @media (max-width: 424px) {
   .heronav { height: 220px; }
-  .hero { font-size: 18px; }
+  /* .hero { font-size: 18px; } */
   .blogCategories { gap: 6px; }
   .category-btn { padding: 6px 12px; font-size: 12px; }
   .blogArticles div { padding: 16px; }
@@ -947,4 +947,10 @@ nav #menuToggle:hover {
 
 @media (max-width: 319px) {
   .hero { font-size: 16px; }
+}
+
+@media (min-width:768px) {
+  .heronav{
+    background-attachment: fixed;
+  }
 }

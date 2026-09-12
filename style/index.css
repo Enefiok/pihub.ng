@@ -1463,7 +1463,7 @@ nav #menuToggle:hover {
   }
 
   .subscribeForm {
-    max-width: none;
+    max-width: 100%;
     flex: 1 1 auto;
     padding: 3px 3px 3px 14px;
   }
@@ -1751,5 +1751,11 @@ nav #menuToggle:hover {
   .about-btn {
     margin-top: 23px;
     padding: 11px 28px;
+  }
+}
+
+@media(min-width:768px){
+  .heroNavbar{
+  background-attachment: fixed;
   }
 }
