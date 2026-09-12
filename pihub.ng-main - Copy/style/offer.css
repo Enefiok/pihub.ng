@@ -1,0 +1,2027 @@
+/* ============================================================
+   RESET & VARIABLES
+   ============================================================ */
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-color: #fa7001;
+  --primary-color-dark: #e26400;
+  --natural-color: #ffffff;
+
+  --text-dark: #1a1a1a;
+  --text-medium: #333333;
+  --text-light: #555555;
+  --text-muted: #777777;
+
+  --bg-cream: #fff8f3;
+  --bg-black: #110f0e;
+
+  --radius-md: 14px;
+  --radius-lg: 20px;
+
+  --container-pad: 7%;
+  --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+
+  font-family: "Poppins", sans-serif;
+  color: var(--text-medium);
+
+  overflow-x: clip;
+}
+
+section {
+  scroll-margin-top: 80px;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+
+.page-link.active {
+  color: var(--primary-color);
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: linear-gradient(
+    to bottom,
+    rgb(17, 15, 14),
+    rgba(40, 38, 36, 0.6) 100%
+  );
+
+  padding: 14px 7%;
+
+  box-shadow: 0px 2px 4px rgba(8, 8, 8, 0.8);
+
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+
+  z-index: 100;
+
+  transition:
+    padding 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+nav .links {
+  display: flex;
+  gap: clamp(16px, 3vw, 40px);
+}
+
+nav a {
+  text-decoration: none;
+  color: white;
+
+  font-weight: 400;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  position: relative;
+
+  transition: color 0.25s ease;
+}
+
+nav .links a::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: -4px;
+
+  width: 0%;
+
+  height: 2px;
+
+  background-color: var(--primary-color);
+
+  transition: width 0.3s ease;
+}
+
+nav .links a:hover {
+  color: var(--primary-color);
+}
+
+nav .links a:hover::after {
+  width: 100%;
+}
+
+nav #contactUs {
+  background-color: var(--primary-color);
+
+  border-radius: 10px;
+
+  padding: 10px 20px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+nav #contactUs:hover {
+  background-color: var(--primary-color-dark);
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0px 4px 10px rgba(250, 112, 1, 0.4);
+}
+
+nav img {
+  width: 35px;
+
+  display: block;
+
+  transition: transform 0.3s ease;
+}
+
+nav a:first-child:hover img {
+  transform: scale(1.08);
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+}
+
+nav #menuToggle {
+  display: none;
+
+  transition:
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+nav #menuToggle:hover {
+  color: var(--primary-color);
+
+  transform: rotate(90deg);
+}
+
+
+/* ============================================================
+   MOBILE MENU
+   ============================================================ */
+
+.mobileMenu {
+  position: fixed;
+
+  top: 0;
+  right: 0;
+
+  height: 100%;
+
+  width: min(78vw, 300px);
+
+  background: var(--bg-black);
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 26px;
+
+  padding: 32px 30px 60px;
+
+  transform: translateX(100%);
+
+  transition:
+    transform 0.35s var(--ease);
+
+  z-index: 200;
+}
+
+.mobileMenu.open {
+  transform: translateX(0);
+}
+
+.mobileMenu a {
+  text-decoration: none;
+
+  color: white;
+
+  font-size: 1.05rem;
+
+  cursor: pointer;
+}
+
+#menuClose {
+  color: white;
+
+  font-size: 1.6rem;
+
+  cursor: pointer;
+
+  align-self: flex-end;
+
+  margin-bottom: 10px;
+}
+
+.menuOverlay {
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.55);
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.3s ease;
+
+  z-index: 150;
+}
+
+.menuOverlay.open {
+  opacity: 1;
+
+  pointer-events: auto;
+}
+
+
+/* ============================================================
+   HERO
+   ============================================================ */
+
+.heronav {
+  width: 100%;
+  height: 450px;
+
+  background-image:
+    linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.88),
+      rgba(17, 15, 14, 0.75)
+    ),
+    url("../src/image/workspace2.jpg");
+
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heronav.panel-workspace {
+  background-image:
+    linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.88),
+      rgba(17, 15, 14, 0.75)
+    ),
+    url("../src/image/workspace.jpg");
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  width: 100%;
+  height: 100%;
+
+  color: var(--natural-color);
+
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+}
+
+.hero span {
+  display: grid;
+  place-items: center;
+
+  min-width: 80px;
+
+  background-color: var(--primary-color);
+  border-radius: 10px;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.hero:hover span {
+  transform: scale(1.05) rotate(-3deg);
+
+  box-shadow:
+    0 6px 16px rgba(250, 112, 1, 0.4);
+}
+
+
+/* ============================================================
+   OFFER PAGE CONTAINER
+   ============================================================ */
+
+.offer {
+  width: 100%;
+
+  padding:
+    70px
+    var(--container-pad)
+    100px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* ============================================================
+   SERVICE OPTIONS / FILTER
+   ============================================================ */
+
+.options {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  flex-wrap: wrap;
+
+  gap: 14px;
+}
+
+.options span.option-btn {
+  display: grid;
+  place-items: center;
+
+  padding: 10px 16px;
+
+  background-color: #f5f5f5;
+
+  color: var(--text-medium);
+
+  border-radius: 10px;
+
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* ============================================================
+   SERVICE OPTIONS / FILTER
+   ============================================================ */
+
+.options {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  flex-wrap: wrap;
+
+  gap: 14px;
+}
+
+.options span.option-btn {
+  display: grid;
+  place-items: center;
+
+  padding: 10px 16px;
+
+  background-color: #f5f5f5;
+
+  color: var(--text-medium);
+
+  border-radius: 10px;
+
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+/* ============================================================
+   ALL TABS — ACTIVE STATE
+   ============================================================ */
+
+.options span.option-btn.active {
+  background-color: var(--bg-black);
+  color: var(--natural-color);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+}
+
+/* Hover effect for inactive tabs */
+.options span.option-btn:not(.active):hover {
+  background-color: var(--bg-black);
+  color: var(--natural-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+}
+
+/* ============================================================
+   SERVICE PANEL FILTERING
+   IMPORTANT:
+   Only the active panel shows.
+   Workspace is active by default from your HTML.
+   ============================================================ */
+
+.offer-panel {
+  display: none;
+}
+
+.offer-panel.active {
+  display: grid;
+
+  animation: panelFadeIn 0.45s ease both;
+}
+
+@keyframes panelFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ============================================================
+   SERVICE CONTENT
+   ============================================================ */
+
+.options2 {
+  text-align: center;
+
+  margin-top: 70px;
+}
+
+.options2 > span:nth-child(1) {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+
+  font-weight: 700;
+
+  color: var(--text-dark);
+
+  margin-bottom: 14px;
+}
+
+.options2 > span:nth-child(2) {
+  font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+
+  color: var(--text-light);
+
+  line-height: 1.6;
+
+  max-width: 650px;
+
+  margin-inline: auto;
+}
+
+
+/* ============================================================
+   SERVICE DESCRIPTION
+   ============================================================ */
+
+.options2-desc {
+  max-width: 700px;
+
+  margin:
+    40px
+    auto
+    0;
+
+  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+
+  line-height: 1.7;
+
+  color: var(--text-light);
+}
+
+
+/* ============================================================
+   PRIVATE ROOM / CONFERENCE / SHOWROOM
+   ============================================================ */
+
+.offer-panel[data-panel="privateRoom"] .options2-desc,
+.offer-panel[data-panel="conferenceRoom"] .options2-desc,
+.offer-panel[data-panel="podcast"] .options2-desc {
+  text-align: left;
+
+  border-left:
+    3px
+    solid
+    var(--primary-color);
+
+  padding-left: 16px;
+
+  max-width: 700px;
+}
+
+
+/* ============================================================
+   OPTIONS GRID
+   ============================================================ */
+
+.options3 {
+  display: flex;
+
+  justify-content: center;
+  align-items: stretch;
+
+  flex-wrap: wrap;
+
+  gap: 24px;
+
+  margin-top: 60px;
+}
+
+
+/* ============================================================
+   PLAN / SERVICE CARDS
+   Shared by Workspace plans AND Private Office / Conference Room /
+   Showroom (single-card panels reuse this same structure):
+   .planCard
+     .planName  OR  .planNameRow > (.planName + .popularBadge)
+     .planDesc
+     .planPrice
+     .selectBtn
+     .planFeatures > span (icon + text)
+   Modifiers:
+     .planCard.popular = highlighted workspace plan, dark card
+     .planCard.wide    = single-card panels (private/conference/showroom),
+                          wider than the 3-up workspace cards
+     .selectBtn.enquiryBtn = button with an icon + text (WhatsApp enquiry)
+   ============================================================ */
+
+.planCard {
+  width: min(100%, 300px);
+
+  padding: 28px 24px;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: var(--natural-color);
+
+  border:
+    1px
+    solid
+    #e8e8e8;
+
+  border-radius: var(--radius-md);
+
+  text-align: left;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.planCard:hover {
+  transform: translateY(-6px);
+
+  border-color: var(--primary-color);
+
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.1);
+}
+
+.planCard.wide {
+  width: min(100%, 440px);
+}
+
+.planNameRow {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+.planName {
+  font-size: 1.1rem;
+
+  font-weight: 600;
+
+  color: var(--text-dark);
+}
+
+.popularBadge {
+  display: grid;
+  place-items: center;
+
+  padding:
+    5px
+    10px;
+
+  background-color: #fff0e5;
+
+  color: var(--primary-color);
+
+  border-radius: 20px;
+
+  font-size: 0.7rem;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+.planDesc {
+  margin-top: 10px;
+
+  font-size: 0.85rem;
+
+  line-height: 1.6;
+
+  color: var(--text-light);
+}
+
+.planPrice {
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 5px;
+
+  margin-top: 22px;
+}
+
+.planPrice p:first-child,
+.planPrice .currency-symbol,
+.planPrice .counter-number {
+  font-size: 1.4rem;
+
+  font-weight: 700;
+
+  color: var(--text-dark);
+}
+
+.planPrice p:last-child {
+  color: var(--text-muted);
+
+  font-size: 0.8rem;
+}
+
+.selectBtn {
+  display: grid;
+  place-items: center;
+
+  width: 100%;
+
+  min-height: 42px;
+
+  margin-top: 24px;
+
+  border:
+    1px
+    solid
+    var(--primary-color);
+
+  border-radius: 10px;
+
+  color: var(--primary-color);
+
+  font-size: 0.85rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.selectBtn:hover {
+  background-color: var(--primary-color);
+
+  color: var(--natural-color);
+
+  transform: translateY(-2px);
+}
+
+.selectBtn.enquiryBtn {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+}
+
+.planFeatures {
+  margin-top: 22px;
+
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  background-color: #f6f6f6;
+
+  border-radius: 12px;
+}
+
+.planFeatures span {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  font-size: 0.8rem;
+
+  color: var(--text-light);
+}
+
+.planFeatures span i {
+  width: 22px;
+  height: 22px;
+
+  display: grid;
+  place-items: center;
+
+  flex-shrink: 0;
+
+  background-color: var(--primary-color);
+
+  color: var(--natural-color);
+
+  border-radius: 50%;
+
+  font-size: 0.6rem;
+}
+
+
+/* ---- POPULAR (dark) PLAN CARD ---- */
+
+.planCard.popular {
+  background-color: var(--bg-black);
+
+  border-color: var(--bg-black);
+}
+
+.planCard.popular:hover {
+  border-color: var(--primary-color);
+}
+
+.planCard.popular .planName {
+  color: var(--natural-color);
+}
+
+.planCard.popular .planDesc {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.planCard.popular .planPrice p:first-child,
+.planCard.popular .planPrice .currency-symbol,
+.planCard.popular .planPrice .counter-number {
+  color: var(--natural-color);
+}
+
+.planCard.popular .planPrice p:last-child {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.planCard.popular .popularBadge {
+  background-color: var(--primary-color);
+
+  color: var(--natural-color);
+}
+
+.planCard.popular .selectBtn {
+  background-color: var(--primary-color);
+
+  border-color: var(--primary-color);
+
+  color: var(--natural-color);
+}
+
+.planCard.popular .selectBtn:hover {
+  background-color: var(--primary-color-dark);
+
+  border-color: var(--primary-color-dark);
+}
+
+.planCard.popular .planFeatures {
+  background-color: var(--natural-color);
+}
+
+
+/* ============================================================
+   COURSE GRID
+   ============================================================ */
+
+.options2[data-panel="courses"] .options3 {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  width: 100%;
+
+  margin-bottom: 80px;
+}
+
+
+/* ============================================================
+   COURSE CARD
+   ============================================================ */
+
+.courseCard {
+  width: 100%;
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: var(--natural-color);
+
+  border:
+    1px
+    solid
+    #e8e8e8;
+
+  border-radius: var(--radius-md);
+
+  text-align: left;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.courseCard:hover {
+  transform: translateY(-6px);
+
+  border-color: var(--primary-color);
+
+  box-shadow:
+    0 16px 30px rgba(0, 0, 0, 0.1);
+}
+
+.courseCard .cardPic1,
+.courseCard .cardPic2,
+.courseCard .cardPic3,
+.courseCard .cardPic4,
+.courseCard .cardPic5,
+.courseCard .cardPic6 {
+  width: 100%;
+
+  height: 200px;
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.cardPic1 {
+  background-image:
+    url("../src/image/Frontend Development.png");
+}
+
+.cardPic2 {
+  background-image:
+    url("../src/image/UIUX Design.png");
+}
+
+.cardPic3 {
+  background-image:
+    url("../src/image/Data Analysis.png");
+}
+
+.cardPic4 {
+  background-image:
+    url("../src/image/Backend Development.png");
+}
+
+.cardPic5 {
+  background-image:
+    url("../src/image/Backend Development.png");
+}
+
+.cardPic6 {
+  background-image:
+    url("../src/image/Backend Development.png");
+}
+
+.courseCard > div:nth-child(2) {
+  margin:
+    20px
+    18px
+    0;
+
+  font-size: 1rem;
+
+  font-weight: 600;
+
+  color: var(--text-dark);
+}
+
+.courseCard > div:nth-child(3) {
+  margin:
+    14px
+    18px
+    0;
+
+  font-size: 0.8rem;
+
+  line-height: 1.6;
+
+  color: var(--text-light);
+}
+
+.courseCard > div:nth-child(4) {
+  width: fit-content;
+
+  margin:
+    14px
+    18px
+    0;
+
+  padding:
+    6px
+    12px;
+
+  border:
+    1px
+    solid
+    #e5e5e5;
+
+  border-radius: 30px;
+
+  color: var(--text-muted);
+
+  font-size: 0.7rem;
+
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+}
+
+.courseCard > div:nth-child(5) {
+  margin:
+    auto
+    18px
+    0;
+
+  padding:
+    20px
+    0;
+
+  width:
+    calc(100% - 36px);
+
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 12px;
+}
+
+.courseCard > div:nth-child(5) span:first-child {
+  font-size: 1.05rem;
+
+  font-weight: 600;
+
+  color: var(--text-dark);
+}
+
+.courseCard > div:nth-child(5) span:last-child {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  padding:
+    10px
+    16px;
+
+  background-color: #2e8b57;
+
+  color: var(--natural-color);
+
+  border-radius: 8px;
+
+  font-size: 0.75rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition:
+    background-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.courseCard > div:nth-child(5) span:last-child:hover {
+  background-color: #256e46;
+
+  transform: translateY(-2px);
+}
+
+
+/* ============================================================
+   UNAVAILABLE COURSE
+   ============================================================ */
+
+.courseCard.unavailable {
+  position: relative;
+}
+
+.courseCard.unavailable::before {
+  content: "Coming Soon";
+
+  position: absolute;
+
+  top: 16px;
+  right: 16px;
+
+  z-index: 2;
+
+  padding:
+    5px
+    12px;
+
+  background-color: #777;
+
+  color: var(--natural-color);
+
+  border-radius: 20px;
+
+  font-size: 0.7rem;
+
+  font-weight: 600;
+}
+
+/* REMOVE OR COMMENT OUT THIS SECTION - This is what causes the fade */
+/*
+.courseCard.unavailable::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    rgba(255, 255, 255, 0.35);
+
+  pointer-events: none;
+}
+*/
+
+.courseCard.unavailable > div:nth-child(5) span:last-child {
+  background-color: #999;
+
+  cursor: not-allowed;
+
+  pointer-events: none;
+}
+
+/* Optional: Keep the card looking normal on hover */
+.courseCard.unavailable:hover {
+  transform: none; /* Prevent lift on hover */
+  border-color: #e8e8e8; /* Keep original border */
+}
+/* ============================================================
+   BOOKING FORM
+   ============================================================ */
+
+.bookingForm {
+  display: none;
+
+  flex-direction: column;
+
+  gap: 16px;
+
+  width: 100%;
+  max-width: 520px;
+
+  margin:
+    50px
+    auto
+    0;
+
+  padding: 30px;
+
+  background-color: var(--natural-color);
+
+  border:
+    1px
+    solid
+    #e8e8e8;
+
+  border-radius: var(--radius-lg);
+
+  text-align: left;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.bookingForm.active {
+  display: flex;
+}
+
+.bookingForm-title {
+  text-align: center;
+
+  font-size: 1.2rem;
+
+  font-weight: 700;
+
+  color: var(--text-dark);
+}
+
+.bookingForm .formGroup {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.bookingForm .formGroup label {
+  font-size: 0.8rem;
+
+  font-weight: 600;
+
+  color: var(--text-medium);
+}
+
+.bookingForm input,
+.dateInputWrapper input[type="date"] {
+  width: 100%;
+
+  height: 45px;
+
+  padding-inline: 14px;
+
+  border:
+    1px
+    solid
+    #dddddd;
+
+  border-radius: 10px;
+
+  font-family: inherit;
+
+  color: var(--text-dark);
+
+  background-color: var(--natural-color);
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.bookingForm input:focus,
+.dateInputWrapper input[type="date"]:focus {
+  outline: none;
+
+  border-color: var(--primary-color);
+
+  box-shadow:
+    0 0 0 3px rgba(250, 112, 1, 0.12);
+}
+
+.bookingForm input#planInput {
+  background-color: var(--bg-cream);
+
+  color: var(--primary-color);
+
+  font-weight: 600;
+}
+
+.dateInputWrapper {
+  position: relative;
+
+  width: 100%;
+}
+
+.dateInputWrapper .calendarIcon {
+  position: absolute;
+
+  right: 14px;
+
+  top: 50%;
+
+  transform:
+    translateY(-50%);
+
+  color: var(--text-muted);
+
+  pointer-events: none;
+}
+
+.bookingForm button {
+  height: 46px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background-color: var(--primary-color);
+
+  color: var(--natural-color);
+
+  font-family: inherit;
+
+  font-size: 0.9rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.bookingForm button:hover {
+  background-color: var(--primary-color-dark);
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 8px 18px rgba(250, 112, 1, 0.25);
+}
+
+.changePlan {
+  text-align: center;
+
+  color: var(--text-muted);
+
+  font-size: 0.8rem;
+
+  cursor: pointer;
+
+  transition:
+    color 0.25s ease;
+}
+
+.changePlan:hover {
+  color: var(--primary-color);
+}
+
+
+/* ============================================================
+   SUBSCRIBE
+   SHOW ON PAGE LOAD
+   ============================================================ */
+
+.subscribe {
+  background-color: var(--bg-black);
+
+  padding: 0 var(--container-pad) 0;
+
+  position: relative;
+
+  z-index: 2;
+}
+
+.subscribeBox {
+  opacity: 1;
+  transform: none;
+
+  background-color: var(--primary-color);
+
+  border-radius: 16px;
+
+  width: 100%;
+  max-width: 1200px;
+
+  margin-inline: auto;
+
+  margin-top: -70px;
+  margin-bottom: -70px;
+
+  padding: 32px 48px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  flex-wrap: wrap;
+
+  position: relative;
+}
+
+.subscribeHeading {
+  color: var(--natural-color);
+
+  font-weight: 700;
+
+  font-size: 1.4rem;
+
+  line-height: 1.35;
+
+  max-width: 360px;
+}
+
+.subscribeForm {
+  display: flex;
+
+  align-items: center;
+
+  background-color: var(--natural-color);
+
+  border-radius: 40px;
+
+  padding: 5px 5px 5px 22px;
+
+  gap: 10px;
+
+  flex: 1 1 360px;
+
+  max-width: 460px;
+}
+
+.subscribeForm input {
+  flex: 1;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  font-family: "Poppins", sans-serif;
+
+  font-size: 0.88rem;
+
+  color: var(--text-dark);
+
+  min-width: 0;
+}
+
+.subscribeForm input::placeholder {
+  color: var(--text-muted);
+}
+
+.subscribeForm button {
+  background-color: var(--primary-color-dark);
+
+  color: var(--natural-color);
+
+  border: none;
+
+  border-radius: 40px;
+
+  padding: 11px 24px;
+
+  font-family: "Poppins", sans-serif;
+
+  font-weight: 600;
+
+  font-size: 0.8rem;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition:
+    background-color 0.25s ease;
+}
+
+.subscribeForm button:hover {
+  background-color: #b35700;
+}
+
+
+/* ============================================================
+   FOOTER
+   SHOW ON PAGE LOAD
+   ============================================================ */
+
+.footer {
+  background-color: var(--bg-black);
+
+  width: 100%;
+
+  padding:
+    100px
+    var(--container-pad)
+    0;
+
+  display: flex;
+  flex-direction: column;
+
+  position: relative;
+
+  z-index: 1;
+}
+
+.footerBrand,
+.footerCol,
+.copyright {
+  opacity: 1;
+  transform: none;
+}
+
+.footerTop {
+  display: grid;
+
+  grid-template-columns:
+    1.4fr
+    1fr
+    1fr
+    1.2fr;
+
+  gap: 24px;
+
+  padding-bottom: 20px;
+}
+
+.footerBrand img {
+  width: 46px;
+}
+
+.footerApps {
+  display: flex;
+
+  gap: 8px;
+
+  margin-top: 10px;
+}
+
+.footerApps a {
+  width: 26px;
+  height: 26px;
+
+  border-radius: 6px;
+
+  background-color:
+    rgba(255, 255, 255, 0.08);
+
+  color: var(--natural-color);
+
+  display: grid;
+  place-items: center;
+
+  font-size: 0.72rem;
+
+  transition:
+    background-color 0.25s ease;
+}
+
+.footerApps a:hover {
+  background-color: var(--primary-color);
+}
+
+.footerCol {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.footerHeading {
+  color: #b35700;
+
+  font-weight: 600;
+
+  font-size: 0.92rem;
+
+  margin-bottom: 2px;
+}
+
+.footerCol a {
+  text-decoration: none;
+
+  color:
+    rgba(255, 255, 255, 0.65);
+
+  font-size: 0.82rem;
+
+  transition:
+    color 0.25s ease;
+
+  width: fit-content;
+}
+
+.footerCol a:hover {
+  color: var(--primary-color);
+}
+
+.footerSocial p {
+  font-size: 0.78rem;
+
+  line-height: 1.5;
+
+  color:
+    rgba(255, 255, 255, 0.55);
+
+  margin-top: -2px;
+}
+
+.footerSocialIcons {
+  display: flex;
+
+  gap: 10px;
+
+  margin-top: 2px;
+}
+
+.footerSocialIcons a {
+  width: 28px;
+  height: 28px;
+
+  border-radius: 50%;
+
+  background-color:
+    rgba(255, 255, 255, 0.08);
+
+  color: var(--natural-color);
+
+  display: grid;
+  place-items: center;
+
+  font-size: 0.72rem;
+
+  transition:
+    background-color 0.25s ease;
+}
+
+.footerSocialIcons a:hover {
+  background-color: var(--primary-color);
+}
+
+.copyright {
+  border-top:
+    1px
+    solid
+    rgba(255, 255, 255, 0.08);
+
+  padding:
+    14px
+    var(--container-pad);
+
+  margin-inline:
+    calc(var(--container-pad) * -1);
+
+  display: flex;
+
+  justify-content: center;
+}
+
+.copyright p {
+  font-size: 0.78rem;
+
+  color:
+    rgba(255, 255, 255, 0.45);
+}
+
+
+/* ============================================================
+   RESPONSIVE — TABLET
+   ============================================================ */
+
+@media (max-width: 1024px) {
+
+  nav {
+    padding: 10px 5%;
+  }
+
+  nav .links {
+    display: none;
+  }
+
+  nav #menuToggle {
+    display: block;
+
+    color: white;
+
+    font-size: 1.2rem;
+
+    cursor: pointer;
+  }
+
+  nav #contactUs {
+    padding: 6px 12px;
+
+    font-size: 0.72rem;
+  }
+
+  nav img {
+    width: 26px;
+  }
+
+  .navActions {
+    gap: 10px;
+  }
+
+  .offer {
+    padding-inline: 5%;
+  }
+
+  .options2[data-panel="courses"] .options3 {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .planCard {
+    width: min(100%, 280px);
+  }
+
+  .planCard.wide {
+    width: min(100%, 400px);
+  }
+
+  .footerBrand {
+    display: none;
+  }
+
+  .footerTop {
+    grid-template-columns:
+      repeat(3, 1fr);
+
+    column-gap: 14px;
+
+    row-gap: 0;
+
+    padding-bottom: 30px;
+  }
+}
+
+
+/* ============================================================
+   TABLET / MOBILE
+   ============================================================ */
+
+@media (max-width: 899px) {
+
+  .offer {
+    padding-top: 50px;
+  }
+
+  .options {
+    gap: 12px;
+  }
+
+  .options2 {
+    margin-top: 55px;
+  }
+
+  .options3 {
+    margin-top: 45px;
+  }
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 767px) {
+
+  nav {
+    padding: 10px 5%;
+  }
+
+  nav .links {
+    display: none;
+  }
+
+  nav img {
+    width: 26px;
+  }
+
+  nav #contactUs {
+    padding: 6px 12px;
+
+    font-size: 0.72rem;
+  }
+
+  nav #menuToggle {
+    display: block;
+
+    font-size: 1.2rem;
+  }
+
+  .navActions {
+    gap: 10px;
+  }
+
+  .heronav {
+    height: 320px;
+  }
+
+  .hero {
+    font-size:
+      clamp(1.3rem, 5vw, 1.8rem);
+  }
+
+  .hero span {
+    min-width: 65px;
+  }
+
+  .offer {
+    padding:
+      45px
+      6%
+      70px;
+  }
+
+  .options {
+    gap: 10px;
+  }
+
+  .options span.option-btn {
+    padding:
+      8px
+      12px;
+
+    font-size: 0.78rem;
+  }
+
+  .options2 {
+    margin-top: 45px;
+  }
+
+  .options2 > span:nth-child(1) {
+    font-size:
+      clamp(1.3rem, 6vw, 1.7rem);
+  }
+
+  .options3 {
+    flex-direction: column;
+
+    align-items: center;
+  }
+
+  .planCard,
+  .planCard.wide {
+    width: 100%;
+
+    max-width: 420px;
+  }
+
+  .options2[data-panel="courses"] .options3 {
+    grid-template-columns:
+      1fr;
+
+    width: 100%;
+  }
+
+  .courseCard {
+    max-width: 420px;
+
+    margin-inline: auto;
+  }
+
+  .courseCard > div:nth-child(5) {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .courseCard > div:nth-child(5) span:last-child {
+    width: 100%;
+  }
+
+  .bookingForm {
+    padding: 24px 20px;
+  }
+
+  .subscribe {
+    padding:
+      0
+      6%
+      30px;
+  }
+
+  .subscribeBox {
+    flex-direction: column;
+
+    align-items: stretch;
+
+    text-align: left;
+
+    padding: 16px;
+
+    gap: 10px;
+
+    margin-top: -20px;
+
+    margin-bottom: -20px;
+  }
+
+  .subscribeHeading {
+    font-size: 0.95rem;
+
+    line-height: 1.25;
+
+    max-width: none;
+  }
+
+  .subscribeForm {
+    max-width: none;
+
+    flex: 1 1 auto;
+
+    padding:
+      3px
+      3px
+      3px
+      14px;
+  }
+
+  .subscribeForm input {
+    font-size: 0.75rem;
+  }
+
+  .subscribeForm button {
+    padding:
+      8px
+      14px;
+
+    font-size: 0.68rem;
+  }
+
+  .footer {
+    padding-top: 40px;
+
+    padding-inline: 6%;
+  }
+
+  .footerBrand {
+    display: none;
+  }
+
+  .footerTop {
+    grid-template-columns:
+      repeat(3, 1fr);
+
+    column-gap: 14px;
+
+    row-gap: 0;
+
+    padding-bottom: 30px;
+  }
+
+  .footerHeading {
+    font-size: 0.8rem;
+  }
+
+  .footerCol {
+    gap: 8px;
+  }
+
+  .footerCol a {
+    font-size: 0.72rem;
+  }
+
+  .footerSocial p {
+    font-size: 0.72rem;
+
+    display: block;
+  }
+
+  .copyright {
+    padding:
+      18px
+      6%;
+  }
+}
+
+
+/* ============================================================
+   SMALL PHONES
+   ============================================================ */
+
+@media (max-width: 480px) {
+
+  nav img {
+    width: 22px;
+  }
+
+  .navActions {
+    gap: 8px;
+  }
+
+  nav #contactUs {
+    padding: 5px 9px;
+
+    font-size: 0.65rem;
+  }
+
+  nav #menuToggle {
+    font-size: 1.1rem;
+  }
+
+  .heronav {
+    height: 260px;
+  }
+
+  .hero {
+    font-size: 1.3rem;
+  }
+
+  .hero span {
+    min-width: 55px;
+  }
+
+  .offer {
+    padding-inline: 6%;
+  }
+
+  .options span.option-btn {
+    font-size: 0.7rem;
+
+    padding:
+      7px
+      10px;
+  }
+
+  .options2 > span:nth-child(2) {
+    font-size: 0.85rem;
+  }
+
+  .courseCard .cardPic1,
+  .courseCard .cardPic2,
+  .courseCard .cardPic3,
+  .courseCard .cardPic4,
+  .courseCard .cardPic5,
+  .courseCard .cardPic6 {
+    height: 180px;
+  }
+
+  .bookingForm {
+    padding: 20px 16px;
+  }
+}

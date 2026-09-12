@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Contact Us | PIHUB</title>
+
+    <!-- GOOGLE FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet" href="src/Fontawesome/css/all.min.css" />
+
+    <!-- CONTACT CSS -->
+    <link rel="stylesheet" href="style/contactus.css" />
+  </head>
+
+  <body>
+    <!-- HERO + NAVBAR -->
+    <section class="heronav">
+
+      <!-- NAVBAR -->
+      <nav>
+        <a href="index.html">
+          <img
+            src="src/image/logo on black background without background11.png"
+            alt="PIHUB logo"
+          />
+        </a>
+
+        <div class="links">
+          <a href="index.html" class="page-link">Home</a>
+          <a href="about.html" class="page-link">About</a>
+          <a href="offer.html" class="page-link">Services</a>
+          <a href="blog.html" class="page-link">Blog</a>
+        </div>
+
+        <div class="navActions">
+          <a
+            href="contactus.html"
+            id="contactUs"
+            class="page-link active"
+          >
+            Contact Us
+          </a>
+
+          <i
+            class="fas fa-bars"
+            id="menuToggle"
+            aria-label="Open menu"
+            role="button"
+            tabindex="0"
+          ></i>
+        </div>
+      </nav>
+
+
+      <!-- MOBILE MENU -->
+      <div class="mobileMenu" id="mobileMenu">
+
+        <i
+          class="fas fa-times"
+          id="menuClose"
+          aria-label="Close menu"
+          role="button"
+          tabindex="0"
+        ></i>
+
+        <a href="index.html" class="page-link">Home</a>
+        <a href="about.html" class="page-link">About</a>
+        <a href="offer.html" class="page-link">Services</a>
+        <a href="blog.html" class="page-link">Blog</a>
+
+      </div>
+
+      <div class="menuOverlay" id="menuOverlay"></div>
+      <!-- MOBILE MENU -->
+
+
+      <!-- PAGE HERO -->
+      <section class="hero">
+        Contact <span>Us</span>
+      </section>
+
+    </section>
+    <!-- HERO + NAVBAR -->
+
+    <!-- NEW CONTACT SECTION (Template Style) -->
+    <section class="new-contact-section">
+      
+      <div class="contact-layout">
+        
+        <!-- LEFT SIDE: Info -->
+        <div class="contact-info-col">
+          <h2 class="section-title">Get In Touch</h2>
+          <p class="section-desc">
+            We'd love to hear from you. Reach out anytime for enquiries about our workspace, courses, or facilities.
+          </p>
+
+          <div class="info-item">
+            <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="info-text">
+              <h4>Uyo, Akwa Ibom</h4>
+              <p>325, Oron Road, Opp Shelter Afrique, Mbiabong, Uyo</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
+            <div class="info-text">
+              <h4>Call Us</h4>
+              <p>0808 834 9833</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon"><i class="fas fa-clock"></i></div>
+            <div class="info-text">
+              <h4>Working Hours</h4>
+              <p>Mon - Fri: 8:00 AM - 5:00 PM</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE: Form Card -->
+        <div class="contact-form-card">
+          <h3 class="form-heading">Your Detail</h3>
+          
+          <!-- Added novalidate to prevent any native browser validation -->
+          <form id="contactFormTemplate" novalidate>
+            <div class="form-row">
+              <div class="input-group">
+                <label>First Name *</label>
+                <!-- Removed 'required' -->
+                <input type="text" id="fname" placeholder="Your First Name">
+              </div>
+              <div class="input-group">
+                <label>Last Name *</label>
+                <!-- Removed 'required' -->
+                <input type="text" id="lname" placeholder="Your Last Name">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="input-group">
+                <label>Email Address *</label>
+                <!-- Changed to type="text" and removed 'required' to stop browser auto-scroll/validation -->
+                <input type="text" id="email" placeholder="Your Email">
+              </div>
+              <div class="input-group">
+                <label>Phone Number</label>
+                <!-- Changed to type="text" -->
+                <input type="text" id="phone" placeholder="Your Phone Number">
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label>Service Type</label>
+              <select id="service_type" style="width: 100%; background: transparent; border: none; border-bottom: 1px solid #333; color: white; padding: 10px 0; font-family: 'Poppins', sans-serif; font-size: 1rem;">
+                <option value="GENERAL" style="background: #161622;">General Enquiry</option>
+                <option value="CONFERENCE_ROOM" style="background: #161622;">Conference Room</option>
+                <option value="PRIVATE_SPACE" style="background: #161622;">Private Space</option>
+                <option value="PODCAST" style="background: #161622;">Podcast Studio</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label>Subject *</label>
+              <!-- Removed 'required' -->
+              <input type="text" id="subject" placeholder="Message Subject">
+            </div>
+
+            <div class="input-group">
+              <label>Comments / Questions *</label>
+              <!-- Removed 'required' -->
+              <textarea id="message" placeholder="Your Message" rows="3"></textarea>
+            </div>
+
+            <!-- CRITICAL: Changed type="submit" to type="button" so it CANNOT trigger a native form reload -->
+            <button type="button" id="sendMessageBtn" class="template-btn">Send Message</button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- MAP SECTION -->
+      <div class="map-wrapper">
+        <div class="map-container">
+          <!-- Google Maps Embed for Prestige Innovation Hub -->
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3977.1234567890123!2d7.9399708!3d5.0005068!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x10684e0b0b0b0b0b%3A0x0!2zNcKwMDAnMDIuMCJOIDfCsDU2JzI0LjAiRQ!5e0!3m2!1sen!2sng!4v1600000000000!5m2!1sen!2sng" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+          
+        </div>
+      </div>
+
+    </section>
+    <!-- END NEW CONTACT SECTION -->
+
+    <!-- SUBSCRIBE -->
+    <section class="subscribe">
+
+      <div class="subscribeBox">
+
+        <p class="subscribeHeading">
+          Keep Updated About Our Product
+        </p>
+
+        <form class="subscribeForm">
+
+          <input
+            type="email"
+            name="email"
+            placeholder="Your email address"
+            required
+          />
+
+          <button type="submit">
+            Submit
+          </button>
+
+        </form>
+
+      </div>
+
+    </section>
+    <!-- SUBSCRIBE -->
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+
+      <div class="footerTop">
+
+        <!-- BRAND -->
+        <div class="footerBrand">
+
+          <img
+            src="src/image/logo on black background without background11.png"
+            alt="PIHUB logo"
+          />
+
+          <div class="footerApps">
+
+            <a href="#" aria-label="Apple">
+              <i class="fab fa-apple"></i>
+            </a>
+
+            <a href="#" aria-label="Google Play">
+              <i class="fab fa-google-play"></i>
+            </a>
+
+            <a href="#" aria-label="App Store">
+              <i class="fab fa-app-store-ios"></i>
+            </a>
+
+          </div>
+
+        </div>
+
+
+        <!-- OTHER PAGES -->
+        <div class="footerCol">
+
+          <span class="footerHeading">
+            Other Pages
+          </span>
+
+          <a href="index.html">Home</a>
+          <a href="about.html">About Us</a>
+          <a href="offer.html">Services</a>
+          <a href="contactus.html">Contact</a>
+          <a href="#">Project</a>
+
+        </div>
+
+
+        <!-- QUICK LINKS -->
+        <div class="footerCol">
+
+          <span class="footerHeading">
+            Quick Links
+          </span>
+
+          <a href="#">Privacy Policy</a>
+          <a href="#">Term of Service</a>
+          <a href="#">Disclaimer</a>
+          <a href="#">Credits</a>
+          <a href="#">FAQ</a>
+
+        </div>
+
+
+        <!-- SOCIAL MEDIA -->
+        <div class="footerCol footerSocial">
+
+          <span class="footerHeading">
+            Social Media
+          </span>
+
+          <p>
+            Our Support and Sales team is available 24/7 to answer your queries
+          </p>
+
+
+          <div class="footerSocialIcons">
+
+            <a href="#" aria-label="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+
+            <a href="#" aria-label="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+
+            <a href="#" aria-label="LinkedIn">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+
+            <a href="#" aria-label="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- COPYRIGHT -->
+      <div class="copyright">
+
+        <p>
+          &copy; 2026 PIHUB. All rights reserved.
+        </p>
+
+      </div>
+
+    </footer>
+    <!-- FOOTER -->
+
+
+        <!-- SUCCESS / LOADING MODAL -->
+    <div id="submissionModal" class="submission-modal">
+      <div class="modal-content">
+        
+        <!-- Loading State -->
+        <div id="modalLoading" class="modal-state">
+          <div class="spinner"></div>
+          <p>Sending your message...</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="modalSuccess" class="modal-state" style="display: none;">
+          <div class="success-checkmark">
+            <div class="check-icon">
+              <span class="icon-line line-tip"></span>
+              <span class="icon-line line-long"></span>
+              <div class="icon-circle"></div>
+              <div class="icon-fix"></div>
+            </div>
+          </div>
+          <h3>Message Sent Successfully!</h3>
+          <p>Thank you for reaching out. Our team will get back to you shortly.</p>
+          <button id="closeModalBtn" class="modal-close-btn">Awesome!</button>
+        </div>
+
+        <!-- Error State -->
+        <div id="modalError" class="modal-state" style="display: none;">
+          <div class="error-icon">
+            <span class="icon-line line-left"></span>
+            <span class="icon-line line-right"></span>
+            <div class="icon-circle error-circle"></div>
+          </div>
+          <h3>Oops! Something went wrong.</h3>
+          <p id="modalErrorMsg">Please check your connection and try again.</p>
+          <button id="closeErrorModalBtn" class="modal-close-btn error-btn">Try Again</button>
+        </div>
+
+      </div>
+    </div>
+    <!-- END MODAL -->
+
+   
+
+
+    <!-- SCRIPTS -->
+    <script src="script/config.js"></script>
+    <script src="script/navigation.js"></script>
+    <script src="script/contactus.js"></script>
+
+  </body>
+</html>
