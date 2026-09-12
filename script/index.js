@@ -723,8 +723,11 @@ async function loadGalleryImages() {
     return;
   }
 
-  const apiUrl = typeof BASE_API_URL !== 'undefined' ? BASE_API_URL : 'http://127.0.0.1:8000';
-  const galleryEndpoint = `${apiUrl}/api/core/gallery/`;
+  // ✅ FIXED: Changed BASE_API_URL to API_BASE_URL to match config.js
+  const apiUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 'https://pihub-backend.onrender.com';
+  
+  // ✅ FIXED: Point to the working staff gallery endpoint
+  const galleryEndpoint = `${apiUrl}/api/core/staff/gallery/`;
 
   trackLeft.innerHTML = '<span style="padding: 20px; color: #777;">Loading gallery...</span>';
   trackRight.innerHTML = '';
@@ -784,10 +787,10 @@ async function loadGalleryImages() {
       trackRight.appendChild(createImageSpan(image.image, image.title));
     });
 
-    console.log(`Gallery loaded: ${images.length} unique images, repeated to get ${MIN_IMAGES} per track`);
+    console.log(`✅ Gallery loaded successfully from: ${apiUrl}`);
 
   } catch (error) {
-    console.error('Error loading gallery:', error);
+    console.error('❌ Error loading gallery:', error);
     trackLeft.innerHTML = '<span style="padding: 20px; color: #d32f2f;">Failed to load gallery</span>';
     trackRight.innerHTML = '';
   }
