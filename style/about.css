@@ -460,9 +460,10 @@ nav #menuToggle:hover {
 }
 
 /* Image 1 - slide from left with zoom */
+/* Image 1 - slide from left with zoom */
 .aboutinfo > div:nth-child(2) {
   border-radius: 0 130px 0 130px;
-  background: url("../src/image/aboutusfirst.jpg");
+  background: url("../src/image/aboutusfirst.jpeg"); /* <--- FIXED */
   background-repeat: no-repeat;
   background-size: cover;
   height: 400px;
