@@ -55,14 +55,14 @@ body {
 .hero {
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center; /* Updated to center like Offer page */
   text-align: center;
-  font-size: clamp(16px, 4.5vw, 32px);
-  color: white;
-  gap: clamp(8px, 1.5vw, 10px);
+  font-size: clamp(1.5rem, 3vw, 2rem); /* Smooth responsive scaling */
+  color: var(--natural-color);
+  gap: 10px;
   height: 100%;
   width: 100%;
-  padding-bottom: 150px;
+  font-weight: 600;
   opacity: 0;
   animation: heroFadeUp 0.8s ease forwards;
   animation-delay: 0.3s;
@@ -80,13 +80,11 @@ body {
 }
 
 .hero span {
-  width: fit-content;
-  max-width: 90%;
-  text-align: center;
-  padding: clamp(4px, 0.8vw, 5px) clamp(8px, 1.5vw, 10px);
+  display: grid;
+  place-items: center;
+  min-width: 80px; /* Changed to min-width to prevent text crushing */
   background-color: var(--primary-color);
   border-radius: 10px;
-  display: inline-block;
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
@@ -239,8 +237,6 @@ body {
 }
 
 /* --- Map Section --- */
-
-
 .map-container {
   position: relative;
   width: 100%;
@@ -384,15 +380,6 @@ body {
   }
 }
 
-@media (max-width: 319px) {
-  .map-container {
-    height: 200px;
-  }
-  
-  .map-info-card {
-    padding: 10px;
-  }
-}
 
 /* ============================================================
    NAVBAR & MOBILE MENU
@@ -754,10 +741,7 @@ nav #menuToggle:hover {
     background-attachment: scroll;
   }
   
-  .hero {
-    font-size: clamp(22px, 3.5vw, 32px);
-    padding-bottom: 120px;
-  }
+  /* REMOVED: .hero font-size override (clamp handles this smoothly now) */
 
   .contact {
     gap: clamp(20px, 3vw, 24px);
@@ -832,12 +816,15 @@ nav #menuToggle:hover {
 /* 767px and below */
 @media (max-width: 767px) {
   .heronav {
-    height: clamp(260px, 35vw, 320px);
+    height: 320px;
   }
 
+  /* UPDATED HERO RESPONSIVE STYLES */
   .hero {
-    font-size: clamp(20px, 4vw, 26px);
-    padding-bottom: 80px;
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
+  }
+  .hero span {
+    min-width: 65px;
   }
 
   .contact {
@@ -954,18 +941,11 @@ nav #menuToggle:hover {
 /* 575px and below */
 @media (max-width: 575px) {
   .heronav {
-    height: clamp(220px, 30vw, 260px);
+    height: 260px;
   }
 
-  .hero {
-    font-size: clamp(18px, 3.5vw, 22px);
-    gap: clamp(6px, 1.2vw, 8px);
-    padding-bottom: 60px;
-  }
-
-  .hero span {
-    width: clamp(50px, 8vw, 60px);
-  }
+  /* REMOVED: .hero font-size override (clamp handles this smoothly now) */
+  /* REMOVED: .hero span width override */
 
   .contact {
     padding: clamp(20px, 3vw, 24px) 5%;
@@ -1038,17 +1018,20 @@ nav #menuToggle:hover {
   nav #menuToggle {
     font-size: 1.1rem;
   }
+
+  /* UPDATED HERO RESPONSIVE STYLES FOR SMALL PHONES */
+  .hero {
+    font-size: 1.3rem;
+  }
+  .hero span {
+    min-width: 55px;
+  }
 }
 
 /* 424px and below */
 @media (max-width: 424px) {
   .heronav {
-    height: clamp(200px, 28vw, 220px);
-  }
-
-  .hero {
-    font-size: clamp(16px, 3vw, 18px);
-    padding-bottom: 50px;
+    height: 220px;
   }
 
   .contact1 > div:nth-child(3) span a,
@@ -1084,13 +1067,7 @@ nav #menuToggle:hover {
   }
 }
 
-/* 319px and below */
-@media (max-width: 319px) {
-  .hero {
-    font-size: clamp(14px, 2.5vw, 16px);
-    padding-bottom: 40px;
-  }
-}
+/* REMOVED the old @media (max-width: 319px) block entirely, as the 480px rules now handle the smallest screens perfectly */
 
 
 /* ============================================================
@@ -1119,7 +1096,7 @@ nav #menuToggle:hover {
 }
 
 .modal-content {
-  background: #1e1e2d; /* Matches your dark theme */
+  background: #1e1e2d;
   color: #ffffff;
   padding: 40px 30px;
   border-radius: 16px;

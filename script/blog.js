@@ -286,6 +286,26 @@ const FILTER_TRANSITION_MS = 300;
 console.log('🔍 Blog Container found:', !!blogContainer);
 console.log('🔍 Categories Container found:', !!categoriesContainer);
 
+// ✅ NEW: Single source of truth for extracting category names
+// This ensures the buttons and the cards ALWAYS match, whether the API 
+// returns an object {name: "Business"} or a string "Business"
+function getCategoryName(post) {
+  if (post.category) {
+    if (typeof post.category === 'object' && post.category.name) {
+      return String(post.category.name).toLowerCase().trim();
+    } else if (typeof post.category === 'string') {
+      return String(post.category).toLowerCase().trim();
+    }
+  }
+  if (post.category_name) {
+    return String(post.category_name).toLowerCase().trim();
+  }
+  if (post.cat) {
+    return String(post.cat).toLowerCase().trim();
+  }
+  return 'uncategorized';
+}
+
 // Fetch Blog Posts from API
 async function fetchBlogPosts() {
   try {
@@ -298,12 +318,17 @@ async function fetchBlogPosts() {
     
     console.log('✅ Fetched', allBlogPosts.length, 'blog posts');
     
-    const categories = [...new Set(allBlogPosts.map(post => {
-      const catName = (post.category && post.category.name) ? post.category.name : 'Uncategorized';
-      return String(catName).toLowerCase();
-    }))];
+    // Debug: Log ALL posts with their extracted categories
+    console.log('📋 All posts and their categories:');
+    allBlogPosts.forEach((post, index) => {
+      console.log(`Post ${index + 1}: "${post.title}" -> Extracted as: "${getCategoryName(post)}"`);
+    });
     
-    console.log('🏷️ Found categories:', categories);
+    // Use the helper function to get a clean list of unique categories
+    const categories = [...new Set(allBlogPosts.map(post => getCategoryName(post)))];
+    
+    console.log('🏷️ Found unique categories:', categories);
+    console.log('🔢 Category count:', categories.length);
     
     renderCategories(categories);
     renderBlogPosts(allBlogPosts);
@@ -320,17 +345,40 @@ function renderCategories(categories) {
     return;
   }
 
+  // Preserve the "All" button
   const allButton = categoriesContainer.querySelector('[data-category="all"]');
-  categoriesContainer.innerHTML = '';
-  if (allButton) {
-    categoriesContainer.appendChild(allButton);
+  
+  // Clear existing categories (except "All")
+  const existingButtons = categoriesContainer.querySelectorAll('[data-category]:not([data-category="all"])');
+  existingButtons.forEach(btn => btn.remove());
+  
+  // If no categories found, show a message
+  if (!categories || categories.length === 0) {
+    console.warn('⚠️ No categories found in blog posts. Make sure posts have categories assigned.');
+    return;
   }
   
+  console.log('🎨 Rendering', categories.length, 'categories...');
+  
+  // Sort categories alphabetically
+  categories.sort();
+  
+  // Add each category button
   categories.forEach(category => {
+    // Skip if it's already "all"
+    if (category === 'all') return;
+    
     const btn = document.createElement('div');
     btn.className = 'category-btn';
     btn.dataset.category = category;
-    btn.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+    
+    // Capitalize first letter of each word (handles "Forex & Trading" nicely)
+    const formattedName = category
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+    
+    btn.textContent = formattedName;
     categoriesContainer.appendChild(btn);
   });
   
@@ -340,7 +388,7 @@ function renderCategories(categories) {
 // Render Blog Posts
 function renderBlogPosts(posts) {
   if (!blogContainer) {
-    console.error(' Blog container not found! Cannot render posts.');
+    console.error('🚫 Blog container not found! Cannot render posts.');
     return;
   }
 
@@ -362,9 +410,8 @@ function renderBlogPosts(posts) {
       (post.author.username || post.author.first_name || 'PIHUB Author') 
       : 'PIHUB';
     
-    const categoryName = (post.category && post.category.name) ? 
-      String(post.category.name).toLowerCase() 
-      : 'uncategorized';
+    // ✅ FIX: Use the EXACT SAME helper function to guarantee the card's data-category matches the button
+    const categoryName = getCategoryName(post);
     
     let imageUrl = 'src/image/heroImage.jpg';
     if (post.featured_image) {
@@ -379,8 +426,17 @@ function renderBlogPosts(posts) {
     tempDiv.innerHTML = post.content;
     const excerpt = tempDiv.textContent.substring(0, 120) + '...';
     
+    // ✅ FIX: Escape quotes to prevent HTML breaking in data attributes
+    const safeTitle = post.title.toLowerCase().replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    const safeAuthor = authorName.toLowerCase().replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    const postId = post.id || post.slug || '';
+    
     return `
-      <div class="scroll-reveal article-card" data-category="${categoryName}" data-title="${post.title.toLowerCase()}" data-author="${authorName.toLowerCase()}" data-content="${post.content.toLowerCase()}">
+      <div class="scroll-reveal article-card" 
+           data-category="${categoryName}" 
+           data-title="${safeTitle}" 
+           data-author="${safeAuthor}" 
+           data-post-id="${postId}">
         <span><img src="${imageUrl}" alt="${post.title}" onerror="this.src='src/image/heroImage.jpg'" /></span>
         <span class="card-title">${post.title}</span>
         <span class="card-desc">${excerpt}</span>
@@ -467,7 +523,6 @@ function filterBlogPosts(category) {
   
   applySeeMoreLimit();
 }
-
 // ============================================================
 // SEARCH FUNCTIONALITY - NEW!
 // ============================================================
@@ -477,7 +532,7 @@ const searchInput = document.querySelector('input[type="text"][placeholder*="Sea
                     document.getElementById('searchInput');
 
 if (searchInput) {
-  console.log('🔍 Search input found, initializing search functionality...');
+  console.log(' Search input found, initializing search functionality...');
   
   let searchTimeout;
   
@@ -508,13 +563,11 @@ if (searchInput) {
       articleCards.forEach((card) => {
         const title = card.dataset.title || '';
         const author = card.dataset.author || '';
-        const content = card.dataset.content || '';
         const cardDesc = card.querySelector('.card-desc')?.textContent.toLowerCase() || '';
         
-        // Search in title, author, content, and description
+        // ✅ FIX: Search only in title, author, and description (removed content search)
         const matchesSearch = title.includes(searchTerm) || 
-                             author.includes(searchTerm) || 
-                             content.includes(searchTerm) ||
+                             author.includes(searchTerm) ||
                              cardDesc.includes(searchTerm);
         
         if (matchesSearch) {

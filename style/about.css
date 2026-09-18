@@ -234,9 +234,6 @@ nav #menuToggle:hover {
   pointer-events: auto;
 }
 
-/* overlay lightened to match the index.css hero fix: the old near-opaque
-   black wash (#000000 / rgba(8,8,8,.9)) fully hid the background photo.
-   background-color is a fallback paint layer if the image path 404s. */
 .heronav {
   background-color: var(--bg-black);
   background-image:
@@ -253,10 +250,11 @@ nav #menuToggle:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 40px;
+  font-size: clamp(1.5rem, 3vw, 2.5rem); /* Smooth responsive scaling */
   color: white;
   gap: 10px;
   height: 100%;
+  font-weight: 600;
   opacity: 0;
   animation: heroFadeUp 0.8s ease forwards;
   animation-delay: 0.3s;
@@ -268,7 +266,7 @@ nav #menuToggle:hover {
 }
 
 .hero span {
-  width: 80px;
+  min-width: 80px; /* Changed from fixed width to min-width */
   background-color: var(--primary-color);
   border-radius: 20px;
   display: grid;
@@ -307,9 +305,7 @@ nav #menuToggle:hover {
   transform: translateY(0);
 }
 
-/* Who are we? / What we do? - fade up
-   (was span:nth-child(2) — shifted to nth-child(1) after the
-   "About us" pill span was removed from the markup) */
+/* Who are we? / What we do? - fade up */
 .aboutinfo > div:nth-child(1) > span:nth-child(1),
 .aboutinfo > div:nth-child(4) > span:nth-child(1) {
   display: flex;
@@ -328,8 +324,7 @@ nav #menuToggle:hover {
   transition-delay: 0.1s;
 }
 
-/* Identity line - scale from center
-   (was span:nth-child(2) .identity — shifted to nth-child(1)) */
+/* Identity line - scale from center */
 .aboutinfo > div:nth-child(1) span:nth-child(1) .identity {
   width: 120px;
   border: 2px solid var(--primary-color);
@@ -344,25 +339,61 @@ nav #menuToggle:hover {
   transition-delay: 0.25s;
 }
 
-/* Subtitle - slide up
-   (was span:nth-child(3) — shifted to nth-child(2)) */
-.aboutinfo > div:nth-child(1) > span:nth-child(2),
-.aboutinfo > div:nth-child(4) > span:nth-child(2) {
+/* ============================================================ */
+/* "Who are we?" Subtitle — CENTERED, one line                  */
+/* ============================================================ */
+.aboutinfo > div:nth-child(1) > span:nth-child(2) {
   font-weight: 550;
   font-size: 14px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: nowrap;
   place-self: center;
   margin-top: 20px;
   justify-content: center;
   align-items: center;
   font-style: italic;
+  gap: 6px;
   opacity: 1;
   transform: translateY(0);
   transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.aboutinfo > div:nth-child(1).show > span:nth-child(2),
+.aboutinfo > div:nth-child(1) > span:nth-child(2) p {
+  margin: 0;
+}
+
+.aboutinfo > div:nth-child(1).show > span:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.2s;
+}
+
+/* ============================================================ */
+/* "What we do?" Subtitle — LEFT ALIGNED, one line              */
+/* ============================================================ */
+.aboutinfo > div:nth-child(4) > span:nth-child(2) {
+  font-weight: 550;
+  font-size: 14px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  place-self: start;
+  margin-top: 20px;
+  justify-content: flex-start;
+  align-items: center;
+  font-style: italic;
+  gap: 6px;
+  text-align: left;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.aboutinfo > div:nth-child(4) > span:nth-child(2) p {
+  margin: 0;
+}
+
 .aboutinfo > div:nth-child(4).show > span:nth-child(2) {
   opacity: 1;
   transform: translateY(0);
@@ -472,8 +503,7 @@ nav #menuToggle:hover {
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
 }
 
-/* What we do - list items
-   (was span:nth-child(4) — shifted to nth-child(3)) */
+/* What we do - list items */
 .aboutinfo > div:nth-child(4) span:nth-child(3) {
   display: flex;
   flex-direction: column;
@@ -499,7 +529,6 @@ nav #menuToggle:hover {
   gap: 20px;
   font-size: 16px;
   align-items: center;
-  transition: transform 0.25s ease;
   opacity: 1;
   transform: translateX(0);
   transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -527,15 +556,17 @@ nav #menuToggle:hover {
   transform: translateX(6px);
 }
 
+/* FIXED: Orange bullet icons — now perfect circles (45px x 45px) */
 .aboutinfo > div:nth-child(4) span:nth-child(3) i {
   border-radius: 50%;
   width: 45px;
-  height: 40px;
+  height: 45px;
   background-color: var(--primary-color);
   display: grid;
   place-items: center;
   font-size: 14px;
   color: white;
+  flex-shrink: 0;
   transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
@@ -593,7 +624,6 @@ nav #menuToggle:hover {
   padding: 5px 5px 5px 22px;
   gap: 10px;
   flex: 1 1 360px;
-  /* max-width: 460px; */
 }
 
 .subscribeForm input {
@@ -641,8 +671,6 @@ nav #menuToggle:hover {
   padding: 100px var(--container-pad) 90px;
 }
 
-/* Title — was div:nth-child(2), shifted to nth-child(1) after the
-   "About Us" pill div was removed from the markup */
 .meet > div:nth-child(1) {
   font-weight: 700;
   margin-top: 20px;
@@ -681,7 +709,6 @@ nav #menuToggle:hover {
   margin-top: 60px;
   display: flex;
   align-items: center;
-  /* gap: 16px; */
 }
 
 .meetTrack {
@@ -714,9 +741,6 @@ nav #menuToggle:hover {
   transform: translateY(-6px);
 }
 
-/* Colored blob wrapper — the photo is inset smaller than this box
-   so the wrapper's color shows through as a frame/shape around it,
-   matching the reference (rather than the photo covering it fully). */
 .meetImgWrap {
   position: relative;
   width: 100%;
@@ -926,14 +950,9 @@ nav #menuToggle:hover {
 }
 
 /* ============================================================ */
-/* RESPONSIVE - Keep your existing media queries                */
+/* RESPONSIVE                                                    */
 /* ============================================================ */
 
-/* Sidebar only exists on small screens — desktop never renders it,
-   regardless of what triggers openMenu(). Matches the same 1024px
-   breakpoint used below to show/hide the hamburger icon itself, so
-   there's no gap where the icon is visible but the panel is
-   force-hidden. */
 @media (min-width: 1025px) {
   .mobileMenu,
   .menuOverlay {
@@ -941,7 +960,6 @@ nav #menuToggle:hover {
   }
 }
 
-/* Small laptops / large tablets */
 @media (max-width: 1024px) {
   nav {
     padding: 10px 5%;
@@ -973,9 +991,7 @@ nav #menuToggle:hover {
     gap: 10px;
   }
 
-  .hero {
-    font-size: clamp(1.8rem, 4vw, 3.2rem);
-  }
+  /* REMOVED: .hero font-size override (clamp handles this smoothly now) */
 
   .aboutinfo {
     gap: 50px;
@@ -993,11 +1009,6 @@ nav #menuToggle:hover {
     padding-bottom: 30px;
   }
 
-  /* Legacy rules from an older team-grid layout (targeted a
-     ".meet1" class that no longer exists in the markup). Kept at
-     nth-child(2) — same offset as before the "About Us" pill div
-     was removed — so they stay inert rather than starting to match
-     .meetSubtitle/.meetCarouselWrap and disturbing spacing. */
   .meet > div:nth-child(2) {
     gap: clamp(30px, 5vw, 60px);
     margin-top: clamp(40px, 6vh, 80px);
@@ -1035,15 +1046,34 @@ nav #menuToggle:hover {
     height: 280px;
   }
 
-  .aboutinfo > div:nth-child(1) > span:nth-child(2),
-  .aboutinfo > div:nth-child(4) > span:nth-child(2) {
-    display: block;
+  /* "Who are we?" subtitle — centered, one line */
+  .aboutinfo > div:nth-child(1) > span:nth-child(2) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     text-align: center;
+    justify-content: center;
+    gap: 6px;
   }
 
-  .aboutinfo > div:nth-child(1) > span:nth-child(2) p,
+  .aboutinfo > div:nth-child(1) > span:nth-child(2) p {
+    display: inline;
+    margin: 0;
+  }
+
+  /* "What we do?" subtitle — LEFT ALIGNED, one line */
+  .aboutinfo > div:nth-child(4) > span:nth-child(2) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    text-align: left;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
   .aboutinfo > div:nth-child(4) > span:nth-child(2) p {
     display: inline;
+    margin: 0;
   }
 
   .aboutinfo > div:nth-child(1) > span:nth-child(1) {
@@ -1095,7 +1125,6 @@ nav #menuToggle:hover {
   }
 }
 
-/* Mobile Landscape & Small Tablets (576px - 767px) */
 @media (max-width: 767px) {
   nav {
     padding: 10px 5%;
@@ -1127,8 +1156,12 @@ nav #menuToggle:hover {
     height: 320px;
   }
 
+  /* UPDATED HERO RESPONSIVE STYLES */
   .hero {
-    font-size: 26px;
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
+  }
+  .hero span {
+    min-width: 65px;
   }
 
   .aboutinfo {
@@ -1235,6 +1268,7 @@ nav #menuToggle:hover {
   .copyright {
     padding: 18px 6%;
   }
+
   .meet {
     padding-top: 50px;
     padding-bottom: 50px;
@@ -1263,7 +1297,6 @@ nav #menuToggle:hover {
     width: 68px;
   }
 
-  /* Adjust stagger delays for mobile */
   .meet2.scroll-reveal:nth-child(1) { transition-delay: 0.03s; }
   .meet2.scroll-reveal:nth-child(2) { transition-delay: 0.08s; }
   .meet2.scroll-reveal:nth-child(3) { transition-delay: 0.13s; }
@@ -1277,14 +1310,8 @@ nav #menuToggle:hover {
     height: 260px;
   }
 
-  .hero {
-    font-size: 22px;
-    gap: 8px;
-  }
-
-  .hero span {
-    width: 40px;
-  }
+  /* REMOVED: .hero font-size override (clamp handles this smoothly now) */
+  /* REMOVED: .hero span width override */
 
   .aboutinfo {
     padding-inline: 5%;
@@ -1307,9 +1334,7 @@ nav #menuToggle:hover {
     gap: 12px;
   }
 
-  /* Equal width/height (+ aspect-ratio as a safeguard) so the
-     border-radius:50% icon stays a true circle. Sized down from
-     36px — it was reading too large next to the small list text. */
+  /* Keep bullet icons as perfect circles on small screens */
   .aboutinfo > div:nth-child(4) span:nth-child(3) i {
     width: 26px;
     height: 26px;
@@ -1345,7 +1370,6 @@ nav #menuToggle:hover {
     margin-top: 8px;
   }
 
-  /* Faster stagger on small mobile */
   .meet2.scroll-reveal:nth-child(1) { transition-delay: 0.02s; }
   .meet2.scroll-reveal:nth-child(2) { transition-delay: 0.06s; }
   .meet2.scroll-reveal:nth-child(3) { transition-delay: 0.10s; }
@@ -1355,11 +1379,11 @@ nav #menuToggle:hover {
 
   .heronav {
     min-height: 250px;
-}
+  }
 
-.hero{
+  .hero{
     font-weight: 750;
-}
+  }
 }
 
 @media (max-width: 480px) {
@@ -1378,6 +1402,14 @@ nav #menuToggle:hover {
 
   nav #menuToggle {
     font-size: 1.1rem;
+  }
+
+  /* UPDATED HERO RESPONSIVE STYLES FOR SMALL PHONES */
+  .hero {
+    font-size: 1.3rem;
+  }
+  .hero span {
+    min-width: 55px;
   }
 }
 
@@ -1416,7 +1448,6 @@ nav #menuToggle:hover {
     font-size: 11px;
   }
 
-  /* Even faster stagger on very small mobile */
   .meet2.scroll-reveal:nth-child(1) { transition-delay: 0.01s; }
   .meet2.scroll-reveal:nth-child(2) { transition-delay: 0.04s; }
   .meet2.scroll-reveal:nth-child(3) { transition-delay: 0.07s; }
@@ -1425,38 +1456,10 @@ nav #menuToggle:hover {
   .meet2.scroll-reveal:nth-child(6) { transition-delay: 0.16s; }
 }
 
-/* Extra Small Mobile (below 320px) */
-@media (max-width: 319px) {
-  .mobileMenu {
-    width: 100vw;
-  }
-
-  .hero {
-    font-size: 16px;
-  }
-
-  .meet > div:nth-child(2) {
-    gap: 20px;
-  }
-
-  .meet > div:nth-child(2) .meet1 {
-    width: 70px;
-  }
-
-  .meet > div:nth-child(2) .meet1 p {
-    width: 56px;
-  }
-}
-
-/* @media (max-width:320px) {
-  .meetImgWrap{
-      width: 60%;
-}
-} */
-
+/* REMOVED the old @media (max-width: 319px) block entirely, as the 480px rules now handle the smallest screens perfectly */
 
 @media(min-width:768px){
   .heronav{
-  background-attachment: fixed;
+    background-attachment: fixed;
   }
 }

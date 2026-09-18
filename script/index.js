@@ -1,44 +1,30 @@
 // ============================================================
 // DISABLE BROWSER SCROLL ANCHORING GLOBALLY
-// Scroll anchoring is a browser feature that silently adjusts scrollTop
-// to "compensate" for layout shifts near the viewport. It's the actual
-// cause of the jump — even small, transform-only shifts can trigger it.
-// Turning it off here removes the entire category of jump, regardless
-// of what causes the underlying shift.
 // ============================================================
 document.documentElement.style.overflowAnchor = "none";
 document.body.style.overflowAnchor = "none";
 
-
 // ============================================================
 // GLOBAL SCROLL SPEED TRACKER
 // ============================================================
-
 let lastScrollY = window.scrollY;
 let lastScrollTime = performance.now();
-let currentScrollSpeed = 0; // px/ms
+let currentScrollSpeed = 0;
 
-window.addEventListener(
-  "scroll",
-  () => {
-    const now = performance.now();
-    const deltaY = Math.abs(window.scrollY - lastScrollY);
-    const deltaTime = now - lastScrollTime || 1;
-
-    currentScrollSpeed = deltaY / deltaTime;
-
-    lastScrollY = window.scrollY;
-    lastScrollTime = now;
-  },
-  { passive: true }
-);
+window.addEventListener("scroll", () => {
+  const now = performance.now();
+  const deltaY = Math.abs(window.scrollY - lastScrollY);
+  const deltaTime = now - lastScrollTime || 1;
+  currentScrollSpeed = deltaY / deltaTime;
+  lastScrollY = window.scrollY;
+  lastScrollTime = now;
+}, { passive: true });
 
 const FAST_SCROLL_THRESHOLD = 1.5;
 const INSTANT_THRESHOLD = 3;
 
 function getScrollSpeedMultiplier() {
-  if (currentScrollSpeed > FAST_SCROLL_THRESHOLD) return 0.15;
-  return 1;
+  return currentScrollSpeed > FAST_SCROLL_THRESHOLD ? 0.15 : 1;
 }
 
 function isInstantScroll() {
@@ -50,67 +36,148 @@ function snapToEndState(el, endStyles) {
   Object.assign(el.style, endStyles);
 }
 
-
 // ============================================================
-// HERO SEQUENTIAL INTRO - SPED UP
+// HERO SEQUENTIAL & CONCURRENT ANIMATION
 // ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+  
+  const motto = document.getElementById('motto');
+  const staticTextEl = document.getElementById('staticText');
+  const heroNextEl = document.getElementById('heroNext');
+  const heroText = document.getElementById('heroText');
+  const buttons = document.querySelector('.buttons');
+  const toWordEl = document.querySelector('.toWord');
+  const cursorEl = document.querySelector('.cursor');
 
-function typeTextSequential(el, speed = 15, startDelay = 500) {
-  if (!el) return Promise.resolve();
+  // 1. FORCE HIDE & KILL CSS ANIMATIONS (Prevents Flashing)
+  [motto, heroText, buttons].forEach(el => {
+    if(el) {
+      el.style.animation = 'none';
+      el.style.opacity = '0';
+      el.style.visibility = 'hidden';
+    }
+  });
 
-  const fullText = el.textContent.trim();
-  el.textContent = "";
+  // Hide "to" and the cursor until the static text finishes typing (prevents them appearing instantly)
+  if (toWordEl) toWordEl.style.opacity = '0';
+  if (cursorEl) {
+    // The CSS blink animation overrides inline opacity while running, so it
+    // must be disabled here too, not just faded to 0 — otherwise the cursor
+    // keeps blinking in place during the "Your all in one space" typing.
+    cursorEl.style.animation = 'none';
+    cursorEl.style.opacity = '0';
+  }
 
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      el.style.opacity = "1";
-      let i = 0;
+  // 2. START HERO TEXT & BUTTONS IMMEDIATELY (Concurrent)
+  setTimeout(() => {
+    if (heroText) {
+      heroText.style.visibility = 'visible';
+      heroText.animate(
+        [
+          { opacity: 0, transform: 'translateX(-100px)' }, 
+          { opacity: 1, transform: 'translateX(0)' }       
+        ],
+        { 
+          duration: 1000, 
+          easing: 'cubic-bezier(0.22, 1, 0.36, 1)', 
+          fill: 'forwards' 
+        }
+      );
+    }
 
-      function step() {
-        if (i < fullText.length) {
-          el.textContent += fullText.charAt(i);
-          i++;
-          setTimeout(step, speed);
+    if (buttons) {
+      buttons.style.visibility = 'visible';
+      buttons.animate(
+        [
+          { opacity: 0, transform: 'translateY(20px)' },
+          { opacity: 1, transform: 'translateY(0)' }
+        ],
+        { 
+          duration: 800, 
+          easing: 'cubic-bezier(0.22, 1, 0.36, 1)', 
+          fill: 'forwards',
+          delay: 200
+        }
+      );
+    }
+  }, 400);
+
+  // 3. START MOTTO TYPING SEQUENCE
+  setTimeout(() => {
+    if (motto) {
+      motto.style.visibility = 'visible';
+      motto.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, fill: 'forwards' });
+    }
+
+    // ✅ FIXED: Clear the text first before typing
+    staticTextEl.textContent = '';
+    
+    // Type the static text
+    const staticString = "Your all in one space ";
+    let sIndex = 0;
+    
+    function typeStatic() {
+      if (sIndex < staticString.length) {
+        staticTextEl.textContent += staticString.charAt(sIndex);
+        sIndex++;
+        setTimeout(typeStatic, 40);
+      } else {
+        // Reveal "to" and the cursor right after "space" finishes typing, then start cycling words
+        if (toWordEl) {
+          toWordEl.style.transition = 'opacity 0.3s ease';
+          toWordEl.style.opacity = '1';
+        }
+        if (cursorEl) {
+          cursorEl.style.transition = 'opacity 0.3s ease';
+          cursorEl.style.opacity = '1';
+          // Re-enable the blink animation only after the fade-in finishes,
+          // so it doesn't immediately fight the opacity transition.
+          setTimeout(() => {
+            cursorEl.style.animation = 'blink 1s step-end infinite';
+          }, 300);
+        }
+        setTimeout(startCycling, 250);
+      }
+    }
+    typeStatic();
+
+    // Infinite Cycling Loop
+    function startCycling() {
+      const words = ['Learn', 'Build', 'Connect'];
+      let wIndex = 0;
+      let cIndex = 0;
+      let isDeleting = false;
+
+      function cycle() {
+        const word = words[wIndex];
+        
+        if (isDeleting) {
+          heroNextEl.textContent = word.substring(0, cIndex - 1);
+          cIndex--;
+          
+          if (cIndex === 0) {
+            isDeleting = false;
+            wIndex = (wIndex + 1) % words.length;
+            setTimeout(cycle, 300);
+          } else {
+            setTimeout(cycle, 40);
+          }
         } else {
-          resolve();
+          heroNextEl.textContent = word.substring(0, cIndex + 1);
+          cIndex++;
+          
+          if (cIndex === word.length) {
+            isDeleting = true;
+            setTimeout(cycle, 2000);
+          } else {
+            setTimeout(cycle, 80);
+          }
         }
       }
-      step();
-    }, startDelay);
-  });
-}
-
-async function initHeroIntro() {
-  const heroText = document.getElementById("heroText");
-  if (!heroText) {
-    console.warn("Hero text #heroText was not found.");
-    return;
-  }
-
-  const heroButton = document.querySelector(".hero-btn");
-  heroText.style.opacity = "0";
-
-  await typeTextSequential(heroText, 15, 500);
-
-  if (heroButton) {
-    await new Promise((resolve) => {
-      heroButton.animate(
-        [
-          { opacity: 0, transform: "translateY(20px) scale(0.96)" },
-          { opacity: 1, transform: "translateY(0) scale(1)" }
-        ],
-        {
-          duration: 650,
-          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
-          fill: "forwards"
-        }
-      ).finished.then(resolve).catch(resolve);
-    });
-  }
-}
-
-initHeroIntro();
-
+      cycle();
+    }
+  }, 800);
+});
 
 // ============================================================
 // ABOUT SECTION — DYNAMIC ALTERNATING FEATURES
@@ -130,8 +197,6 @@ if (aboutSection) {
   const EASE_OUT = "cubic-bezier(0.16, 1, 0.3, 1)";
   const EASE_BOUNCE = "cubic-bezier(0.34, 1.56, 0.64, 1)";
 
-  // Belt-and-suspenders: prevent this section and its features container
-  // from ever producing a scrollable overflow area that could shift layout.
   aboutSection.style.overflowAnchor = "none";
   if (featuresContainer) {
     featuresContainer.style.overflow = "hidden";
@@ -199,20 +264,10 @@ if (aboutSection) {
           }, 1700 * speedMultiplier);
         }
 
-        // --- FEATURES: ALTERNATING LEFT/RIGHT + FAST STAGGER ---
-        // FIX: previously these used translateX(-100vw)/translateX(100vw) as the
-        // starting position. A transform that large still contributes to the
-        // element's layout box for scroll-anchoring/overflow purposes, so the
-        // page's scrollable area briefly ballooned out to ~2x viewport width
-        // right as this section entered view. The browser's scroll anchoring
-        // then "corrected" for that shift, which is what caused the jump back
-        // up the page. Using a small, container-relative offset (60px) keeps
-        // the same slide-in effect without blowing out the layout bounds.
         const FEATURES_START = 2350 * speedMultiplier;
-        const FAST_FEATURE_STAGGER = 120 * speedMultiplier; // Much faster stagger
-        const FEATURE_SLIDE_DISTANCE = 40; // px, was 100vw
+        const FAST_FEATURE_STAGGER = 120 * speedMultiplier;
+        const FEATURE_SLIDE_DISTANCE = 40;
 
-        // Setup initial hidden states with alternating directions
         features.forEach((feature, index) => {
           feature.style.opacity = "0";
           feature.style.transform = index % 2 === 0
@@ -295,24 +350,24 @@ if (offerSection) {
     const isLargeScreen = window.innerWidth >= 1024;
     return isLargeScreen
       ? {
-          headingDuration: 900,
-          subtitleDelay: 500,
-          subtitleDuration: 750,
-          cardsStart: 1150,
-          cardStagger: 450,
-          cardDuration: 850,
-          iconDelay: 450,
-          iconDuration: 500
+          headingDuration: 700,
+          subtitleDelay: 300,
+          subtitleDuration: 550,
+          cardsStart: 650,
+          cardStagger: 220,
+          cardDuration: 600,
+          iconDelay: 250,
+          iconDuration: 400
         }
       : {
-          headingDuration: 1400,
-          subtitleDelay: 900,
-          subtitleDuration: 1200,
-          cardsStart: 2200,
-          cardStagger: 850,
-          cardDuration: 1400,
-          iconDelay: 800,
-          iconDuration: 800
+          headingDuration: 800,
+          subtitleDelay: 400,
+          subtitleDuration: 650,
+          cardsStart: 900,
+          cardStagger: 350,
+          cardDuration: 700,
+          iconDelay: 350,
+          iconDuration: 450
         };
   }
 
@@ -494,7 +549,6 @@ if (footerSection) {
 
         const speedMultiplier = getScrollSpeedMultiplier();
 
-        // Brand drops in with a bounce and blur
         if (brand) {
           brand.animate(
             [
@@ -507,9 +561,8 @@ if (footerSection) {
         }
 
         const COLUMNS_START = 500 * speedMultiplier;
-        const COLUMN_STAGGER = 150 * speedMultiplier; 
+        const COLUMN_STAGGER = 150 * speedMultiplier;
 
-        // Columns alternate entering from left and right with a slight scale/translation
         columns.forEach((col, index) => {
           const startAt = COLUMNS_START + index * COLUMN_STAGGER;
           setTimeout(() => {
@@ -525,7 +578,6 @@ if (footerSection) {
 
         const copyrightStart = COLUMNS_START + columns.length * COLUMN_STAGGER + 400 * speedMultiplier;
 
-        // Copyright smoothly pops up with a slight bounce
         if (copyright) {
           setTimeout(() => {
             copyright.animate(
@@ -618,7 +670,6 @@ function showSubscribeMessage(message, type) {
   const subscribeBox = document.querySelector('.subscribeBox');
   if (!subscribeBox) return;
 
-  // Ensure the container is relatively positioned so the message anchors to it
   subscribeBox.style.position = 'relative';
 
   const existingMsg = document.querySelector('.subscribe-message');
@@ -628,9 +679,8 @@ function showSubscribeMessage(message, type) {
   msgDiv.className = `subscribe-message ${type}`;
   msgDiv.textContent = message;
   
-  // Absolute positioning prevents the container from expanding or shifting layout
   msgDiv.style.position = 'absolute';
-  msgDiv.style.bottom = '-30px'; // Floats just below the box
+  msgDiv.style.bottom = '-30px';
   msgDiv.style.left = '50%';
   msgDiv.style.transform = 'translateX(-50%)';
   msgDiv.style.width = '100%';
@@ -638,13 +688,12 @@ function showSubscribeMessage(message, type) {
   msgDiv.style.fontWeight = '500';
   msgDiv.style.color = type === 'success' ? '#22c55e' : '#ef4444'; 
   msgDiv.style.textAlign = 'center';
-  msgDiv.style.whiteSpace = 'nowrap'; // Prevents text wrapping from affecting layout
+  msgDiv.style.whiteSpace = 'nowrap';
   msgDiv.style.zIndex = '10';
-  msgDiv.style.pointerEvents = 'none'; // Allows clicking through the message if it overlaps anything
+  msgDiv.style.pointerEvents = 'none';
 
   subscribeBox.appendChild(msgDiv);
 
-  // Auto-remove with a smooth fade-out
   setTimeout(() => {
     if (msgDiv.parentNode) {
       msgDiv.style.transition = 'opacity 0.4s ease';
@@ -677,7 +726,6 @@ function initSubscribeForm() {
     submitButton.textContent = 'Subscribing...';
 
     try {
-      // Checks for API_BASE_URL or BASE_API_URL (whichever you defined in config.js)
       const baseUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : (typeof BASE_API_URL !== 'undefined' ? BASE_API_URL : '');
       const apiUrl = `${baseUrl}/api/core/subscribe/`;
       
@@ -694,7 +742,7 @@ function initSubscribeForm() {
 
       if (response.ok) {
         showSubscribeMessage('Successfully subscribed to our newsletter!', 'success');
-        emailInput.value = ''; // Clear input on success
+        emailInput.value = '';
       } else {
         const errorMsg = data.email ? data.email[0] : (data.detail || 'Failed to subscribe. Please try again.');
         showSubscribeMessage(errorMsg, 'error');
@@ -723,10 +771,7 @@ async function loadGalleryImages() {
     return;
   }
 
-  // ✅ FIXED: Changed BASE_API_URL to API_BASE_URL to match config.js
   const apiUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 'https://pihub-backend.onrender.com';
-  
-  // ✅ FIXED: Point to the working staff gallery endpoint
   const galleryEndpoint = `${apiUrl}/api/core/staff/gallery/`;
 
   trackLeft.innerHTML = '<span style="padding: 20px; color: #777;">Loading gallery...</span>';
@@ -799,22 +844,16 @@ async function loadGalleryImages() {
 
 // ============================================================
 // INFINITE INNOVATION CAROUSEL FIX
-// Ensures the hero carousel is always duplicated for a seamless infinite loop
-// This guarantees it never "finishes" and stays full-width on any device.
 // ============================================================
 function fixInnovationCarousel() {
   const innovationTrack = document.querySelector('.innovation');
   if (!innovationTrack) return;
 
-  // Check if it's already been duplicated by this script to prevent infinite loops
   if (innovationTrack.dataset.duplicated === 'true') return;
 
   const originalItems = Array.from(innovationTrack.children);
   if (originalItems.length === 0) return;
 
-  // Clone the original set and append it to make it exactly 2x the length.
-  // This ensures the CSS animation `transform: translateX(-50%)` loops perfectly
-  // without gaps, regardless of screen width.
   originalItems.forEach(item => {
     innovationTrack.appendChild(item.cloneNode(true));
   });
@@ -822,7 +861,6 @@ function fixInnovationCarousel() {
   innovationTrack.dataset.duplicated = 'true';
 }
 
-// Run on load and resize to guarantee it's always perfect
 document.addEventListener('DOMContentLoaded', fixInnovationCarousel);
 window.addEventListener('resize', fixInnovationCarousel);
 
@@ -835,6 +873,5 @@ document.addEventListener('DOMContentLoaded', function() {
     loadGalleryImages();
   }, 100);
   
-  // Initialize subscription form handler
   initSubscribeForm();
 });

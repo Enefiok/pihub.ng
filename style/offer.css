@@ -415,44 +415,6 @@ nav #menuToggle:hover {
     box-shadow 0.25s ease;
 }
 
-/* ============================================================
-   SERVICE OPTIONS / FILTER
-   ============================================================ */
-
-.options {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-
-  flex-wrap: wrap;
-
-  gap: 14px;
-}
-
-.options span.option-btn {
-  display: grid;
-  place-items: center;
-
-  padding: 10px 16px;
-
-  background-color: #f5f5f5;
-
-  color: var(--text-medium);
-
-  border-radius: 10px;
-
-  font-size: 0.9rem;
-  font-weight: 500;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.25s ease,
-    color 0.25s ease,
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
-}
-
 
 /* ============================================================
    ALL TABS — ACTIVE STATE
@@ -512,28 +474,49 @@ nav #menuToggle:hover {
   margin-top: 70px;
 }
 
+/* MUCH TIGHTER SPACING for Private Office, Conference Room, Showroom */
+.offer-panel[data-panel="privateRoom"] .options2,
+.offer-panel[data-panel="conferenceRoom"] .options2,
+.offer-panel[data-panel="podcast"] .options2 {
+  margin-top: 0px;
+}
+
 .options2 > span:nth-child(1) {
   font-size: clamp(1.5rem, 3vw, 2rem);
-
   font-weight: 700;
-
   color: var(--text-dark);
-
   margin-bottom: 14px;
+}
+
+/* Reduce margin-bottom for heading in these panels */
+.offer-panel[data-panel="privateRoom"] .options2 > span:nth-child(1),
+.offer-panel[data-panel="conferenceRoom"] .options2 > span:nth-child(1),
+.offer-panel[data-panel="podcast"] .options2 > span:nth-child(1) {
+  margin-bottom: 5px;
 }
 
 .options2 > span:nth-child(2) {
   font-size: clamp(0.9rem, 1.5vw, 1.05rem);
-
   color: var(--text-light);
-
   line-height: 1.6;
-
   max-width: 650px;
-
   margin-inline: auto;
 }
 
+/* ADDED: Remove top margin from the description text */
+.offer-panel[data-panel="privateRoom"] .options2-desc,
+.offer-panel[data-panel="conferenceRoom"] .options2-desc,
+.offer-panel[data-panel="podcast"] .options2-desc {
+  margin-top: 0px !important;
+  margin-bottom: 10px;
+}
+
+/* ADDED: Remove top margin from the card container */
+.offer-panel[data-panel="privateRoom"] .options3,
+.offer-panel[data-panel="conferenceRoom"] .options3,
+.offer-panel[data-panel="podcast"] .options3 {
+  margin-top: 0px !important;
+}
 
 /* ============================================================
    SERVICE DESCRIPTION
@@ -572,6 +555,10 @@ nav #menuToggle:hover {
   padding-left: 16px;
 
   max-width: 700px;
+
+  /* MUCH REDUCED margin for these panels */
+  margin-top: 10px;
+  margin-bottom: 15px;
 }
 
 
@@ -590,6 +577,13 @@ nav #menuToggle:hover {
   gap: 24px;
 
   margin-top: 60px;
+}
+
+/* MUCH REDUCED spacing for Private Office, Conference Room, Showroom cards */
+.offer-panel[data-panel="privateRoom"] .options3,
+.offer-panel[data-panel="conferenceRoom"] .options3,
+.offer-panel[data-panel="podcast"] .options3 {
+  margin-top: 15px;
 }
 
 
@@ -1737,8 +1731,22 @@ nav #menuToggle:hover {
     margin-top: 55px;
   }
 
+  /* Adjust spacing for Private Office, Conference Room, Showroom on tablet */
+  .offer-panel[data-panel="privateRoom"] .options2,
+  .offer-panel[data-panel="conferenceRoom"] .options2,
+  .offer-panel[data-panel="podcast"] .options2 {
+    margin-top: 15px;
+  }
+
   .options3 {
     margin-top: 45px;
+  }
+
+  /* Adjust card spacing for these panels on tablet */
+  .offer-panel[data-panel="privateRoom"] .options3,
+  .offer-panel[data-panel="conferenceRoom"] .options3,
+  .offer-panel[data-panel="podcast"] .options3 {
+    margin-top: 15px;
   }
 }
 
@@ -1813,6 +1821,35 @@ nav #menuToggle:hover {
     margin-top: 45px;
   }
 
+  /* AGGRESSIVE TIGHTER spacing for Private Office, Conference Room, Showroom on mobile */
+  .offer-panel[data-panel="privateRoom"] .options2,
+  .offer-panel[data-panel="conferenceRoom"] .options2,
+  .offer-panel[data-panel="podcast"] .options2 {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  .offer-panel[data-panel="privateRoom"] .options2 > span:nth-child(1),
+  .offer-panel[data-panel="conferenceRoom"] .options2 > span:nth-child(1),
+  .offer-panel[data-panel="podcast"] .options2 > span:nth-child(1) {
+    margin-bottom: 5px !important;
+  }
+
+  .offer-panel[data-panel="privateRoom"] .options2 > span:nth-child(2),
+  .offer-panel[data-panel="conferenceRoom"] .options2 > span:nth-child(2),
+  .offer-panel[data-panel="podcast"] .options2 > span:nth-child(2) {
+    margin-bottom: 5px !important;
+  }
+
+  .offer-panel[data-panel="privateRoom"] .options2-desc,
+  .offer-panel[data-panel="conferenceRoom"] .options2-desc,
+  .offer-panel[data-panel="podcast"] .options2-desc {
+    margin: 0 auto 5px !important;
+    padding: 0 !important;
+    font-size: 0.8rem !important;
+    line-height: 1.3 !important;
+  }
+
   .options2 > span:nth-child(1) {
     font-size:
       clamp(1.3rem, 6vw, 1.7rem);
@@ -1822,6 +1859,14 @@ nav #menuToggle:hover {
     flex-direction: column;
 
     align-items: center;
+  }
+
+  /* AGGRESSIVE card spacing for these panels on mobile */
+  .offer-panel[data-panel="privateRoom"] .options3,
+  .offer-panel[data-panel="conferenceRoom"] .options3,
+  .offer-panel[data-panel="podcast"] .options3 {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
   }
 
   .planCard,
@@ -2010,6 +2055,26 @@ nav #menuToggle:hover {
 
   .options2 > span:nth-child(2) {
     font-size: 0.85rem;
+  }
+
+  /* EVEN TIGHTER spacing for small phones */
+  .offer-panel[data-panel="privateRoom"] .options2,
+  .offer-panel[data-panel="conferenceRoom"] .options2,
+  .offer-panel[data-panel="podcast"] .options2 {
+    margin-top: 0 !important;
+  }
+
+  .offer-panel[data-panel="privateRoom"] .options2-desc,
+  .offer-panel[data-panel="conferenceRoom"] .options2-desc,
+  .offer-panel[data-panel="podcast"] .options2-desc {
+    margin-bottom: 2px !important;
+    font-size: 0.75rem !important;
+  }
+
+  .offer-panel[data-panel="privateRoom"] .options3,
+  .offer-panel[data-panel="conferenceRoom"] .options3,
+  .offer-panel[data-panel="podcast"] .options3 {
+    margin-top: 0 !important;
   }
 
   .courseCard .cardPic1,

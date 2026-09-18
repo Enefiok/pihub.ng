@@ -227,11 +227,16 @@ nav #menuToggle:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 6% 7%;
-  flex: 1;
+  padding: 0 7%;
+  padding-bottom: 120px;
   text-align: center;
   gap: clamp(10px, 2vw, 18px);
-  position: relative;
+  padding-top: 100px;
+  position: static;
+  min-height: calc(100svh - 74px);
+  box-sizing: border-box;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 @keyframes fadeUp {
@@ -246,9 +251,9 @@ nav #menuToggle:hover {
 }
 
 .logo {
-  width: 20%;
-  max-width: 230px;
-  min-width: 90px;
+  width: 22.2%;
+  max-width: 255px;
+  min-width: 150px;
   margin: 0 auto;
   opacity: 0;
   animation: logoReveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -284,27 +289,55 @@ nav #menuToggle:hover {
 
 #heroNext {
   color: var(--primary-color);
+  text-align: left;
+  display: inline;
+ 
+  min-width: 110px; /* Width of 'Connect' + buffer to prevent layout shift */
+  
 }
 
+.toWord {
+  opacity: 0;
+}
+
+
+
+.cursor {
+  color: var(--primary-color);
+  font-weight: 300;
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+
+
+
 #motto {
-  font-size: clamp(1.4rem, 4.2vw, 2.5rem);
+  font-size: clamp(1.8rem, 4.2vw, 2.5rem);
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--natural-color);
   opacity: 0;
   animation: fadeUp 0.7s var(--ease) forwards;
   animation-delay: 0.28s;
+  opacity: 0;
+  
 }
 
 #heroText {
-  font-size: clamp(0.9rem, 1.6vw, 1.05rem);
+  font-size: clamp(1rem, 1.6vw, 1.05rem);
   font-weight: 400;
   line-height: 1.55;
   opacity: 0;
 }
 
 .hero-image-container > span:not(#heroText) {
-  font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+  font-size: clamp(1rem, 1.3vw, 0.95rem);
   font-weight: 300;
   opacity: 0;
   animation: fadeUp 0.7s var(--ease) forwards;
@@ -312,6 +345,7 @@ nav #menuToggle:hover {
 }
 
 .buttons {
+  opacity: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -332,7 +366,7 @@ nav #menuToggle:hover {
   border-radius: 10px;
   color: var(--natural-color);
   flex: 0 1 160px;
-  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  font-size: clamp(0.95rem, 1.2vw, 1rem);
   font-weight: 500;
   transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
@@ -356,12 +390,16 @@ nav #menuToggle:hover {
 .carousel {
   width: 100%;
   overflow: hidden;
-  position: relative;
-  margin-top: 12px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
   padding-block: 18px;
   opacity: 0;
   animation: fadeUp 0.7s var(--ease) forwards;
   animation-delay: 0.95s;
+  z-index: 10;
   -webkit-mask-image: linear-gradient(
     to right,
     transparent,
@@ -402,7 +440,7 @@ nav #menuToggle:hover {
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 40px;
   color: white;
-  font-size: clamp(0.6rem, 0.8vw, 0.7rem);
+  font-size: clamp(0.7rem, 0.8vw, 0.7rem);
   font-weight: 500;
   letter-spacing: 0.12em;
   display: flex;
@@ -416,53 +454,6 @@ nav #menuToggle:hover {
 .innovation span:hover {
   border-color: var(--primary-color);
   transform: translateY(-2px);
-}
-
-@media (min-width: 1025px) {
-
-  .heroNavbar {
-    height: 100svh;
-    min-height: 100svh;
-    padding-top: 74px;
-    position: relative;
-  }
-
-  .hero-image-container {
-    position: static !important;
-    padding: 110px 7% 0;
-  }
-
-  .logo {
-    max-width: 160px;
-  }
-
-  #motto {
-    font-size: clamp(1.8rem, 2.6vw, 2.4rem);
-  }
-
-  #heroText {
-    font-size: 0.95rem;
-    max-width: 520px;
-    margin-inline: auto;
-    line-height: 1.4;
-  }
-
-  .buttons a {
-    padding: 12px 18px;
-    font-size: 0.85rem;
-    flex: 0 1 140px;
-  }
-
-  .heroNavbar .carousel {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    margin: 0;
-    padding-block: 20px;
-    z-index: 10;
-  }
 }
 
 /* ============================================================
@@ -738,7 +729,6 @@ nav #menuToggle:hover {
   color: var(--natural-color);
 }
 
-/* ✅ FIXED: Icon starts hidden and animates in with the card */
 .offerCard span:nth-child(1) {
   background-color: var(--primary-color);
   border-radius: 10px;
@@ -748,19 +738,15 @@ nav #menuToggle:hover {
   aspect-ratio: 1;
   color: var(--natural-color);
   font-size: clamp(1.1rem, 1.5vw, 1.3rem);
-  /* Hide icon initially */
   opacity: 0;
   transform: translateY(10px);
-  /* Only transition transform & color on hover (fast, no lag) */
   transition: transform 0.3s ease, background-color 0.25s ease, color 0.25s ease;
 }
 
-/* When card becomes visible, animate the icon in with a slight delay */
 .offerCard.visible span:nth-child(1),
 .offerCard.show span:nth-child(1) {
   opacity: 1;
   transform: translateY(0);
-  /* Separate transition just for the entrance (doesn't affect hover) */
   transition: opacity 0.5s ease 0.15s, transform 0.5s ease 0.15s;
 }
 
@@ -1172,6 +1158,7 @@ nav #menuToggle:hover {
   .hero-image-container {
     position: static;
     width: 100%;
+    max-width: 100%;
     height: 100%;
     min-height: 100svh;
     flex: 1 1 auto;
@@ -1181,17 +1168,20 @@ nav #menuToggle:hover {
     justify-content: center;
     box-sizing: border-box;
     padding: 0 6%;
-    gap: 8px;
+    gap: clamp(18px, 4vw, 28px);
     text-align: center;
   }
 
   .logo {
-    width: 32%;
-    max-width: 120px;
+    width: 55%;
+    max-width: 220px;
+    min-width: 160px;
   }
 
   #motto {
-    font-size: clamp(1.1rem, 4vw, 1.7rem);
+    font-size: clamp(1.1rem, 4vw, 1.9rem);
+    white-space: normal;
+    line-height: 1.25;
   }
 
   #heroText {
@@ -1319,25 +1309,38 @@ nav #menuToggle:hover {
   .hero-image-container {
     position: static;
     width: 100%;
+    max-width: 100%;
     height: 100%;
     min-height: 100svh;
     flex: 1 1 auto;
-    padding: 0 6%;
+    padding: 60px 6% 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: clamp(16px, 4.5vw, 24px);
     text-align: center;
   }
 
   .logo {
-    width: 32%;
-    max-width: 120px;
+    width: 60%;
+    max-width: 190px;
+    min-width: 150px;
   }
 
   #motto {
-    font-size: clamp(1.1rem, 6vw, 1.5rem);
+    font-size: clamp(0.95rem, 6.2vw, 1.8rem);
+    white-space: normal;
+    line-height: 1.5;
+  }
+
+  .line2Group {
+    display: block;
+    margin-top: 2px;
+  }
+
+  .cursor {
+    margin-left: 3px;
   }
 
   #heroText {
@@ -1350,15 +1353,37 @@ nav #menuToggle:hover {
 
   .buttons {
     width: 100%;
-    max-width: 360px;
-    flex-direction: row;
-    gap: 10px;
+    max-width: 300px;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 4px;
   }
 
   .buttons a {
-    flex: 1 1 0;
-    padding: 11px 8px;
-    font-size: 0.8rem;
+    width: 100%;
+    flex: none;
+    padding: 15px 20px;
+    font-size: 0.95rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  }
+
+  .buttons a:first-child {
+    order: 1;
+  }
+
+  .buttons a:last-child {
+    order: 2;
+    background-color: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    box-shadow: none;
+  }
+
+  .buttons a:last-child:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .buttons a:active {
+    transform: scale(0.97);
   }
 
   .heroNavbar .carousel {
@@ -1522,8 +1547,9 @@ nav #menuToggle:hover {
 @media (max-width: 480px) {
 
   .logo {
-    width: 38%;
-    max-width: 95px;
+    width: 60%;
+    max-width: 170px;
+    min-width: 130px;
   }
 
   .innovation span {
@@ -1571,50 +1597,27 @@ nav #menuToggle:hover {
   }
 
   #motto {
-    font-size: clamp(1rem, 6.5vw, 1.3rem);
+    font-size: clamp(0.8rem, 6.8vw, 1.7rem);
+    white-space: normal;
+    line-height: 1.5;
   }
 
   .hero-image-container {
-    padding: 0 6%;
+    padding: 50px 6% 0;
+    gap: 16px;
+  }
+
+  .buttons {
+    max-width: 280px;
   }
 
   .buttons a {
-    padding: 10px 6px;
-    font-size: 0.75rem;
+    padding: 14px 16px;
+    font-size: 0.9rem;
   }
 
   .hero-image-container > span:not(#heroText) {
     display: none;
-  }
-}
-
-/* ============================================================
-   DESKTOP (1025px and above)
-   ============================================================ */
-
-@media (min-width: 1025px) {
-
-  .heroNavbar {
-    padding-top: 74px;
-  }
-
-  .hero-image-container {
-    position: relative;
-  }
-}
-
-/* ============================================================
-   LARGE DESKTOP
-   ============================================================ */
-
-@media (min-width: 1440px) {
-
-  .hero-image-container {
-    padding: 5% 10%;
-  }
-
-  #motto {
-    font-size: clamp(2.5rem, 4vw, 3.5rem);
   }
 }
 
