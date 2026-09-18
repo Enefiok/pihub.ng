@@ -885,7 +885,7 @@ nav #menuToggle:hover {
   }
 
   .subscribeForm {
-    max-width: none;
+    max-width: 100%;
     flex: 1 1 auto;
     padding: 3px 3px 3px 14px;
   }
