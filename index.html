@@ -1,9 +1,18 @@
 <!doctype html>
 <html lang="en">
-  <head>
+ <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PIHUB</title>
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <!-- FAVICON -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -11,9 +20,10 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="src/Fontawesome/css/all.min.css" />
-   
+
     <link rel="stylesheet" href="style/index.css" />
   </head>
+
   <body>
     <section class="heroNavbar">
       <!-- NAVBAR -->
@@ -58,6 +68,23 @@
       <div class="menuOverlay" id="menuOverlay"></div>
       <!-- MOBILE MENU -->
 
+
+         <!-- LAUNCH POPUP -->
+      <div class="launchOverlay" id="launchOverlay" aria-hidden="true">
+        <div class="launchModal" role="dialog" aria-modal="true" aria-label="PIHUB Grand Launch">
+          <button class="launchClose" id="launchClose" type="button" aria-label="Close popup">
+            <i class="fas fa-times"></i>
+          </button>
+          <img src="src/image/Launch.png" alt="PIHUB Grand Launch" />
+          <a href="https://fewticket.com/discover/Pihub-grand-launch" target="_blank" rel="noopener noreferrer" class="launchRegister">Register Now</a>
+        </div>
+      </div>
+      <!-- LAUNCH POPUP -->
+
+    <script src="script/config.js"></script>
+    <script src="script/navigation.js"></script>
+    <script src="script/index.js"></script>
+
       <!-- HERO SECTION -->
       <section class="hero">
         <div class="hero-image-container">
@@ -80,16 +107,9 @@
             <a href="contactus.html">Contact Us</a>
           </div>
 
-          <div class="carousel">
-            <div class="innovation">
-              <span><i class="fas fa-lightbulb"></i><p>INNOVATIONS</p></span>
-              <span><i class="fas fa-lightbulb"></i><p>INNOVATIONS</p></span>
-              <span><i class="fas fa-lightbulb"></i><p>INNOVATIONS</p></span>
-              <span><i class="fas fa-lightbulb"></i><p>INNOVATIONS</p></span>
-              <span><i class="fas fa-lightbulb"></i><p>INNOVATIONS</p></span>
-              <span><i class="fas fa-lightbulb"></i><p>INNOVATIONS</p></span>
-              <span><i class="fas fa-lightbulb"></i><p>INNOVATIONS</p></span>
-              <span><i class="fas fa-lightbulb"></i><p>INNOVATIONS</p></span>
+         <div class="carousel">
+            <div class="innovation" id="innovationTrack">
+              <!-- Course pills are loaded dynamically from the API in index.js -->
             </div>
           </div>
         </div>

@@ -843,27 +843,63 @@ async function loadGalleryImages() {
 
 
 // ============================================================
-// INFINITE INNOVATION CAROUSEL FIX
+// INNOVATION CAROUSEL — COURSES FROM API
 // ============================================================
-function fixInnovationCarousel() {
-  const innovationTrack = document.querySelector('.innovation');
-  if (!innovationTrack) return;
+const COURSE_ICONS = [
+  { match: /cyber/i, icon: "fa-shield-alt" },
+  { match: /front.?end/i, icon: "fa-code" },
+  { match: /back.?end/i, icon: "fa-server" },
+  { match: /ui\/?ux|design/i, icon: "fa-palette" },
+  { match: /data/i, icon: "fa-chart-bar" },
+  { match: /cloud/i, icon: "fa-cloud" },
+  { match: /network/i, icon: "fa-network-wired" },
+  { match: /mobile|app/i, icon: "fa-mobile-alt" },
+];
 
-  if (innovationTrack.dataset.duplicated === 'true') return;
-
-  const originalItems = Array.from(innovationTrack.children);
-  if (originalItems.length === 0) return;
-
-  originalItems.forEach(item => {
-    innovationTrack.appendChild(item.cloneNode(true));
-  });
-  
-  innovationTrack.dataset.duplicated = 'true';
+function getCourseIcon(title) {
+  const found = COURSE_ICONS.find((entry) => entry.match.test(title));
+  return found ? found.icon : "fa-graduation-cap";
 }
 
-document.addEventListener('DOMContentLoaded', fixInnovationCarousel);
-window.addEventListener('resize', fixInnovationCarousel);
+function buildInnovationPill(title) {
+  const a = document.createElement("a");
+  a.href = "offer.html#courses";
+  a.innerHTML = `<i class="fas ${getCourseIcon(title)}"></i><p>${title.toUpperCase()}</p>`;
+  return a;
+}
 
+async function loadInnovationCarousel() {
+  const track = document.getElementById("innovationTrack");
+  if (!track) return;
+
+  const apiUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 'https://pihub-backend.onrender.com';
+
+  try {
+    const response = await fetch(`${apiUrl}/api/courses/`);
+    if (!response.ok) throw new Error(`API returned ${response.status}`);
+    const courses = await response.json();
+
+    const available = courses.filter((c) => c.status !== "UNAVAILABLE");
+
+    if (available.length === 0) throw new Error("No courses to show");
+
+    track.innerHTML = "";
+    // duplicate the list once so the -50% translateX loop is seamless
+    [...available, ...available].forEach((course) => {
+      track.appendChild(buildInnovationPill(course.title));
+    });
+
+  } catch (error) {
+    console.error("Error loading innovation carousel:", error);
+    const fallback = ["Frontend Development", "Backend Development", "UI/UX Design", "Cyber Security", "Data Analysis"];
+    track.innerHTML = "";
+    [...fallback, ...fallback].forEach((title) => {
+      track.appendChild(buildInnovationPill(title));
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadInnovationCarousel);
 
 // ============================================================
 // INITIALIZATION
@@ -875,3 +911,97 @@ document.addEventListener('DOMContentLoaded', function() {
   
   initSubscribeForm();
 });
+
+
+
+// ============================================================
+// LAUNCH POPUP — shows until 29 Sept 2026, 1:00 PM (Nigeria time, WAT)
+// Shows once per visit. Shows again only after 3 page refreshes.
+// ============================================================
+(function initLaunchPopup() {
+  const overlay = document.getElementById("launchOverlay");
+  if (!overlay) return;
+
+  const START = new Date("2026-09-19T00:00:00+01:00");
+  const END = new Date("2026-09-29T13:00:00+01:00");
+  const now = new Date();
+
+  if (now < START || now >= END) {
+    overlay.remove();
+    return;
+  }
+
+  function openPopup() {
+    overlay.classList.add("open");
+    overlay.setAttribute("aria-hidden", "false");
+  }
+
+  function closePopup() {
+    overlay.classList.remove("open");
+    overlay.setAttribute("aria-hidden", "true");
+    // Fully remove it after the fade-out so it can never block the page
+    setTimeout(() => overlay.remove(), 400);
+  }
+
+  // Listeners first, so they are always attached
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay || e.target.closest("#launchClose")) {
+      closePopup();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closePopup();
+  });
+
+  // If the page is restored from the back/forward cache, never keep it open
+  window.addEventListener("pageshow", (e) => {
+    if (e.persisted) overlay.remove();
+  });
+
+  // Decide whether to show it
+  const SEEN_KEY = "pihubLaunchSeen";
+  const RELOAD_KEY = "pihubLaunchReloads";
+  const RELOADS_BEFORE_SHOWING_AGAIN = 3;
+
+  const navEntry = performance.getEntriesByType("navigation")[0];
+  const isReload = !!navEntry && navEntry.type === "reload";
+
+  let shouldShow = false;
+
+  try {
+    const seen = sessionStorage.getItem(SEEN_KEY) === "1";
+    let reloads = parseInt(sessionStorage.getItem(RELOAD_KEY) || "0", 10);
+
+    if (!seen) {
+      shouldShow = true;
+      sessionStorage.setItem(SEEN_KEY, "1");
+      sessionStorage.setItem(RELOAD_KEY, "0");
+    } else if (isReload) {
+      reloads++;
+      if (reloads >= RELOADS_BEFORE_SHOWING_AGAIN) {
+        shouldShow = true;
+        reloads = 0;
+      }
+      sessionStorage.setItem(RELOAD_KEY, String(reloads));
+    }
+  } catch (err) {
+    shouldShow = true;
+  }
+
+  if (!shouldShow) {
+    overlay.remove();
+    return;
+  }
+
+  // Open shortly after the page is ready (works even if "load" already fired)
+  function scheduleOpen() {
+    setTimeout(openPopup, 800);
+  }
+
+  if (document.readyState === "complete") {
+    scheduleOpen();
+  } else {
+    window.addEventListener("load", scheduleOpen, { once: true });
+  }
+})();

@@ -45,6 +45,50 @@ if (!document.getElementById("dynamic-styles")) {
     .course-enquiry-btn:hover { background-color: #256e46; transform: translateY(-2px); }
     .courseCard.disabled-course .course-enquiry-btn:hover { transform: none !important; }
 
+    /* Course Contact Choice Popup (WhatsApp / Gmail) — course cards only */
+    .course-contact-choice-content {
+      max-width: 460px;
+      padding: 34px;
+      text-align: center;
+      background: linear-gradient(145deg, #ffffff 0%, #f8f8f8 100%);
+      border: 1px solid rgba(250, 112, 1, 0.12);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.28);
+    }
+    .course-contact-choice-header { margin-bottom: 26px; }
+    .course-contact-choice-icon {
+      width: 58px; height: 58px; margin: 0 auto 16px; border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #fa7001, #e26400); color: #fff;
+      font-size: 1.45rem; box-shadow: 0 10px 25px rgba(250, 112, 1, 0.25);
+    }
+    .course-contact-choice-title { margin: 0 0 8px; color: #151515; font-size: 1.45rem; font-weight: 700; }
+    .course-contact-choice-subtitle { margin: 0; color: #777; font-size: 0.9rem; line-height: 1.6; }
+    .course-contact-choice-options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .course-contact-choice-btn {
+      min-height: 125px; padding: 20px 14px; border: 1px solid #e8e8e8; border-radius: 16px;
+      background: #fff; color: #222; text-decoration: none;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 10px; cursor: pointer; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      font-family: inherit;
+    }
+    .course-contact-choice-btn:hover { transform: translateY(-5px); box-shadow: 0 14px 30px rgba(0, 0, 0, 0.10); }
+    .course-contact-choice-btn i { font-size: 1.75rem; }
+    .course-contact-choice-btn strong { font-size: 0.95rem; font-weight: 700; }
+    .course-contact-choice-btn span { font-size: 0.72rem; color: #888; line-height: 1.4; word-break: break-word; }
+    .course-contact-whatsapp { border-color: rgba(46, 139, 87, 0.18); }
+    .course-contact-whatsapp i { color: #2e8b57; }
+    .course-contact-whatsapp:hover { border-color: #2e8b57; box-shadow: 0 14px 30px rgba(46, 139, 87, 0.15); }
+    .course-contact-gmail { border-color: rgba(234, 67, 53, 0.16); }
+    .course-contact-gmail i { color: #ea4335; }
+    .course-contact-gmail:hover { border-color: #ea4335; box-shadow: 0 14px 30px rgba(234, 67, 53, 0.14); }
+    .course-contact-choice-note { margin: 20px 0 0; color: #999; font-size: 0.72rem; }
+    @media (max-width: 520px) {
+      .course-contact-choice-content { padding: 30px 20px; max-width: 390px; }
+      .course-contact-choice-options { grid-template-columns: 1fr; }
+      .course-contact-choice-btn { min-height: 100px; flex-direction: row; justify-content: flex-start; text-align: left; padding: 16px; }
+      .course-contact-choice-btn i { width: 42px; text-align: center; flex-shrink: 0; }
+    }
+
     /* 🚀 SCROLL-TRIGGERED SEQUENTIAL ANIMATIONS */
     .anim-fade-up { animation: animFadeUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
     .anim-fade-left { animation: animFadeLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
@@ -83,6 +127,80 @@ async function loadWorkspacePlans() {
     plansLoaded = true;
   }
 }
+
+// ============================================================
+// COURSE CONTACT CHOICE POPUP (WhatsApp / Gmail) — course cards only
+// ============================================================
+(function setupCourseContactChoicePopup() {
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay course-contact-choice-overlay";
+  overlay.innerHTML = `
+    <div class="modal-content course-contact-choice-content">
+      <button class="modal-close-btn course-contact-choice-close" aria-label="Close contact options">&times;</button>
+      <div class="course-contact-choice-header">
+        <div class="course-contact-choice-icon"><i class="fas fa-comments"></i></div>
+        <h3 class="course-contact-choice-title">How would you like to contact us?</h3>
+        <p class="course-contact-choice-subtitle" id="courseContactSubtitle">Choose your preferred way to make an enquiry with PIHUB.</p>
+      </div>
+      <div class="course-contact-choice-options">
+        <button type="button" class="course-contact-choice-btn course-contact-whatsapp" id="courseContactWhatsAppBtn">
+          <i class="fab fa-whatsapp"></i>
+          <strong>WhatsApp</strong>
+          <span>Chat with us directly</span>
+        </button>
+        <button type="button" class="course-contact-choice-btn course-contact-gmail" id="courseContactGmailBtn">
+          <i class="fas fa-envelope"></i>
+          <strong>Gmail</strong>
+          <span>prestigeinnovationhub@gmail.com</span>
+        </button>
+      </div>
+      <p class="course-contact-choice-note">Select an option above to continue.</p>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const closeBtn = overlay.querySelector(".course-contact-choice-close");
+  const whatsAppBtn = overlay.querySelector("#courseContactWhatsAppBtn");
+  const gmailBtn = overlay.querySelector("#courseContactGmailBtn");
+  const subtitle = overlay.querySelector("#courseContactSubtitle");
+
+  let currentCourseName = "a course";
+
+  window.openCourseContactChoicePopup = (courseName = "a course") => {
+    currentCourseName = courseName;
+    if (subtitle) subtitle.textContent = `Choose your preferred way to enquire about the ${courseName} course.`;
+    overlay.classList.add("active");
+    document.body.style.overflow = "hidden";
+  };
+
+  window.closeCourseContactChoicePopup = () => {
+    overlay.classList.remove("active");
+    document.body.style.overflow = "";
+  };
+
+  closeBtn.addEventListener("click", window.closeCourseContactChoicePopup);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) window.closeCourseContactChoicePopup(); });
+
+  whatsAppBtn.addEventListener("click", function () {
+    const message = encodeURIComponent(`Hello, I'm interested in the ${currentCourseName} course at PIHUB. Can you provide more information?`);
+    window.open(`https://wa.me/2348088349833?text=${message}`, "_blank");
+    window.closeCourseContactChoicePopup();
+  });
+
+  gmailBtn.addEventListener("click", function () {
+    const subject = encodeURIComponent(`Enquiry: ${currentCourseName} Course`);
+    const body = encodeURIComponent(`Hello, I'm interested in the ${currentCourseName} course at PIHUB. Can you provide more information?`);
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=prestigeinnovationhub@gmail.com&su=${subject}&body=${body}`;
+    window.open(gmailUrl, "_blank");
+    window.closeCourseContactChoicePopup();
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && overlay.classList.contains("active")) {
+      window.closeCourseContactChoicePopup();
+    }
+  });
+})();
 
 // ============================================================
 // COURSES API INTEGRATION
@@ -168,8 +286,9 @@ function attachCourseEnquiryListeners() {
       e.preventDefault();
       e.stopPropagation();
       const courseName = this.getAttribute("data-course") || "a course";
-      const message = encodeURIComponent(`Hello, I'm interested in the ${courseName} course at PIHUB. Can you provide more information?`);
-      window.open(`https://wa.me/2348088349833?text=${message}`, "_blank");
+      if (window.openCourseContactChoicePopup) {
+        window.openCourseContactChoicePopup(courseName);
+      }
     });
   });
 }

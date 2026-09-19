@@ -148,6 +148,8 @@ nav #menuToggle {
   transition: color 0.25s ease, transform 0.25s ease;
 }
 
+
+
 nav #menuToggle:hover {
   color: var(--primary-color);
   transform: rotate(90deg);
@@ -433,13 +435,14 @@ nav #menuToggle:hover {
   }
 }
 
-.innovation span {
+.innovation a {
   height: 46px;
   padding-inline: 22px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 40px;
   color: white;
+  text-decoration: none;
   font-size: clamp(0.7rem, 0.8vw, 0.7rem);
   font-weight: 500;
   letter-spacing: 0.12em;
@@ -448,12 +451,17 @@ nav #menuToggle:hover {
   align-items: center;
   gap: 8px;
   flex: 0 0 auto;
+  cursor: pointer;
   transition: border-color 0.3s ease, transform 0.3s ease;
 }
 
-.innovation span:hover {
+.innovation a:hover {
   border-color: var(--primary-color);
   transform: translateY(-2px);
+}
+
+.innovation a i {
+  color: var(--primary-color);
 }
 
 /* ============================================================
@@ -1274,7 +1282,7 @@ nav #menuToggle:hover {
 @media (max-width: 767px) {
 
   nav {
-    padding: 10px 5%;
+    padding: 14px 5%; /* was 10px 5% — gives the bar more breathing room */
   }
 
   nav .links {
@@ -1282,17 +1290,17 @@ nav #menuToggle:hover {
   }
 
   nav img {
-    width: 26px;
+    width: 44px; /* slightly bigger than original 50px→now scaled down from 64px */
   }
 
   nav #contactUs {
-    padding: 6px 12px;
-    font-size: 0.72rem;
+    padding: 12px 16px; /* narrower width — was 12px 24px */
+    font-size: 0.82rem; /* scaled down from 0.9rem */
   }
 
   nav #menuToggle {
     display: block;
-    font-size: 1.2rem;
+    font-size: 1.45rem; /* scaled down from 1.7rem */
   }
 
   .navActions {
@@ -1313,7 +1321,7 @@ nav #menuToggle:hover {
     height: 100%;
     min-height: 100svh;
     flex: 1 1 auto;
-    padding: 60px 6% 0;
+    padding: 70px 6% 0; /* was 60px 6% 0 — clears the taller nav bar */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1552,7 +1560,7 @@ nav #menuToggle:hover {
     min-width: 130px;
   }
 
-  .innovation span {
+  .innovation a {
     height: 40px;
     padding-inline: 16px;
     font-size: 0.55rem;
@@ -1580,7 +1588,7 @@ nav #menuToggle:hover {
   }
 
   nav img {
-    width: 22px;
+    width: 30px; /* was 22px — slightly bigger logo on small phones */
   }
 
   .navActions {
@@ -1588,12 +1596,12 @@ nav #menuToggle:hover {
   }
 
   nav #contactUs {
-    padding: 5px 9px;
-    font-size: 0.65rem;
+    padding: 8px 12px; /* narrower width — was 8px 16px */
+    font-size: 0.7rem; /* was 0.65rem */
   }
 
   nav #menuToggle {
-    font-size: 1.1rem;
+    font-size: 1.25rem; /* was 1.1rem — slightly bigger hamburger icon */
   }
 
   #motto {
@@ -1761,4 +1769,94 @@ nav #menuToggle:hover {
   .heroNavbar{
   background-attachment: fixed;
   }
+}
+
+
+
+/* ============================================================
+   LAUNCH POPUP
+   ============================================================ */
+.launchOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.launchOverlay.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.launchModal {
+  position: relative;
+  width: min(100%, 320px, calc((92svh - 48px) * 0.8));
+  background: var(--bg-black);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(30px) scale(0.94);
+  transition: transform 0.4s var(--ease);
+}
+
+.launchOverlay.open .launchModal {
+  transform: translateY(0) scale(1);
+}
+
+.launchModal img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
+
+.launchClose {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+  transition: background-color 0.25s ease, transform 0.25s ease;
+}
+
+.launchClose:hover {
+  background: var(--primary-color);
+  transform: rotate(90deg);
+}
+
+.launchRegister {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  background: var(--primary-color);
+  color: var(--natural-color);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 14px 20px;
+  transition: background-color 0.25s ease;
+}
+
+.launchRegister:hover {
+  background: var(--primary-color-dark);
 }
