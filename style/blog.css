@@ -1036,9 +1036,9 @@ article blockquote,
 @media (max-width: 767px) {
   nav { padding: 10px 5%; }
   nav .links { display: none; }
-  nav img { width: 44px; } /* was 26px — bigger logo on mobile */
-  nav #contactUs { padding: 12px 16px; font-size: 0.82rem; } /* was 6px 12px / 0.72rem — bigger, narrower-width button */
-  nav #menuToggle { display: block; font-size: 1.45rem; } /* was 1.2rem — bigger hamburger icon */
+  nav img { width: 26px; }
+  nav #contactUs { padding: 6px 12px; font-size: 0.72rem; }
+  nav #menuToggle { display: block; font-size: 1.2rem; }
   .navActions { gap: 10px; }
   .heronav { height: 320px; }
   
@@ -1086,10 +1086,10 @@ article blockquote,
 }
 
 @media (max-width: 480px) {
-  nav img { width: 30px; } /* was 22px — slightly bigger logo on small phones */
+  nav img { width: 22px; }
   .navActions { gap: 8px; }
-  nav #contactUs { padding: 8px 12px; font-size: 0.7rem; } /* was 5px 9px / 0.65rem — bigger, narrower-width button */
-  nav #menuToggle { font-size: 1.25rem; } /* was 1.1rem — bigger hamburger icon */
+  nav #contactUs { padding: 5px 9px; font-size: 0.65rem; }
+  nav #menuToggle { font-size: 1.1rem; }
   
   /* UPDATED HERO RESPONSIVE STYLES FOR SMALL PHONES */
   .hero {

@@ -1137,17 +1137,17 @@ nav #menuToggle:hover {
   }
 
   nav img {
-    width: 44px; /* was 26px — bigger logo on mobile */
+    width: 26px;
   }
 
   nav #contactUs {
-    padding: 12px 16px; /* was 6px 12px — bigger, narrower-width button */
-    font-size: 0.82rem; /* was 0.72rem */
+    padding: 6px 12px;
+    font-size: 0.72rem;
   }
 
   nav #menuToggle {
     display: block;
-    font-size: 1.45rem; /* was 1.2rem — bigger hamburger icon */
+    font-size: 1.2rem;
   }
 
   .navActions {
@@ -1390,7 +1390,7 @@ nav #menuToggle:hover {
 
 @media (max-width: 480px) {
   nav img {
-    width: 30px; /* was 22px — slightly bigger logo on small phones */
+    width: 22px;
   }
 
   .navActions {
@@ -1398,12 +1398,12 @@ nav #menuToggle:hover {
   }
 
   nav #contactUs {
-    padding: 8px 12px; /* was 5px 9px — bigger, narrower-width button */
-    font-size: 0.7rem; /* was 0.65rem */
+    padding: 5px 9px;
+    font-size: 0.65rem;
   }
 
   nav #menuToggle {
-    font-size: 1.25rem; /* was 1.1rem — bigger hamburger icon */
+    font-size: 1.1rem;
   }
 
   /* UPDATED HERO RESPONSIVE STYLES FOR SMALL PHONES */
