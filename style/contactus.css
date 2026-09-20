@@ -50,6 +50,7 @@ body {
   background-attachment: fixed;
   height: clamp(220px, 40vw, 450px);
   width: 100%;
+   padding-top: 74px;
 }
 
 .hero {
@@ -815,8 +816,36 @@ nav #menuToggle:hover {
 
 /* 767px and below */
 @media (max-width: 767px) {
+  /* Nav Responsive */
+  nav {
+    padding: 14px 5%; /* was 10px 5% — gives the bar more breathing room */
+  }
+
+  nav .links {
+    display: none;
+  }
+
+  nav img {
+    width: 44px; /* slightly bigger than original 50px→now scaled down from 64px */
+  }
+
+  nav #contactUs {
+    padding: 12px 16px; /* narrower width — was 12px 24px */
+    font-size: 0.82rem; /* scaled down from 0.9rem */
+  }
+
+  nav #menuToggle {
+    display: block;
+    font-size: 1.45rem; /* scaled down from 1.7rem */
+  }
+
+  .navActions {
+    gap: 10px;
+  }
+
   .heronav {
     height: 320px;
+     padding-top: 90px;
   }
 
   /* UPDATED HERO RESPONSIVE STYLES */
@@ -1003,7 +1032,7 @@ nav #menuToggle:hover {
 @media (max-width: 480px) {
   /* Nav Responsive */
   nav img {
-    width: 22px;
+    width: 30px; /* was 22px — slightly bigger logo on small phones */
   }
 
   .navActions {
@@ -1011,12 +1040,12 @@ nav #menuToggle:hover {
   }
 
   nav #contactUs {
-    padding: 5px 9px;
-    font-size: 0.65rem;
+    padding: 8px 12px; /* narrower width — was 8px 16px */
+    font-size: 0.7rem; /* was 0.65rem */
   }
 
   nav #menuToggle {
-    font-size: 1.1rem;
+    font-size: 1.25rem; /* was 1.1rem — slightly bigger hamburger icon */
   }
 
   /* UPDATED HERO RESPONSIVE STYLES FOR SMALL PHONES */
