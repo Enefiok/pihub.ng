@@ -1021,3 +1021,18 @@ if (subscribeForm) {
     }
   });
 }
+
+
+// ============================================================
+// COURSE "MAKE ENQUIRY" BUTTON -> always open the contact choice popup
+// (event delegation, so it works even if cards are re-rendered)
+// ============================================================
+document.addEventListener("click", function (e) {
+  const btn = e.target.closest(".courseCard:not(.disabled-course) .course-enquiry-btn");
+  if (!btn) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  if (window.openCourseContactChoicePopup) {
+    window.openCourseContactChoicePopup(btn.dataset.course || "a course");
+  }
+}, true);
