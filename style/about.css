@@ -261,6 +261,10 @@ nav #menuToggle:hover {
   padding-top:50px
 }
 
+#vic{
+     object-position: center 20%;
+}
+
 @keyframes heroFadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
