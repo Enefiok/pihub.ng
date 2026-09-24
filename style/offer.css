@@ -30,6 +30,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x:clip
 }
 
 body {
@@ -94,7 +95,7 @@ nav {
   top: 0;
   left: 0;
 
-  width: 100%;
+  width: 100vw;
 
   z-index: 100;
 
@@ -336,6 +337,7 @@ nav #menuToggle:hover {
 
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 600;
+   padding-top:50px
 }
 
 .hero span {
@@ -2251,7 +2253,7 @@ nav #menuToggle:hover {
   }
 
   .subscribeForm {
-    max-width: none;
+    max-width: 100%;
 
     flex: 1 1 auto;
 

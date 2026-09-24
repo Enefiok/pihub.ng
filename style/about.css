@@ -258,6 +258,7 @@ nav #menuToggle:hover {
   opacity: 0;
   animation: heroFadeUp 0.8s ease forwards;
   animation-delay: 0.3s;
+  padding-top:50px
 }
 
 @keyframes heroFadeUp {
