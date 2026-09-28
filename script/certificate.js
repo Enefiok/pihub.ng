@@ -82,9 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 5. Print Functionality
-    printBtn.addEventListener('click', () => {
-        window.print();
-    });
+    // printBtn.addEventListener('click', () => {
+    //     window.print();
+    // });
 
     // Initialize
     fetchCertificate();
