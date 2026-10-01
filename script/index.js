@@ -1005,3 +1005,95 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener("load", scheduleOpen, { once: true });
   }
 })();
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  // --- CONFIGURATION ---
+  const WHATSAPP_NUMBER = '2348088349833';
+  const WHATSAPP_DEFAULT_MESSAGE = "Hi! I'm interested in learning more.";
+  // ---------------------
+
+  const waFabBtn = document.getElementById('waFabBtn');
+  const waPopup = document.getElementById('waPopup');
+  const waClose = document.getElementById('waClose');
+  const waSendBtn = document.getElementById('waSendBtn');
+  const waWidget = document.getElementById('waWidget');
+  const footerEl = document.querySelector('.footer');
+
+  if (waSendBtn) {
+    waSendBtn.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_DEFAULT_MESSAGE)}`;
+  }
+
+  function openWaPopup() {
+    if (!waPopup || !waFabBtn) return;
+    waPopup.hidden = false;
+    waFabBtn.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeWaPopup() {
+    if (!waPopup || !waFabBtn) return;
+    waPopup.hidden = true;
+    waFabBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  if (waFabBtn && waPopup) {
+    waFabBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      waPopup.hidden ? openWaPopup() : closeWaPopup();
+    });
+  }
+
+  if (waClose) {
+    waClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeWaPopup();
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!waWidget || !waPopup || waPopup.hidden) return;
+    if (!waWidget.contains(e.target)) closeWaPopup();
+  });
+
+  // ---- FAB collapse / expand on scroll + footer ----
+  if (waFabBtn) {
+    const mobileQuery = window.matchMedia('(max-width: 767px)');
+    let footerInView = false;
+
+    function updateFabState() {
+      const isMobile = mobileQuery.matches;
+      const scrolledDown = window.scrollY > 80;
+
+      if (footerInView) {
+        waFabBtn.classList.remove('is-collapsed');
+        waFabBtn.classList.add('is-expanded');
+      } else if (isMobile) {
+        waFabBtn.classList.remove('is-expanded');
+        waFabBtn.classList.add('is-collapsed');
+      } else if (scrolledDown) {
+        waFabBtn.classList.remove('is-expanded');
+        waFabBtn.classList.add('is-collapsed');
+      } else {
+        waFabBtn.classList.remove('is-collapsed', 'is-expanded');
+      }
+    }
+
+    window.addEventListener('scroll', updateFabState, { passive: true });
+    mobileQuery.addEventListener('change', updateFabState);
+
+    if (footerEl && 'IntersectionObserver' in window) {
+      const footerObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            footerInView = entry.isIntersecting;
+            updateFabState();
+          });
+        },
+        { threshold: 0.15 }
+      );
+      footerObserver.observe(footerEl);
+    }
+
+    updateFabState();
+  }
+});

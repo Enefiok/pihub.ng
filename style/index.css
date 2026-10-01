@@ -1861,3 +1861,328 @@ nav #menuToggle:hover {
 .launchRegister:hover {
   background: var(--primary-color-dark);
 }
+
+/* =========================================
+   WhatsApp Widget Styles (Self-Contained)
+   ========================================= */
+.wa-widget {
+  /* Local variables so it works on any website */
+  --wa-card-bg: #141414;
+  --wa-card-border: rgba(255, 255, 255, 0.08);
+  --wa-orange: #ff5a1f;
+  --wa-text: #ffffff;
+  --wa-muted: #9a9691;
+  
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  z-index: 9999; /* Ensures it stays on top of everything */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+/* Floating Button */
+.wa-fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 44px;
+  width: 146px;
+  padding: 0 14px 0 12px;
+  border: none;
+  border-radius: 999px;
+  background: #25D366;
+  color: #fff;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(37, 211, 102, 0.55);
+  transition: width 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.05s,
+              padding 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.05s,
+              border-radius 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.05s,
+              gap 0.35s ease,
+              transform 0.2s ease, box-shadow 0.2s ease;
+  animation: whatsapp-pulse 2.4s ease-out infinite;
+}
+
+.wa-fab svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  fill: currentColor;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.35s ease, height 0.35s ease;
+}
+
+.wa-fab-label {
+  font-weight: 600;
+  font-size: 12.5px;
+  white-space: nowrap;
+  opacity: 1;
+  max-width: 110px;
+  overflow: hidden;
+  transition: opacity 0.2s ease, max-width 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.wa-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.wa-fab:active {
+  transform: scale(0.97);
+}
+
+@keyframes whatsapp-pulse {
+  0% { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(37, 211, 102, 0.55); }
+  70% { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 0 14px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-fab { animation: none; }
+}
+
+/* Mobile: collapsed to a bigger plain circle by default (no flash of text) */
+@media (max-width: 767px) {
+  .wa-widget {
+    bottom: 14px;
+    right: 14px;
+  }
+
+  .wa-fab {
+    width: 58px;
+    height: 58px;
+    padding: 0;
+    border-radius: 50%;
+    gap: 0;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 0 0 rgba(37, 211, 102, 0.55);
+  }
+
+  .wa-fab svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .wa-fab .wa-fab-label {
+    opacity: 0;
+    max-width: 0;
+    pointer-events: none;
+  }
+}
+
+/* Desktop: collapsed state added by JS once user scrolls */
+.wa-fab.is-collapsed {
+  width: 44px;
+  padding: 0;
+  border-radius: 50%;
+  gap: 0;
+}
+.wa-fab.is-collapsed .wa-fab-label {
+  opacity: 0;
+  max-width: 0;
+  pointer-events: none;
+}
+.wa-fab.is-collapsed svg {
+  transform: scale(1.05);
+}
+
+/* On mobile, "collapsed" state should keep the bigger circle size, not the desktop 44px one */
+@media (max-width: 767px) {
+  .wa-fab.is-collapsed {
+    width: 58px;
+    height: 58px;
+  }
+  .wa-fab.is-collapsed svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Expanded state added by JS when the footer comes into view (mobile + desktop) */
+.wa-fab.is-expanded {
+  width: 146px;
+  height: 44px;
+  padding: 0 14px 0 12px;
+  border-radius: 999px;
+  gap: 7px;
+}
+.wa-fab.is-expanded svg {
+  width: 17px;
+  height: 17px;
+}
+.wa-fab.is-expanded .wa-fab-label {
+  opacity: 1;
+  max-width: 110px;
+  pointer-events: auto;
+}
+
+/* Popup Window */
+.wa-popup {
+  width: 300px;
+  max-width: calc(100vw - 44px);
+  background: var(--wa-card-bg);
+  border: 1px solid var(--wa-card-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55);
+  animation: waPopupIn 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.wa-popup[hidden] {
+  display: none;
+}
+
+@keyframes waPopupIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.wa-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 14px 16px;
+  background: #128C7E;
+  color: #fff;
+}
+
+.wa-popup-header-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wa-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--wa-orange);
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.wa-popup-title {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.wa-popup-subtitle {
+  font-size: 11.5px;
+  opacity: 0.85;
+  line-height: 1.3;
+}
+
+.wa-popup-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+  opacity: 0.85;
+}
+
+.wa-popup-close:hover {
+  opacity: 1;
+}
+
+.wa-popup-body {
+  padding: 16px 14px 14px;
+  background-color: #e9e2d8;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.wa-bubble {
+  position: relative;
+  background: #dcf8c6;
+  color: #1b1b1b;
+  border-radius: 10px 10px 10px 2px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 16px 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.wa-bubble::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-right-color: #dcf8c6;
+  border-bottom: 0;
+  border-left: 0;
+}
+
+.wa-send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #25D366;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13.5px;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  transition: background 0.2s ease;
+}
+
+.wa-send-btn svg {
+  fill: currentColor;
+}
+
+.wa-send-btn:hover {
+  background: #1ebd5a;
+}
+
+.wa-popup-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 2px 0;
+  font-size: 11px;
+  color: #6b6864;
+}
+
+.wa-footer-sep {
+  opacity: 0.6;
+}
+
+.wa-online-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #25D366;
+  flex-shrink: 0;
+}
+
+/* Responsive Adjustments for Mobile */
+@media (max-width: 640px) {
+  .wa-widget {
+    bottom: 6px;
+    right: 16px;
+  }
+
+  .wa-popup {
+    width: 280px;
+  }
+}
