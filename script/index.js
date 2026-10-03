@@ -1098,3 +1098,23 @@ document.addEventListener('DOMContentLoaded', function () {
     updateFabState();
   }
 });
+
+// ===== WHAT WE OFFER CARDS -> offer.html (specific panel) =====
+document.querySelectorAll(".offerCard[data-panel]").forEach((card) => {
+  const goToPanel = () => {
+    const panel = card.dataset.panel;
+    window.location.href = `offer.html?panel=${encodeURIComponent(panel)}`;
+  };
+
+  card.style.cursor = "pointer";
+  card.setAttribute("role", "link");
+  card.setAttribute("tabindex", "0");
+
+  card.addEventListener("click", goToPanel);
+  card.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      goToPanel();
+    }
+  });
+});

@@ -1036,3 +1036,36 @@ document.addEventListener("click", function (e) {
     window.openCourseContactChoicePopup(btn.dataset.course || "a course");
   }
 }, true);
+
+
+// ===== OPEN PANEL FROM URL (?panel=courses etc.) =====
+(function openPanelFromURL() {
+  const panelName = new URLSearchParams(window.location.search).get("panel");
+  if (!panelName) return;
+
+  function activate() {
+    const btn = document.querySelector(`.option-btn[data-panel="${panelName}"]`);
+    const panel = document.querySelector(`.offer-panel[data-panel="${panelName}"]`);
+    if (!btn || !panel) return;
+
+    document.querySelectorAll(".option-btn").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".offer-panel").forEach((p) => p.classList.remove("active"));
+    btn.classList.add("active");
+    panel.classList.add("active");
+  }
+
+  function run() {
+    activate();
+    // Re-apply once more in case other code resets the tab right after load
+    setTimeout(activate, 300);
+
+    const section = document.querySelector(".offer");
+    if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  if (document.readyState === "complete") {
+    setTimeout(run, 0);
+  } else {
+    window.addEventListener("load", () => setTimeout(run, 0));
+  }
+})();
