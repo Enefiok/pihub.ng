@@ -1958,6 +1958,11 @@ nav #menuToggle:hover {
     rgba(255, 255, 255, 0.45);
 }
 
+.offer-panel[data-panel="privateRoom"] .options2-desc,
+.offer-panel[data-panel="conferenceRoom"] .options2-desc,
+.offer-panel[data-panel="podcast"] .options2-desc {
+  display: none;
+}
 
 /* ============================================================
    RESPONSIVE — TABLET
@@ -2387,6 +2392,7 @@ nav #menuToggle:hover {
   .offer-panel[data-panel="podcast"] .options2-desc {
     margin-bottom: 2px !important;
     font-size: 0.75rem !important;
+
   }
 
   .offer-panel[data-panel="privateRoom"] .options3,

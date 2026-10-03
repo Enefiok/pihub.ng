@@ -1100,21 +1100,50 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ===== WHAT WE OFFER CARDS -> offer.html (specific panel) =====
-document.querySelectorAll(".offerCard[data-panel]").forEach((card) => {
-  const goToPanel = () => {
-    const panel = card.dataset.panel;
-    window.location.href = `offer.html?panel=${encodeURIComponent(panel)}`;
-  };
+(function setupOfferCards() {
+  const cards = document.querySelectorAll(".offerCard[data-panel]");
 
-  card.style.cursor = "pointer";
-  card.setAttribute("role", "link");
-  card.setAttribute("tabindex", "0");
+  function go(card) {
+    window.location.href = `offer.html?panel=${encodeURIComponent(card.dataset.panel)}`;
+  }
 
-  card.addEventListener("click", goToPanel);
-  card.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      goToPanel();
+  cards.forEach((card) => {
+    card.style.cursor = "pointer";
+    card.style.touchAction = "manipulation";
+    card.style.webkitTapHighlightColor = "transparent";
+    card.setAttribute("role", "link");
+    card.setAttribute("tabindex", "0");
+
+    let startX = 0, startY = 0, tracking = false;
+
+    card.addEventListener("pointerdown", (e) => {
+      startX = e.clientX;
+      startY = e.clientY;
+      tracking = true;
+    });
+
+    card.addEventListener("pointerup", (e) => {
+      if (!tracking) return;
+      tracking = false;
+      const moved = Math.hypot(e.clientX - startX, e.clientY - startY);
+      if (moved < 10) go(card);
+    });
+
+    card.addEventListener("pointercancel", () => { tracking = false; });
+    card.addEventListener("pointerleave", () => { tracking = false; });
+
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        go(card);
+      }
+    });
+  });
+
+  // When the page is restored via the Back button (bfcache), clear any stale state
+  window.addEventListener("pageshow", (e) => {
+    if (e.persisted) {
+      cards.forEach((card) => card.dispatchEvent(new Event("pointercancel")));
     }
   });
-});
+})();
