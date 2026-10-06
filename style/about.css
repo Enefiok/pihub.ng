@@ -802,6 +802,11 @@ nav #menuToggle:hover {
   color: var(--primary-color);
 }
 
+/* Show only the LinkedIn icon on team cards */
+.meetSocials a:not([aria-label="LinkedIn"]) {
+  display: none;
+}
+
 .meetArrow {
   flex-shrink: 0;
   width: 30px;
