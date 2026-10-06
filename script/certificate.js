@@ -67,7 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('student-name').textContent = cert.student_name;
         document.getElementById('course-title').textContent = cert.course_title;
         document.getElementById('issue-date').textContent = formattedDate;
-        document.getElementById('issued-by').textContent = cert.issued_by_name || 'PIHUB Admin';
+        // document.getElementById('issued-by').textContent = cert.issued_by_name || 'PIHUB Admin';
+           document.getElementById('issued-by').textContent = "Management";
         document.getElementById('cert-uuid').textContent = cert.certificate_id;
 
         loadingState.classList.add('hidden');
