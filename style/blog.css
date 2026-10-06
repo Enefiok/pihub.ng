@@ -1017,9 +1017,10 @@ article blockquote,
   .blog-post { padding-bottom: 80px; }
   .blogArticles { gap: 25px; }
   .footerBrand { display: none; }
-  .footerTop { grid-template-columns: repeat(3, 1fr); column-gap: 14px; row-gap: 0; padding-bottom: 30px; }
-  
-  .search-input { width: 280px; }
+    .footer .footerTop { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr); column-gap: 14px; row-gap: 0; padding-bottom: 30px; }
+    .footerCol, .footerSocial { min-width: 0; }
+    .footerSocialIcons { flex-wrap: wrap; gap: 8px; }
+    .search-input { width: 280px; }
 }
 
 @media (max-width: 899px) {
@@ -1070,11 +1071,14 @@ article blockquote,
   .subscribeForm button { padding: 8px 14px; font-size: 0.68rem; }
   .footer { padding-top: 40px; padding-inline: 5%; }
   .footerBrand { display: none; }
-  .footerTop { grid-template-columns: repeat(3, 1fr); column-gap: 14px; row-gap: 0; padding-bottom: 30px; }
+    .footer .footerTop { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr); column-gap: 14px; row-gap: 0; padding-bottom: 30px; }
   .footerHeading { font-size: 0.8rem; }
-  .footerCol { gap: 8px; }
-  .footerCol a { font-size: 0.72rem; }
+  .footerCol { gap: 8px; min-width: 0; }
+  .footerCol a { font-size: 0.72rem; overflow-wrap: break-word; }
+  .footerSocial { min-width: 0; }
   .footerSocial p { font-size: 0.72rem; display: block; }
+  .footerSocialIcons { flex-wrap: wrap; gap: 8px; max-width: 100%; }
+  .footerSocialIcons a { flex-shrink: 0; }
   .copyright { padding: 18px 5%; }
 }
 

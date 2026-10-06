@@ -1009,11 +1009,23 @@ nav #menuToggle:hover {
     display: none;
   }
 
-  .footerTop {
-    grid-template-columns: repeat(3, 1fr);
+  /* minmax(0, ...) lets columns shrink instead of being stretched by the icon row */
+  .footer .footerTop {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr);
     column-gap: 14px;
     row-gap: 0;
     padding-bottom: 30px;
+  }
+
+  .footerCol,
+  .footerSocial {
+    min-width: 0;
+  }
+
+  /* Social icons wrap onto the next line */
+  .footerSocialIcons {
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   .meet > div:nth-child(2) {
@@ -1248,8 +1260,9 @@ nav #menuToggle:hover {
     display: none;
   }
 
-  .footerTop {
-    grid-template-columns: repeat(3, 1fr);
+  /* Other Pages + Quick Links get equal space; Social gets a bit more */
+  .footer .footerTop {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr);
     column-gap: 14px;
     row-gap: 0;
     padding-bottom: 30px;
@@ -1261,15 +1274,32 @@ nav #menuToggle:hover {
 
   .footerCol {
     gap: 8px;
+    min-width: 0;
   }
 
   .footerCol a {
     font-size: 0.72rem;
+    overflow-wrap: break-word;
+  }
+
+  .footerSocial {
+    min-width: 0;
   }
 
   .footerSocial p {
     font-size: 0.72rem;
     display: block;
+  }
+
+  /* Social icons break onto the next line on mobile */
+  .footerSocialIcons {
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 100%;
+  }
+
+  .footerSocialIcons a {
+    flex-shrink: 0;
   }
 
   .copyright {
