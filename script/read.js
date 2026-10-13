@@ -195,12 +195,64 @@ function initSubscribeForm() {
 }
 
 // ============================================================
-// READ ARTICLE API INTEGRATION
+// READ ARTICLE API INTEGRATION & SEO
 // ============================================================
 function decodeAndRenderHTML(htmlString) {
   const txt = document.createElement("textarea");
   txt.innerHTML = htmlString;
   return txt.value;
+}
+
+// ✅ Phase 2: Helper function to dynamically update or create meta tags in <head>
+function updateMetaTag(nameOrProperty, content, isProperty = false) {
+  const attribute = isProperty ? 'property' : 'name';
+  let metaTag = document.head.querySelector(`meta[${attribute}="${nameOrProperty}"]`);
+  
+  if (metaTag) {
+    metaTag.setAttribute('content', content);
+  } else {
+    metaTag = document.createElement('meta');
+    metaTag.setAttribute(attribute, nameOrProperty);
+    metaTag.setAttribute('content', content);
+    document.head.appendChild(metaTag);
+  }
+}
+
+// ✅ Phase 3: Helper function to inject dynamic BlogPosting JSON-LD Schema
+function injectBlogSchema(articleData) {
+  const existingSchema = document.getElementById('dynamic-blog-schema');
+  if (existingSchema) existingSchema.remove();
+
+  const blogSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": articleData.title,
+    "description": articleData.metaDescription || articleData.title,
+    "image": articleData.imgSrc,
+    "datePublished": articleData.rawIsoDate || new Date().toISOString(),
+    "author": {
+      "@type": "Person",
+      "name": articleData.author
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Prestige Innovation Hub",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://pihubng.com/src/image/logo on black background without background11.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": window.location.href
+    }
+  };
+
+  const scriptTag = document.createElement('script');
+  scriptTag.id = 'dynamic-blog-schema';
+  scriptTag.type = 'application/ld+json';
+  scriptTag.textContent = JSON.stringify(blogSchema);
+  document.head.appendChild(scriptTag);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -253,7 +305,11 @@ document.addEventListener("DOMContentLoaded", () => {
         content: post.content,
         category: post.category ? post.category.name : 'Uncategorized',
         categoryId: post.category ? post.category.id : null,
-        imgSrc: post.featured_image ? (post.featured_image.startsWith('http') ? post.featured_image : `${API_BASE_URL}${post.featured_image}`) : 'src/image/heroImage.jpg'
+        imgSrc: post.featured_image ? (post.featured_image.startsWith('http') ? post.featured_image : `${API_BASE_URL}${post.featured_image}`) : 'src/image/heroImage.jpg',
+        metaTitle: post.meta_title || `${post.title} | PIHUB Akwa Ibom`,
+        metaDescription: post.meta_description || '',
+        // ✅ Phase 3: Include raw ISO date for Schema.org
+        rawIsoDate: post.created_at
       };
       
       loadArticleData(articleData);
@@ -360,8 +416,22 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     
-    document.title = `${articleData.title} - PIHUB`;
+    // ✅ Phase 2: Update Document Title & Meta Tags
+    document.title = articleData.metaTitle;
+    updateMetaTag('description', articleData.metaDescription);
+    updateMetaTag('og:title', articleData.metaTitle, true);
+    updateMetaTag('og:description', articleData.metaDescription, true);
+    updateMetaTag('og:image', articleData.imgSrc, true);
+    updateMetaTag('og:type', 'article', true);
+    updateMetaTag('og:url', window.location.href, true);
+    updateMetaTag('twitter:card', 'summary_large_image');
+    updateMetaTag('twitter:title', articleData.metaTitle);
+    updateMetaTag('twitter:description', articleData.metaDescription);
+    updateMetaTag('twitter:image', articleData.imgSrc);
+
+    // ✅ Phase 3: Inject Dynamic BlogPosting Schema
+    injectBlogSchema(articleData);
   }
 });
 
-console.log('Read page animations and API integration fully initialized!');
+console.log('Read page animations, API integration, Dynamic SEO Meta Injection, and JSON-LD Schema fully initialized!');
