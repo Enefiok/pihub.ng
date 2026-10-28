@@ -238,7 +238,7 @@ nav #menuToggle:hover {
   background-color: var(--bg-black);
   background-image:
     linear-gradient(135deg, rgba(0, 0, 0, 0.88), rgba(17, 15, 14, 0.75)),
-    url("../src/image/profesional.jpg");
+    url("../src/image/wide_view_of_the_workspace.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
