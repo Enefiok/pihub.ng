@@ -51,7 +51,7 @@ const revealObserver = new IntersectionObserver(
       }
     });
   },
-  { threshold: 0.15 }
+  { threshold: 0.15 },
 );
 
 scrollRevealElements.forEach((el) => revealObserver.observe(el));
@@ -71,7 +71,7 @@ if (ourArticles) {
         }
       });
     },
-    { threshold: 0.15 }
+    { threshold: 0.15 },
   );
   headingObserver.observe(ourArticles);
 }
@@ -80,20 +80,25 @@ if (ourArticles) {
 // SUBSCRIBE SECTION ANIMATION & IMPROVED API INTEGRATION
 // ============================================================
 
-const subscribeElement = document.querySelector('.subscribe > div') || document.querySelector('.subscribeBox');
+const subscribeElement =
+  document.querySelector(".subscribe > div") ||
+  document.querySelector(".subscribeBox");
 
 if (subscribeElement) {
-  const subscribeObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('show');
-        subscribeObserver.unobserve(entry.target);
-      }
-    });
-  }, {
-    threshold: 0.3,
-    rootMargin: '0px 0px -30px 0px'
-  });
+  const subscribeObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("show");
+          subscribeObserver.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.3,
+      rootMargin: "0px 0px -30px 0px",
+    },
+  );
   subscribeObserver.observe(subscribeElement);
 }
 
@@ -101,11 +106,11 @@ if (subscribeElement) {
 
 function getCookie(name) {
   let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    const cookies = document.cookie.split(';');
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
     for (let i = 0; i < cookies.length; i++) {
       const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+      if (cookie.substring(0, name.length + 1) === name + "=") {
         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
         break;
       }
@@ -115,40 +120,42 @@ function getCookie(name) {
 }
 
 function showSubscribeMessage(message, type) {
-  const box = document.querySelector('.subscribeBox') || document.querySelector('.subscribe > div');
+  const box =
+    document.querySelector(".subscribeBox") ||
+    document.querySelector(".subscribe > div");
   if (!box) return;
 
   // Ensure the container is relatively positioned so the message anchors to it
-  box.style.position = 'relative';
+  box.style.position = "relative";
 
-  const existingMsg = document.querySelector('.subscribe-message');
+  const existingMsg = document.querySelector(".subscribe-message");
   if (existingMsg) existingMsg.remove();
 
-  const msgDiv = document.createElement('div');
+  const msgDiv = document.createElement("div");
   msgDiv.className = `subscribe-message ${type}`;
   msgDiv.textContent = message;
-  
+
   // Absolute positioning prevents the container from expanding or shifting layout
-  msgDiv.style.position = 'absolute';
-  msgDiv.style.bottom = '-30px'; // Floats just below the box
-  msgDiv.style.left = '50%';
-  msgDiv.style.transform = 'translateX(-50%)';
-  msgDiv.style.width = '100%';
-  msgDiv.style.fontSize = '13px';
-  msgDiv.style.fontWeight = '500';
-  msgDiv.style.color = type === 'success' ? '#22c55e' : '#ef4444'; 
-  msgDiv.style.textAlign = 'center';
-  msgDiv.style.whiteSpace = 'nowrap'; // Prevents text wrapping from affecting layout
-  msgDiv.style.zIndex = '10';
-  msgDiv.style.pointerEvents = 'none'; // Allows clicking through the message if it overlaps anything
+  msgDiv.style.position = "absolute";
+  msgDiv.style.bottom = "-30px"; // Floats just below the box
+  msgDiv.style.left = "50%";
+  msgDiv.style.transform = "translateX(-50%)";
+  msgDiv.style.width = "100%";
+  msgDiv.style.fontSize = "13px";
+  msgDiv.style.fontWeight = "500";
+  msgDiv.style.color = type === "success" ? "#22c55e" : "#ef4444";
+  msgDiv.style.textAlign = "center";
+  msgDiv.style.whiteSpace = "nowrap"; // Prevents text wrapping from affecting layout
+  msgDiv.style.zIndex = "10";
+  msgDiv.style.pointerEvents = "none"; // Allows clicking through the message if it overlaps anything
 
   box.appendChild(msgDiv);
 
   // Auto-remove with a smooth fade-out
   setTimeout(() => {
     if (msgDiv.parentNode) {
-      msgDiv.style.transition = 'opacity 0.4s ease';
-      msgDiv.style.opacity = '0';
+      msgDiv.style.transition = "opacity 0.4s ease";
+      msgDiv.style.opacity = "0";
       setTimeout(() => {
         if (msgDiv.parentNode) msgDiv.remove();
       }, 400);
@@ -158,54 +165,74 @@ function showSubscribeMessage(message, type) {
 
 function initSubscribeForm() {
   // Try to find the form by class first, then fallback to specific IDs if they exist
-  const form = document.querySelector('.subscribeForm') || 
-               (document.getElementById('newsletter-email') ? document.getElementById('newsletter-email').closest('form') : null);
-  
+  const form =
+    document.querySelector(".subscribeForm") ||
+    (document.getElementById("newsletter-email")
+      ? document.getElementById("newsletter-email").closest("form")
+      : null);
+
   if (!form) return;
-  
-  form.addEventListener('submit', async (e) => {
+
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    
-    const emailInput = form.querySelector('input[type="email"]') || form.querySelector('input') || document.getElementById('newsletter-email');
-    const submitButton = form.querySelector('button[type="submit"]') || form.querySelector('button') || document.getElementById('newsletter-btn');
-    const email = emailInput ? emailInput.value.trim() : '';
-    
-    if (!email || !email.includes('@')) {
-      showSubscribeMessage('Please enter a valid email address.', 'error');
+
+    const emailInput =
+      form.querySelector('input[type="email"]') ||
+      form.querySelector("input") ||
+      document.getElementById("newsletter-email");
+    const submitButton =
+      form.querySelector('button[type="submit"]') ||
+      form.querySelector("button") ||
+      document.getElementById("newsletter-btn");
+    const email = emailInput ? emailInput.value.trim() : "";
+
+    if (!email || !email.includes("@")) {
+      showSubscribeMessage("Please enter a valid email address.", "error");
       return;
     }
 
-    const originalText = submitButton ? submitButton.textContent : 'Submit';
+    const originalText = submitButton ? submitButton.textContent : "Submit";
     if (submitButton) {
       submitButton.disabled = true;
-      submitButton.textContent = 'Subscribing...';
+      submitButton.textContent = "Subscribing...";
     }
 
     try {
-      const baseUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '';
+      const baseUrl = typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
       const apiUrl = `${baseUrl}/api/core/subscribe/`;
-      
+
       const response = await fetch(apiUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken') 
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken"),
         },
-        body: JSON.stringify({ email: email })
+        body: JSON.stringify({ email: email }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        showSubscribeMessage('Successfully subscribed to our newsletter!', 'success');
-        if (emailInput) emailInput.value = ''; // Clear input on success
+        showSubscribeMessage(
+          "Successfully subscribed to our newsletter!",
+          "success",
+        );
+        if (emailInput) emailInput.value = ""; // Clear input on success
       } else {
-        const errorMsg = data.email ? data.email[0] : (data.detail || data.error || data.message || 'Failed to subscribe. Please try again.');
-        showSubscribeMessage(errorMsg, 'error');
+        const errorMsg = data.email
+          ? data.email[0]
+          : data.detail ||
+            data.error ||
+            data.message ||
+            "Failed to subscribe. Please try again.";
+        showSubscribeMessage(errorMsg, "error");
       }
     } catch (error) {
-      console.error('Subscription error:', error);
-      showSubscribeMessage('A network error occurred. Please try again later.', 'error');
+      console.error("Subscription error:", error);
+      showSubscribeMessage(
+        "A network error occurred. Please try again later.",
+        "error",
+      );
     } finally {
       if (submitButton) {
         submitButton.disabled = false;
@@ -218,26 +245,28 @@ function initSubscribeForm() {
 // Initialize subscription form handler
 initSubscribeForm();
 
-
 // ============================================================
 // FOOTER ANIMATIONS
 // ============================================================
 
-const footerObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry, index) => {
-    if (entry.isIntersecting) {
-      setTimeout(() => {
-        entry.target.classList.add('show');
-      }, index * 100);
-      footerObserver.unobserve(entry.target);
-    }
-  });
-}, {
-  threshold: 0.1,
-  rootMargin: '0px 0px -50px 0px'
-});
+const footerObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry, index) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add("show");
+        }, index * 100);
+        footerObserver.unobserve(entry.target);
+      }
+    });
+  },
+  {
+    threshold: 0.1,
+    rootMargin: "0px 0px -50px 0px",
+  },
+);
 
-document.querySelectorAll('.footer > div').forEach((el) => {
+document.querySelectorAll(".footer > div").forEach((el) => {
   footerObserver.observe(el);
 });
 
@@ -245,33 +274,36 @@ document.querySelectorAll('.footer > div').forEach((el) => {
 // COPYRIGHT ANIMATION
 // ============================================================
 
-const copyrightElement = document.querySelector('.copyright');
+const copyrightElement = document.querySelector(".copyright");
 
 if (copyrightElement) {
-  const copyrightObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('show');
-        copyrightObserver.unobserve(entry.target);
-      }
-    });
-  }, {
-    threshold: 0.1,
-    rootMargin: '0px 0px 0px 0px'
-  });
+  const copyrightObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("show");
+          copyrightObserver.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.1,
+      rootMargin: "0px 0px 0px 0px",
+    },
+  );
 
   copyrightObserver.observe(copyrightElement);
 
   const forceCheck = () => {
     const rect = copyrightElement.getBoundingClientRect();
     if (rect.top < window.innerHeight && rect.bottom > 0) {
-      copyrightElement.classList.add('show');
+      copyrightElement.classList.add("show");
       copyrightObserver.unobserve(copyrightElement);
     }
   };
-  
+
   forceCheck();
-  window.addEventListener('scroll', forceCheck, { passive: true });
+  window.addEventListener("scroll", forceCheck, { passive: true });
 }
 
 // ============================================================
@@ -279,21 +311,25 @@ if (copyrightElement) {
 // ============================================================
 
 let allBlogPosts = [];
-const blogContainer = document.getElementById('blog-articles-container') || document.querySelector('.blogArticles');
-const categoriesContainer = document.getElementById('blog-categories') || document.querySelector('.blogCategories');
+const blogContainer =
+  document.getElementById("blog-articles-container") ||
+  document.querySelector(".blogArticles");
+const categoriesContainer =
+  document.getElementById("blog-categories") ||
+  document.querySelector(".blogCategories");
 const FILTER_TRANSITION_MS = 300;
 
-console.log('🔍 Blog Container found:', !!blogContainer);
-console.log('🔍 Categories Container found:', !!categoriesContainer);
+console.log("🔍 Blog Container found:", !!blogContainer);
+console.log("🔍 Categories Container found:", !!categoriesContainer);
 
 // ✅ NEW: Single source of truth for extracting category names
-// This ensures the buttons and the cards ALWAYS match, whether the API 
+// This ensures the buttons and the cards ALWAYS match, whether the API
 // returns an object {name: "Business"} or a string "Business"
 function getCategoryName(post) {
   if (post.category) {
-    if (typeof post.category === 'object' && post.category.name) {
+    if (typeof post.category === "object" && post.category.name) {
       return String(post.category.name).toLowerCase().trim();
-    } else if (typeof post.category === 'string') {
+    } else if (typeof post.category === "string") {
       return String(post.category).toLowerCase().trim();
     }
   }
@@ -303,135 +339,168 @@ function getCategoryName(post) {
   if (post.cat) {
     return String(post.cat).toLowerCase().trim();
   }
-  return 'uncategorized';
+  return "uncategorized";
 }
 
 // Fetch Blog Posts from API
 async function fetchBlogPosts() {
   try {
-    console.log('🔄 Fetching from:', `${API_BASE_URL}/api/blog/posts/`);
+    console.log("🔄 Fetching from:", `${API_BASE_URL}/api/blog/posts/`);
     const response = await fetch(`${API_BASE_URL}/api/blog/posts/`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    
+
     const data = await response.json();
     allBlogPosts = data.results || data;
-    
-    console.log('✅ Fetched', allBlogPosts.length, 'blog posts');
-    
+
+    console.log("✅ Fetched", allBlogPosts.length, "blog posts");
+
     // Debug: Log ALL posts with their extracted categories
-    console.log('📋 All posts and their categories:');
+    console.log("📋 All posts and their categories:");
     allBlogPosts.forEach((post, index) => {
-      console.log(`Post ${index + 1}: "${post.title}" -> Extracted as: "${getCategoryName(post)}"`);
+      console.log(
+        `Post ${index + 1}: "${post.title}" -> Extracted as: "${getCategoryName(post)}"`,
+      );
     });
-    
+
     // Use the helper function to get a clean list of unique categories
-    const categories = [...new Set(allBlogPosts.map(post => getCategoryName(post)))];
-    
-    console.log('🏷️ Found unique categories:', categories);
-    console.log('🔢 Category count:', categories.length);
-    
+    const categories = [
+      ...new Set(allBlogPosts.map((post) => getCategoryName(post))),
+    ];
+
+    console.log("🏷️ Found unique categories:", categories);
+    console.log("🔢 Category count:", categories.length);
+
     renderCategories(categories);
     renderBlogPosts(allBlogPosts);
-    
   } catch (error) {
-    console.error('❌ Error fetching blog posts:', error);
+    console.error("❌ Error fetching blog posts:", error);
   }
 }
 
 // Render Category Buttons
 function renderCategories(categories) {
   if (!categoriesContainer) {
-    console.warn('⚠️ Categories container not found, skipping category render.');
+    console.warn(
+      "⚠️ Categories container not found, skipping category render.",
+    );
     return;
   }
 
   // Preserve the "All" button
   const allButton = categoriesContainer.querySelector('[data-category="all"]');
-  
+
   // Clear existing categories (except "All")
-  const existingButtons = categoriesContainer.querySelectorAll('[data-category]:not([data-category="all"])');
-  existingButtons.forEach(btn => btn.remove());
-  
+  const existingButtons = categoriesContainer.querySelectorAll(
+    '[data-category]:not([data-category="all"])',
+  );
+  existingButtons.forEach((btn) => btn.remove());
+
   // If no categories found, show a message
   if (!categories || categories.length === 0) {
-    console.warn('⚠️ No categories found in blog posts. Make sure posts have categories assigned.');
+    console.warn(
+      "⚠️ No categories found in blog posts. Make sure posts have categories assigned.",
+    );
     return;
   }
-  
-  console.log('🎨 Rendering', categories.length, 'categories...');
-  
+
+  console.log("🎨 Rendering", categories.length, "categories...");
+
   // Sort categories alphabetically
   categories.sort();
-  
+
   // Add each category button
-  categories.forEach(category => {
+  categories.forEach((category) => {
     // Skip if it's already "all"
-    if (category === 'all') return;
-    
-    const btn = document.createElement('div');
-    btn.className = 'category-btn';
+    if (category === "all") return;
+
+    const btn = document.createElement("div");
+    btn.className = "category-btn";
     btn.dataset.category = category;
-    
+
     // Capitalize first letter of each word (handles "Forex & Trading" nicely)
     const formattedName = category
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-    
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+
     btn.textContent = formattedName;
     categoriesContainer.appendChild(btn);
   });
-  
+
   attachCategoryListeners();
 }
 
 // Render Blog Posts
 function renderBlogPosts(posts) {
   if (!blogContainer) {
-    console.error('🚫 Blog container not found! Cannot render posts.');
+    console.error("🚫 Blog container not found! Cannot render posts.");
     return;
   }
 
   if (!posts || posts.length === 0) {
-    blogContainer.innerHTML = '<p style="text-align:center; padding: 40px; color: #666;">No blog posts available yet.</p>';
+    blogContainer.innerHTML =
+      '<p style="text-align:center; padding: 40px; color: #666;">No blog posts available yet.</p>';
     return;
   }
-  
-  console.log('🎨 Rendering', posts.length, 'posts to DOM...');
-  
-  const htmlContent = posts.map(post => {
-    const date = new Date(post.created_at).toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-    
-    const authorName = post.author ? 
-      (post.author.username || post.author.first_name || 'PIHUB Author') 
-      : 'PIHUB';
-    
-    // ✅ FIX: Use the EXACT SAME helper function to guarantee the card's data-category matches the button
-    const categoryName = getCategoryName(post);
-    
-    let imageUrl = 'src/image/heroImage.jpg';
-    if (post.featured_image) {
-      if (post.featured_image.startsWith('http')) {
-        imageUrl = post.featured_image;
-      } else {
-        imageUrl = `${API_BASE_URL}${post.featured_image}`;
+
+  console.log("🎨 Rendering", posts.length, "posts to DOM...");
+
+  const htmlContent = posts
+    .map((post) => {
+      const date = new Date(post.created_at).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+
+      const authorName = post.author
+        ? post.author.username || post.author.first_name || "PIHUB Author"
+        : "PIHUB";
+
+      // ✅ FIX: Use the EXACT SAME helper function to guarantee the card's data-category matches the button
+      const categoryName = getCategoryName(post);
+
+      let imageUrl = "src/image/heroImage.jpg";
+      if (post.featured_image) {
+        if (post.featured_image.startsWith("http")) {
+          imageUrl = post.featured_image;
+        } else {
+          imageUrl = `${API_BASE_URL}${post.featured_image}`;
+        }
       }
-    }
-    
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = post.content;
-    const excerpt = tempDiv.textContent.substring(0, 120) + '...';
-    
-    // ✅ FIX: Escape quotes to prevent HTML breaking in data attributes
-    const safeTitle = post.title.toLowerCase().replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    const safeAuthor = authorName.toLowerCase().replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    const postId = post.id || post.slug || '';
-    
-    return `
+
+      // const tempDiv = document.createElement('div');
+      // tempDiv.innerHTML = post.content;
+      // const excerpt = tempDiv.textContent.substring(0, 120) + '...';
+
+      // Put a line break after every block element so the title and the
+      // article's first sentence don't merge into one line
+      const spacedHtml = post.content
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/<\/(p|div|h[1-6]|li|blockquote)>/gi, "$&\n");
+
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = spacedHtml;
+
+      const cleanText = tempDiv.textContent
+        .replace(/[ \t]+/g, " ") // collapse extra spaces
+        .replace(/\s*\n\s*/g, "\n") // trim around line breaks
+        .trim();
+
+      const excerpt = cleanText.substring(0, 160) + "...";
+
+      // ✅ FIX: Escape quotes to prevent HTML breaking in data attributes
+      const safeTitle = post.title
+        .toLowerCase()
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+      const safeAuthor = authorName
+        .toLowerCase()
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+      const postId = post.id || post.slug || "";
+
+      return `
       <div class="scroll-reveal article-card" 
            data-category="${categoryName}" 
            data-title="${safeTitle}" 
@@ -447,27 +516,32 @@ function renderBlogPosts(posts) {
         </span>
       </div>
     `;
-  }).join('');
-  
-  console.log('✅ Injecting HTML into container...');
+    })
+    .join("");
+
+  console.log("✅ Injecting HTML into container...");
   blogContainer.innerHTML = htmlContent;
-  
+
   setTimeout(() => {
-    const newRevealElements = blogContainer.querySelectorAll('.scroll-reveal');
+    const newRevealElements = blogContainer.querySelectorAll(".scroll-reveal");
     newRevealElements.forEach((el) => {
-      el.classList.add('show');
+      el.classList.add("show");
       revealObserver.observe(el);
     });
-    console.log('✅ Re-observed', newRevealElements.length, 'new scroll-reveal elements');
+    console.log(
+      "✅ Re-observed",
+      newRevealElements.length,
+      "new scroll-reveal elements",
+    );
   }, 50);
-  
-  console.log('✅ Render complete!');
+
+  console.log("✅ Render complete!");
 }
 
 // Attach Category Filter Listeners
 function attachCategoryListeners() {
   const categoryBtns = document.querySelectorAll(".category-btn");
-  
+
   categoryBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
       const selected = btn.dataset.category;
@@ -520,56 +594,59 @@ function filterBlogPosts(category) {
       });
     }, FILTER_TRANSITION_MS);
   }, FILTER_TRANSITION_MS);
-  
+
   applySeeMoreLimit();
 }
 // ============================================================
 // SEARCH FUNCTIONALITY - NEW!
 // ============================================================
 
-const searchInput = document.querySelector('input[type="text"][placeholder*="Search"]') || 
-                    document.querySelector('input[placeholder*="search" i]') ||
-                    document.getElementById('searchInput');
+const searchInput =
+  document.querySelector('input[type="text"][placeholder*="Search"]') ||
+  document.querySelector('input[placeholder*="search" i]') ||
+  document.getElementById("searchInput");
 
 if (searchInput) {
-  console.log(' Search input found, initializing search functionality...');
-  
+  console.log(" Search input found, initializing search functionality...");
+
   let searchTimeout;
-  
-  searchInput.addEventListener('input', (e) => {
+
+  searchInput.addEventListener("input", (e) => {
     // Clear previous timeout
     clearTimeout(searchTimeout);
-    
+
     const searchTerm = e.target.value.toLowerCase().trim();
-    
+
     // Debounce search - wait 300ms after user stops typing
     searchTimeout = setTimeout(() => {
-      console.log('🔍 Searching for:', searchTerm);
-      
+      console.log("🔍 Searching for:", searchTerm);
+
       if (!searchTerm) {
         // If search is empty, show all posts
         const articleCards = document.querySelectorAll(".article-card");
-        articleCards.forEach(card => {
+        articleCards.forEach((card) => {
           card.classList.remove("hidden");
           card.style.display = "";
         });
         applySeeMoreLimit();
         return;
       }
-      
+
       const articleCards = document.querySelectorAll(".article-card");
       let visibleCount = 0;
-      
+
       articleCards.forEach((card) => {
-        const title = card.dataset.title || '';
-        const author = card.dataset.author || '';
-        const cardDesc = card.querySelector('.card-desc')?.textContent.toLowerCase() || '';
-        
+        const title = card.dataset.title || "";
+        const author = card.dataset.author || "";
+        const cardDesc =
+          card.querySelector(".card-desc")?.textContent.toLowerCase() || "";
+
         // ✅ FIX: Search only in title, author, and description (removed content search)
-        const matchesSearch = title.includes(searchTerm) || 
-                             author.includes(searchTerm) ||
-                             cardDesc.includes(searchTerm);
-        
+        const matchesSearch =
+          title.includes(searchTerm) ||
+          author.includes(searchTerm) ||
+          cardDesc.includes(searchTerm);
+
         if (matchesSearch) {
           card.classList.remove("hidden");
           card.style.display = "";
@@ -579,31 +656,38 @@ if (searchInput) {
           card.style.display = "none";
         }
       });
-      
+
       console.log(`📊 Search results: ${visibleCount} articles found`);
-      
+
       // Show message if no results
       if (visibleCount === 0) {
-        const existingNoResults = blogContainer.querySelector('.no-results-message');
+        const existingNoResults = blogContainer.querySelector(
+          ".no-results-message",
+        );
         if (!existingNoResults) {
-          const noResultsMsg = document.createElement('p');
-          noResultsMsg.className = 'no-results-message';
-          noResultsMsg.style.cssText = 'text-align:center; padding: 40px; color: #666; grid-column: 1/-1;';
+          const noResultsMsg = document.createElement("p");
+          noResultsMsg.className = "no-results-message";
+          noResultsMsg.style.cssText =
+            "text-align:center; padding: 40px; color: #666; grid-column: 1/-1;";
           noResultsMsg.textContent = `No articles found matching "${e.target.value}"`;
           blogContainer.appendChild(noResultsMsg);
         }
       } else {
-        const existingNoResults = blogContainer.querySelector('.no-results-message');
+        const existingNoResults = blogContainer.querySelector(
+          ".no-results-message",
+        );
         if (existingNoResults) {
           existingNoResults.remove();
         }
       }
-      
+
       applySeeMoreLimit();
     }, 300);
   });
 } else {
-  console.warn('⚠️ Search input not found. Make sure your search input has placeholder="Search articles..."');
+  console.warn(
+    '⚠️ Search input not found. Make sure your search input has placeholder="Search articles..."',
+  );
 }
 
 // ============================================================
@@ -626,7 +710,8 @@ function getCurrentLimit() {
 function applySeeMoreLimit() {
   const articleCards = document.querySelectorAll(".article-card");
   const visibleCards = Array.from(articleCards).filter(
-    (card) => !card.classList.contains("hidden") && card.style.display !== "none"
+    (card) =>
+      !card.classList.contains("hidden") && card.style.display !== "none",
   );
 
   const limit = getCurrentLimit();
@@ -675,22 +760,22 @@ window.addEventListener("resize", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   fetchBlogPosts();
-  
+
   setTimeout(() => {
     applySeeMoreLimit();
   }, 500);
-  
+
   const handleArticleClick = (e) => {
-    const card = e.target.closest('.article-card');
+    const card = e.target.closest(".article-card");
     if (!card) return;
-    
+
     const title = card.querySelector(".card-title");
     if (!title) return;
 
     const postTitle = title.textContent;
     // Find the full post data to get the slug and full content
-    const fullPost = allBlogPosts.find(post => post.title === postTitle);
-    
+    const fullPost = allBlogPosts.find((post) => post.title === postTitle);
+
     if (fullPost && fullPost.slug) {
       // ✅ Cleanest method: Redirect with slug in URL
       window.location.href = `read.html?slug=${fullPost.slug}`;
@@ -700,24 +785,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const desc = card.querySelector(".card-desc");
       const author = card.querySelector(".author");
       const date = card.querySelector(".date");
-      
+
       const articleData = {
-        imgSrc: img ? img.src : 'src/image/heroImage.jpg',
+        imgSrc: img ? img.src : "src/image/heroImage.jpg",
         title: postTitle,
-        description: desc ? desc.textContent : '',
-        fullContent: fullPost ? fullPost.content : (desc ? desc.textContent : ''),
-        author: author ? author.textContent : 'PIHUB',
-        date: date ? date.textContent : ''
+        description: desc ? desc.textContent : "",
+        fullContent: fullPost ? fullPost.content : desc ? desc.textContent : "",
+        author: author ? author.textContent : "PIHUB",
+        date: date ? date.textContent : "",
       };
 
       localStorage.setItem("currentArticle", JSON.stringify(articleData));
       window.location.href = "read.html";
     }
   };
-  
+
   if (blogContainer) {
-    blogContainer.addEventListener('click', handleArticleClick);
+    blogContainer.addEventListener("click", handleArticleClick);
   }
 });
 
-console.log('Blog page animations and API integration fully initialized!');
+console.log("Blog page animations and API integration fully initialized!");

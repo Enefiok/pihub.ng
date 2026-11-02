@@ -519,6 +519,7 @@ nav #menuToggle:hover {
   font-size: 13px;
   margin-top: 10px;
   line-height: 1.5;
+  white-space: pre-line; 
   
   display: -webkit-box;
   -webkit-line-clamp: 3;
