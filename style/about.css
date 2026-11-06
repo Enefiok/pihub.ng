@@ -468,7 +468,7 @@ nav #menuToggle:hover {
 /* Image 1 - slide from left with zoom */
 .aboutinfo > div:nth-child(2) {
   border-radius: 0 130px 0 130px;
-  background: url("../src/image/who_we_are.jpg"); /* <--- FIXED */
+  background: url("../src/image/picture_of_people_in_a_workspace.jpg"); /* <--- FIXED */
   background-repeat: no-repeat;
   background-size: cover;
   height: 400px;
