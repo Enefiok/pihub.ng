@@ -1,7 +1,40 @@
 // ============================================================
-// 🔧 API CONFIGURATION
+// API CONFIGURATION
 // ============================================================
 const BASE_API_URL = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : "http://127.0.0.1:8000"; 
+
+// Course registration endpoints (defined in script/config.js, with a safe fallback)
+const REGISTRATION_ENDPOINTS = (typeof API_ENDPOINTS !== 'undefined') ? API_ENDPOINTS : {
+  COURSES: `${BASE_API_URL}/api/courses/`,
+  COURSE_REGISTER: `${BASE_API_URL}/api/courses/register/`,
+  REFERRAL_VALIDATE: `${BASE_API_URL}/api/referrals/validate/`,
+  PAYMENT_STATUS: `${BASE_API_URL}/api/courses/payment-status/`
+};
+
+// ============================================================
+// SMALL HELPERS (escaping and price formatting)
+// ============================================================
+function escapeHtml(value) {
+  return String(value === undefined || value === null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function parsePrice(value) {
+  const n = parseFloat(value);
+  return isFinite(n) ? n : 0;
+}
+
+function formatNaira(value) {
+  const n = parsePrice(value);
+  return "\u20A6" + n.toLocaleString("en-NG", {
+    minimumFractionDigits: n % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2
+  });
+}
 
 // ============================================================
 // INJECT DYNAMIC STYLES (Modals, Courses & Scroll Animations)
@@ -45,7 +78,7 @@ if (!document.getElementById("dynamic-styles")) {
     .course-enquiry-btn:hover { background-color: #256e46; transform: translateY(-2px); }
     .courseCard.disabled-course .course-enquiry-btn:hover { transform: none !important; }
 
-    /* Course Contact Choice Popup (WhatsApp / Gmail) — course cards only */
+    /* Course Contact Choice Popup (WhatsApp / Gmail) - course cards only */
     .course-contact-choice-content {
       max-width: 460px;
       padding: 34px;
@@ -89,7 +122,7 @@ if (!document.getElementById("dynamic-styles")) {
       .course-contact-choice-btn i { width: 42px; text-align: center; flex-shrink: 0; }
     }
 
-    /* 🚀 SCROLL-TRIGGERED SEQUENTIAL ANIMATIONS */
+    /* SCROLL-TRIGGERED SEQUENTIAL ANIMATIONS */
     .anim-fade-up { animation: animFadeUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
     .anim-fade-left { animation: animFadeLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
     .anim-fade-right { animation: animFadeRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
@@ -106,10 +139,83 @@ if (!document.getElementById("dynamic-styles")) {
 }
 
 // ============================================================
+// INJECT STYLES: COURSE REGISTER BUTTON + REGISTER MODAL
+// ============================================================
+if (!document.getElementById("register-modal-styles")) {
+  const regStyle = document.createElement("style");
+  regStyle.id = "register-modal-styles";
+  regStyle.textContent = `
+    /* Course card: two buttons side by side */
+    .course-actions { flex-wrap: wrap; gap: 10px; }
+    .course-register-btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; background-color: var(--primary-color, #fa7001); color: #fff; border: none; border-radius: 8px; font-family: inherit; font-size: 0.75rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background-color 0.25s ease, transform 0.25s ease; }
+    .course-register-btn:hover { background-color: #e06500; transform: translateY(-2px); }
+    .course-register-btn:focus-visible { outline: 2px solid var(--bg-black, #111111); outline-offset: 2px; }
+
+    /* Register modal */
+    .register-modal-content { max-width: 560px; }
+    .register-modal-content [hidden] { display: none !important; }
+    .reg-field { display: flex; flex-direction: column; margin: 0 0 16px; border: 0; padding: 0; min-width: 0; }
+    .reg-field label, .reg-field legend { font-size: 0.82rem; font-weight: 600; color: var(--text-dark, #1a1a1a); margin-bottom: 6px; padding: 0; }
+    .reg-optional { font-weight: 400; color: #888; }
+    .reg-field .form-input { margin-bottom: 0; }
+    .reg-field .form-input[readonly] { background: #f5f5f5; color: #555; cursor: default; }
+    .reg-field .form-input.has-error { border-color: #d32f2f; }
+    .reg-error { font-size: 0.75rem; color: #d32f2f; margin-top: 5px; line-height: 1.4; }
+    .reg-error:empty { display: none; }
+
+    .reg-referral-row { display: flex; gap: 10px; }
+    .reg-referral-row .form-input { flex: 1; min-width: 0; text-transform: uppercase; }
+    .reg-referral-row .form-input::placeholder { text-transform: none; }
+    .reg-apply-btn { flex-shrink: 0; height: 45px; padding: 0 20px; background: var(--bg-black, #111111); color: #fff; border: none; border-radius: 10px; font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background-color 0.25s ease; }
+    .reg-apply-btn:hover:not(:disabled) { background: var(--primary-color, #fa7001); }
+    .reg-apply-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+    .reg-apply-btn .spinner { width: 14px; height: 14px; border-width: 2px; margin-right: 0; }
+    .reg-referral-msg { font-size: 0.78rem; margin-top: 6px; line-height: 1.4; }
+    .reg-referral-msg:empty { display: none; }
+    .reg-referral-msg.success { color: #1b8a4b; }
+    .reg-referral-msg.error { color: #d32f2f; }
+
+    .reg-payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .reg-pay-card { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border: 1px solid #dddddd; border-radius: 12px; cursor: pointer; font-weight: 400; margin: 0; transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease; }
+    .reg-pay-card input { margin-top: 3px; accent-color: var(--primary-color, #fa7001); flex-shrink: 0; }
+    .reg-pay-card.selected { border-color: var(--primary-color, #fa7001); background: rgba(250, 112, 1, 0.06); box-shadow: 0 0 0 3px rgba(250, 112, 1, 0.12); }
+    .reg-pay-card.is-disabled { opacity: 0.5; cursor: not-allowed; }
+    .reg-pay-body { display: flex; flex-direction: column; gap: 3px; }
+    .reg-pay-body strong { font-size: 0.9rem; font-weight: 600; color: var(--text-dark, #1a1a1a); }
+    .reg-pay-body small { font-size: 0.72rem; color: #777; line-height: 1.4; }
+
+    .reg-summary { background: var(--bg-black, #111111); color: #fff; border-radius: 12px; padding: 16px 18px; margin: 4px 0 16px; }
+    .reg-summary-row { display: flex; justify-content: space-between; gap: 12px; font-size: 0.85rem; padding: 4px 0; color: rgba(255, 255, 255, 0.8); }
+    .reg-summary-row.discount { color: #7be0a4; }
+    .reg-summary-row.total { margin-top: 8px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.18); font-size: 1rem; font-weight: 700; color: #fff; }
+    .reg-summary-row.total span:last-child { color: var(--primary-color, #fa7001); font-size: 1.15rem; }
+
+    .reg-banner { padding: 12px 14px; margin-bottom: 14px; border-radius: 10px; background: #fdecea; color: #b3261e; border: 1px solid #f5c2be; font-size: 0.85rem; line-height: 1.5; }
+    .reg-submit-btn { width: 100%; height: 48px; background: var(--primary-color, #fa7001); color: #fff; border: none; border-radius: 10px; font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background-color 0.25s ease; }
+    .reg-submit-btn:hover:not(:disabled) { background: #e06500; }
+    .reg-submit-btn:disabled { opacity: 0.75; cursor: not-allowed; }
+
+    .reg-success-price { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 18px 0; padding: 14px 18px; border-radius: 12px; background: var(--bg-black, #111111); color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; }
+    .reg-success-price strong { color: var(--primary-color, #fa7001); font-size: 1.25rem; }
+    .reg-done-btn { margin-top: 10px; padding: 12px 34px; background: var(--primary-color, #fa7001); color: #fff; border: none; border-radius: 10px; font-family: inherit; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background-color 0.25s ease; }
+    .reg-done-btn:hover { background: #e06500; }
+
+    @media (max-width: 520px) {
+      .register-modal-content { padding: 26px 18px; }
+      .reg-payment-options { grid-template-columns: 1fr; }
+    }
+  `;
+  document.head.appendChild(regStyle);
+}
+
+// ============================================================
 // GLOBAL STATE FOR WORKSPACE PLANS
 // ============================================================
 let workspacePlansMap = {}; 
 let plansLoaded = false;
+
+// Courses loaded from the API, keyed by id (used by the Register modal)
+let coursesById = {};
 
 async function loadWorkspacePlans() {
   try {
@@ -129,7 +235,7 @@ async function loadWorkspacePlans() {
 }
 
 // ============================================================
-// COURSE CONTACT CHOICE POPUP (WhatsApp / Gmail) — course cards only
+// COURSE CONTACT CHOICE POPUP (WhatsApp / Gmail) - course cards only
 // ============================================================
 (function setupCourseContactChoicePopup() {
   const overlay = document.createElement("div");
@@ -203,6 +309,612 @@ async function loadWorkspacePlans() {
 })();
 
 // ============================================================
+// COURSE REGISTER MODAL (registration, referral code, payment option)
+// ============================================================
+(function setupCourseRegisterModal() {
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay register-modal-overlay";
+  overlay.innerHTML = `
+    <div class="modal-content register-modal-content" role="dialog" aria-modal="true" aria-labelledby="regTitle">
+      <button type="button" class="modal-close-btn" id="regClose" aria-label="Close registration form">&times;</button>
+
+      <div id="regFormView">
+        <h3 class="modal-title" id="regTitle">Register for a Course</h3>
+        <span class="modal-subtitle">Fill in your details to secure your place.</span>
+
+        <form id="registerForm" novalidate>
+          <div class="reg-field">
+            <label for="regFullName">Full name</label>
+            <input type="text" class="form-input" id="regFullName" name="full_name" placeholder="Enter your full name" autocomplete="name" maxlength="150">
+            <span class="reg-error" data-error-for="full_name"></span>
+          </div>
+
+          <div class="reg-field">
+            <label for="regEmail">Email address</label>
+            <input type="email" class="form-input" id="regEmail" name="email" placeholder="Enter your email address" autocomplete="email" maxlength="254">
+            <span class="reg-error" data-error-for="email"></span>
+          </div>
+
+          <div class="reg-field">
+            <label for="regPhone">Phone number <span class="reg-optional">(optional)</span></label>
+            <input type="tel" class="form-input" id="regPhone" name="phone" placeholder="Enter your phone number" autocomplete="tel" maxlength="20">
+            <span class="reg-error" data-error-for="phone"></span>
+          </div>
+
+          <div class="reg-field">
+            <label for="regCourse">Selected course</label>
+            <input type="text" class="form-input" id="regCourse" name="course" readonly tabindex="-1">
+            <span class="reg-error" data-error-for="course_id"></span>
+          </div>
+
+          <div class="reg-field">
+            <label for="regReferral">Referral code <span class="reg-optional">(optional)</span></label>
+            <div class="reg-referral-row">
+              <input type="text" class="form-input" id="regReferral" name="referral_code" placeholder="Enter referral code" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="50">
+              <button type="button" class="reg-apply-btn" id="regApplyBtn">Apply</button>
+            </div>
+            <span class="reg-referral-msg" id="regReferralMsg" role="status" aria-live="polite"></span>
+            <span class="reg-error" data-error-for="referral_code"></span>
+          </div>
+
+          <fieldset class="reg-field">
+            <legend>Payment option</legend>
+            <div class="reg-payment-options">
+              <label class="reg-pay-card selected" id="regPayNowCard">
+                <input type="radio" name="payment_option" value="pay_now" checked>
+                <span class="reg-pay-body">
+                  <strong>Pay now</strong>
+                  <small id="regPayNowHint">Pay securely online right after you submit.</small>
+                </span>
+              </label>
+              <label class="reg-pay-card" id="regPayLaterCard">
+                <input type="radio" name="payment_option" value="pay_later">
+                <span class="reg-pay-body">
+                  <strong>Fill now, pay later</strong>
+                  <small>Submit your details now and our team will contact you to arrange payment.</small>
+                </span>
+              </label>
+            </div>
+            <span class="reg-error" data-error-for="payment_option"></span>
+          </fieldset>
+
+          <div class="reg-summary" id="regSummary" aria-live="polite"></div>
+
+          <div class="reg-banner" id="regBanner" role="alert" hidden></div>
+
+          <button type="submit" class="reg-submit-btn" id="regSubmit"><span id="regSubmitLabel">Continue to payment</span></button>
+        </form>
+      </div>
+
+      <div id="regSuccessView" hidden></div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const els = {
+    closeBtn: overlay.querySelector("#regClose"),
+    formView: overlay.querySelector("#regFormView"),
+    successView: overlay.querySelector("#regSuccessView"),
+    form: overlay.querySelector("#registerForm"),
+    fullName: overlay.querySelector("#regFullName"),
+    email: overlay.querySelector("#regEmail"),
+    phone: overlay.querySelector("#regPhone"),
+    course: overlay.querySelector("#regCourse"),
+    referral: overlay.querySelector("#regReferral"),
+    applyBtn: overlay.querySelector("#regApplyBtn"),
+    referralMsg: overlay.querySelector("#regReferralMsg"),
+    payNowCard: overlay.querySelector("#regPayNowCard"),
+    payLaterCard: overlay.querySelector("#regPayLaterCard"),
+    payNowHint: overlay.querySelector("#regPayNowHint"),
+    summary: overlay.querySelector("#regSummary"),
+    banner: overlay.querySelector("#regBanner"),
+    submit: overlay.querySelector("#regSubmit"),
+    submitLabel: overlay.querySelector("#regSubmitLabel")
+  };
+
+  const payNowInput = els.payNowCard.querySelector("input");
+  const payLaterInput = els.payLaterCard.querySelector("input");
+  const PAY_NOW_HINT = els.payNowHint.textContent;
+
+  const state = {
+    course: null,
+    validation: null,      // last successful referral validation response
+    appliedCode: "",       // code the validation belongs to
+    lastCheckedCode: "",   // last code sent to the server (avoids repeat checks on blur)
+    validating: null,      // promise of an in-flight validation
+    submitting: false,
+    redirecting: false
+  };
+
+  // ---------- helpers ----------
+  function toText(value) {
+    if (Array.isArray(value)) return value.map(toText).join(" ");
+    if (value && typeof value === "object") return Object.values(value).map(toText).join(" ");
+    return String(value === undefined || value === null ? "" : value);
+  }
+
+  function extractMessage(data, fallback) {
+    if (!data || typeof data !== "object") return fallback;
+    const candidates = [data.code, data.error, data.detail, data.message, data.non_field_errors];
+    for (const item of candidates) {
+      const text = toText(item).trim();
+      if (text) return text;
+    }
+    const firstKey = Object.keys(data)[0];
+    if (firstKey) {
+      const text = toText(data[firstKey]).trim();
+      if (text) return text;
+    }
+    return fallback;
+  }
+
+  function getCoursePrice() {
+    return state.course ? parsePrice(state.course.price) : 0;
+  }
+
+  function getSelectedPayment() {
+    const checked = els.form.querySelector('input[name="payment_option"]:checked');
+    return checked ? checked.value : "";
+  }
+
+  // ---------- errors ----------
+  function clearErrors() {
+    els.form.querySelectorAll(".reg-error").forEach((el) => { el.textContent = ""; });
+    els.form.querySelectorAll(".form-input.has-error").forEach((el) => el.classList.remove("has-error"));
+    els.banner.hidden = true;
+    els.banner.textContent = "";
+  }
+
+  function showFieldError(name, message) {
+    const target = els.form.querySelector(`.reg-error[data-error-for="${name}"]`);
+    if (!target) return false;
+    target.textContent = message;
+    const input = target.parentElement.querySelector(".form-input");
+    if (input) input.classList.add("has-error");
+    return true;
+  }
+
+  function showBanner(message) {
+    els.banner.textContent = message;
+    els.banner.hidden = false;
+  }
+
+  // ---------- price summary ----------
+  function summaryRow(label, value, extraClass) {
+    return `<div class="reg-summary-row${extraClass ? " " + extraClass : ""}"><span>${label}</span><span>${value}</span></div>`;
+  }
+
+  function renderSummary() {
+    const base = getCoursePrice();
+    const v = state.validation;
+
+    if (!state.course) {
+      els.summary.innerHTML = "";
+      return;
+    }
+
+    if (!base) {
+      els.summary.innerHTML = summaryRow("Course fee", "Contact for pricing", "total");
+      return;
+    }
+
+    if (v) {
+      const percent = Number(v.discount_percent);
+      els.summary.innerHTML =
+        summaryRow("Original price", formatNaira(v.original_price !== undefined ? v.original_price : base)) +
+        summaryRow("Discount", isFinite(percent) ? escapeHtml(percent) + "%" : "-", "discount") +
+        summaryRow("Discount amount", "-" + formatNaira(v.discount_amount), "discount") +
+        summaryRow("Final price", formatNaira(v.final_price), "total");
+      return;
+    }
+
+    els.summary.innerHTML = summaryRow("Course fee", formatNaira(base), "total");
+  }
+
+  // ---------- payment option UI ----------
+  function syncPaymentUI() {
+    const value = getSelectedPayment();
+    els.payNowCard.classList.toggle("selected", value === "pay_now");
+    els.payLaterCard.classList.toggle("selected", value === "pay_later");
+    els.submitLabel.textContent = value === "pay_later" ? "Submit registration" : "Continue to payment";
+  }
+
+  // ---------- referral code ----------
+  function setReferralMessage(text, type) {
+    els.referralMsg.textContent = text || "";
+    els.referralMsg.className = "reg-referral-msg" + (type ? " " + type : "");
+  }
+
+  function clearReferralResult() {
+    state.validation = null;
+    state.appliedCode = "";
+    state.lastCheckedCode = "";
+    setReferralMessage("", "");
+    renderSummary();
+  }
+
+  function setApplyLoading(isLoading) {
+    els.applyBtn.disabled = isLoading;
+    els.applyBtn.innerHTML = isLoading ? '<span class="spinner"></span><span>Checking</span>' : "Apply";
+  }
+
+  async function runReferralValidation(code) {
+    setApplyLoading(true);
+    setReferralMessage("", "");
+    const referralErr = els.form.querySelector('.reg-error[data-error-for="referral_code"]');
+    if (referralErr) referralErr.textContent = "";
+    els.referral.classList.remove("has-error");
+
+    try {
+      const response = await fetch(REGISTRATION_ENDPOINTS.REFERRAL_VALIDATE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: code, course_id: state.course.id })
+      });
+
+      let data = {};
+      try { data = await response.json(); } catch (parseError) { data = {}; }
+
+      state.lastCheckedCode = code;
+
+      if (response.status === 429) {
+        state.validation = null;
+        state.appliedCode = "";
+        renderSummary();
+        setReferralMessage("Too many attempts. Please try again later.", "error");
+        return false;
+      }
+
+      if (!response.ok || data.valid === false) {
+        state.validation = null;
+        state.appliedCode = "";
+        renderSummary();
+        setReferralMessage(extractMessage(data, "This referral code is not valid."), "error");
+        return false;
+      }
+
+      state.validation = data;
+      state.appliedCode = code;
+      renderSummary();
+      setReferralMessage("Referral code applied. You save " + formatNaira(data.discount_amount) + ".", "success");
+      return true;
+    } catch (error) {
+      console.error("Referral validation failed:", error);
+      state.lastCheckedCode = code;
+      state.validation = null;
+      state.appliedCode = "";
+      renderSummary();
+      setReferralMessage("We could not check the code. Please check your connection and try again.", "error");
+      return false;
+    } finally {
+      setApplyLoading(false);
+    }
+  }
+
+  // Returns a promise resolving to true when the code is valid (or empty), false otherwise.
+  // force = true re-checks the same code (used by the Apply button and on submit).
+  function applyReferral(force) {
+    const code = els.referral.value.trim().toUpperCase();
+
+    if (!code) {
+      clearReferralResult();
+      return Promise.resolve(true);
+    }
+    if (!state.course) return Promise.resolve(false);
+
+    if (state.validating) return state.validating;
+
+    if (!force && code === state.lastCheckedCode) {
+      return Promise.resolve(!!state.validation && state.appliedCode === code);
+    }
+
+    state.validating = runReferralValidation(code).then((result) => {
+      state.validating = null;
+      return result;
+    });
+    return state.validating;
+  }
+
+  // ---------- open / close ----------
+  function resetModal() {
+    els.form.reset();
+    clearErrors();
+    state.validation = null;
+    state.appliedCode = "";
+    state.lastCheckedCode = "";
+    state.validating = null;
+    state.submitting = false;
+    state.redirecting = false;
+    setReferralMessage("", "");
+    setApplyLoading(false);
+    els.submit.disabled = false;
+    els.successView.hidden = true;
+    els.successView.innerHTML = "";
+    els.formView.hidden = false;
+  }
+
+  window.openRegisterModal = (course) => {
+    if (!course) return;
+    resetModal();
+    state.course = course;
+    els.course.value = course.title || "";
+
+    const priced = parsePrice(course.price) > 0;
+    payNowInput.disabled = !priced;
+    els.payNowCard.classList.toggle("is-disabled", !priced);
+    els.payNowHint.textContent = priced ? PAY_NOW_HINT : "Online payment is not available for this course yet.";
+    if (!priced) payLaterInput.checked = true;
+
+    syncPaymentUI();
+    renderSummary();
+
+    overlay.classList.add("active");
+    document.body.style.overflow = "hidden";
+  };
+
+  window.closeRegisterModal = () => {
+    if (!overlay.classList.contains("active")) return;
+    overlay.classList.remove("active");
+    document.body.style.overflow = "";
+  };
+
+  els.closeBtn.addEventListener("click", window.closeRegisterModal);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) window.closeRegisterModal(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("active")) window.closeRegisterModal();
+  });
+
+  // ---------- events: payment option ----------
+  els.form.querySelectorAll('input[name="payment_option"]').forEach((input) => {
+    input.addEventListener("change", () => {
+      syncPaymentUI();
+      const err = els.form.querySelector('.reg-error[data-error-for="payment_option"]');
+      if (err) err.textContent = "";
+    });
+  });
+
+  // ---------- events: clear field errors while typing ----------
+  [els.fullName, els.email, els.phone].forEach((input) => {
+    input.addEventListener("input", () => {
+      input.classList.remove("has-error");
+      const err = input.parentElement.querySelector(".reg-error");
+      if (err) err.textContent = "";
+    });
+  });
+
+  // ---------- events: referral code (no validation on every keystroke) ----------
+  els.referral.addEventListener("input", () => {
+    const current = els.referral.value.trim().toUpperCase();
+    els.referral.classList.remove("has-error");
+    const err = els.form.querySelector('.reg-error[data-error-for="referral_code"]');
+    if (err) err.textContent = "";
+
+    if (state.validation && current !== state.appliedCode) {
+      clearReferralResult();
+    } else if (!state.validation) {
+      state.lastCheckedCode = current === state.lastCheckedCode ? state.lastCheckedCode : "";
+      setReferralMessage("", "");
+    }
+  });
+
+  els.referral.addEventListener("blur", (e) => {
+    if (e.relatedTarget && e.relatedTarget.id === "regClose") return;
+    if (!els.referral.value.trim()) return;
+    applyReferral(false);
+  });
+
+  els.referral.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      applyReferral(true);
+    }
+  });
+
+  els.applyBtn.addEventListener("click", () => {
+    if (!els.referral.value.trim()) {
+      setReferralMessage("Enter a referral code first.", "error");
+      els.referral.focus();
+      return;
+    }
+    applyReferral(true);
+  });
+
+  // ---------- validation ----------
+  function validateForm() {
+    clearErrors();
+    const errors = {};
+
+    const fullName = els.fullName.value.trim();
+    const email = els.email.value.trim();
+    const phone = els.phone.value.trim();
+    const paymentOption = getSelectedPayment();
+    const referralCode = els.referral.value.trim().toUpperCase();
+
+    if (!fullName) errors.full_name = "Please enter your full name.";
+    else if (fullName.length < 2) errors.full_name = "Your name looks too short.";
+
+    if (!email) errors.email = "Please enter your email address.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Please enter a valid email address.";
+
+    if (phone && !/^\+?[\d\s\-()]{7,20}$/.test(phone)) errors.phone = "Please enter a valid phone number.";
+
+    if (!state.course || !state.course.id) errors.course_id = "No course selected. Please close this form and try again.";
+
+    if (paymentOption !== "pay_now" && paymentOption !== "pay_later") errors.payment_option = "Please choose a payment option.";
+
+    const keys = Object.keys(errors);
+    if (keys.length) {
+      keys.forEach((key) => showFieldError(key, errors[key]));
+      const firstKey = keys[0];
+      const firstInput = { full_name: els.fullName, email: els.email, phone: els.phone }[firstKey];
+      if (firstInput) firstInput.focus();
+      return null;
+    }
+
+    return {
+      course_id: state.course.id,
+      full_name: fullName,
+      email: email,
+      phone: phone,
+      payment_option: paymentOption,
+      referral_code: referralCode
+    };
+  }
+
+  // ---------- submit ----------
+  function setSubmitting(isSubmitting, label) {
+    state.submitting = isSubmitting;
+    els.submit.disabled = isSubmitting;
+    if (isSubmitting) {
+      els.submit.innerHTML = '<span class="spinner"></span><span>' + escapeHtml(label || "Processing...") + "</span>";
+    } else {
+      els.submit.innerHTML = '<span id="regSubmitLabel"></span>';
+      els.submitLabel = els.submit.querySelector("#regSubmitLabel");
+      syncPaymentUI();
+    }
+  }
+
+  function handleRegisterErrors(data) {
+    const fieldMap = {
+      full_name: "full_name",
+      email: "email",
+      phone: "phone",
+      course_id: "course_id",
+      payment_option: "payment_option",
+      referral_code: "referral_code",
+      code: "referral_code"
+    };
+    const bannerMessages = [];
+    let fieldErrorShown = false;
+
+    if (data && typeof data === "object") {
+      Object.keys(data).forEach((key) => {
+        const text = toText(data[key]).trim();
+        if (!text) return;
+        if (fieldMap[key]) {
+          if (showFieldError(fieldMap[key], text)) fieldErrorShown = true;
+        } else if (key === "error" || key === "detail" || key === "message" || key === "non_field_errors") {
+          bannerMessages.push(text);
+        } else {
+          bannerMessages.push(text);
+        }
+      });
+    }
+
+    if (bannerMessages.length) {
+      showBanner(bannerMessages.join(" "));
+    } else if (!fieldErrorShown) {
+      showBanner("Something went wrong while submitting your registration. Please try again or contact us directly.");
+    }
+  }
+
+  function showPayLaterSuccess(data, values) {
+    let finalPrice = data && data.final_price !== undefined && data.final_price !== null ? data.final_price : null;
+    if (finalPrice === null && state.validation) finalPrice = state.validation.final_price;
+    if (finalPrice === null) finalPrice = state.course ? state.course.price : 0;
+
+    const priceHtml = parsePrice(finalPrice) > 0
+      ? `<div class="reg-success-price"><span>Amount to pay</span><strong>${formatNaira(finalPrice)}</strong></div>`
+      : "";
+
+    els.successView.innerHTML = `
+      <div class="success-container">
+        <div class="success-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg></div>
+        <h3 class="success-title">Registration Received</h3>
+        <p class="success-message">Thank you, ${escapeHtml(values.full_name)}. Your registration for ${escapeHtml(state.course.title)} has been received.</p>
+        ${priceHtml}
+        <p class="success-message">Our team will contact you shortly to arrange payment and confirm your place.</p>
+        <button type="button" class="reg-done-btn" id="regDoneBtn">Done</button>
+      </div>
+    `;
+    els.formView.hidden = true;
+    els.successView.hidden = false;
+    const doneBtn = els.successView.querySelector("#regDoneBtn");
+    if (doneBtn) doneBtn.addEventListener("click", window.closeRegisterModal);
+  }
+
+  els.form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (state.submitting) return;
+
+    const values = validateForm();
+    if (!values) return;
+
+    setSubmitting(true, "Processing...");
+
+    try {
+      // Make sure any entered referral code has been checked before submitting
+      if (values.referral_code) {
+        const codeOk = (state.validation && state.appliedCode === values.referral_code)
+          ? true
+          : await applyReferral(true);
+        if (!codeOk) {
+          els.referral.focus();
+          return;
+        }
+      }
+
+      // The price is never sent. The backend calculates it from the course and code.
+      const payload = {
+        course_id: values.course_id,
+        full_name: values.full_name,
+        email: values.email,
+        phone: values.phone,
+        payment_option: values.payment_option,
+        referral_code: values.referral_code
+      };
+
+      const response = await fetch(REGISTRATION_ENDPOINTS.COURSE_REGISTER, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      let data = {};
+      try { data = await response.json(); } catch (parseError) { data = {}; }
+
+      if (response.status === 429) {
+        showBanner("Too many requests. Please wait a while and try again later.");
+        return;
+      }
+
+      if (!response.ok) {
+        handleRegisterErrors(data);
+        return;
+      }
+
+      if (values.payment_option === "pay_now") {
+        if (data.authorization_url) {
+          state.redirecting = true;
+          setSubmitting(true, "Redirecting to payment...");
+          window.location.href = data.authorization_url;
+          return;
+        }
+        showBanner("We could not start the payment. Please try again or contact us directly.");
+        return;
+      }
+
+      showPayLaterSuccess(data, values);
+    } catch (error) {
+      console.error("Course registration failed:", error);
+      showBanner("We could not reach the server. Please check your connection and try again.");
+    } finally {
+      if (!state.redirecting) setSubmitting(false);
+    }
+  });
+
+  // ---------- Register button on course cards (event delegation) ----------
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".course-register-btn");
+    if (!btn) return;
+    e.preventDefault();
+    const id = btn.getAttribute("data-course-id");
+    const course = coursesById[id] || { id: id, title: btn.getAttribute("data-course") || "Course", price: "0.00" };
+    window.openRegisterModal(course);
+  });
+})();
+
+// ============================================================
 // COURSES API INTEGRATION
 // ============================================================
 async function loadCourses() {
@@ -212,7 +924,7 @@ async function loadCourses() {
   coursesContainer.innerHTML = '<div style="text-align:center; padding: 40px; color: #777;">Loading courses...</div>';
 
   try {
-    const response = await fetch(`${BASE_API_URL}/api/courses/`);
+    const response = await fetch(REGISTRATION_ENDPOINTS.COURSES);
     if (!response.ok) throw new Error("Failed to fetch courses");
     
     const courses = await response.json();
@@ -223,19 +935,21 @@ async function loadCourses() {
       return;
     }
 
+    coursesById = {};
+    courses.forEach((course) => { coursesById[String(course.id)] = course; });
+
     courses.forEach((course, index) => {
       const isUnavailable = course.status === 'UNAVAILABLE';
       const isComingSoon = course.status === 'COMING_SOON';
       const isDisabled = isUnavailable || isComingSoon; 
+      const safeTitle = escapeHtml(course.title);
       
       let imageHtml = '';
       if (course.image) {
-        imageHtml = `<div class="cardPic" style="background-image: url('${course.image}'); background-color: #f0f0f0;" 
-          onerror="this.style.background='linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.innerHTML='<span style=\'color:white; font-size:3rem;\'>📚</span>'">
-        </div>`;
+        imageHtml = `<div class="cardPic" style="background-image: url('${course.image}'); background-color: #f0f0f0;"></div>`;
       } else {
         imageHtml = `<div class="cardPic" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
-          <span style="color: white; font-size: 3rem;">📚</span>
+          <i class="fas fa-book" style="color: white; font-size: 3rem;"></i>
         </div>`;
       }
       
@@ -249,9 +963,12 @@ async function loadCourses() {
           <i class="fas fa-clock"></i> Coming Soon
         </span>`;
       } else {
-        actionButton = `<span class="course-enquiry-btn" data-course="${course.title}">
+        actionButton = `<span class="course-enquiry-btn" data-course="${safeTitle}">
           <i class="fab fa-whatsapp"></i> Make Enquiry
-        </span>`;
+        </span>
+        <button type="button" class="course-register-btn" data-course-id="${escapeHtml(course.id)}" data-course="${safeTitle}">
+          <i class="fas fa-user-plus"></i> Register
+        </button>`;
       }
       
       const courseCard = document.createElement("div");
@@ -260,9 +977,9 @@ async function loadCourses() {
       
       courseCard.innerHTML = `
         ${imageHtml}
-        <div class="course-title">${course.title}</div>
-        <div class="course-desc">${course.description || 'No description available'}</div>
-        <div class="course-duration"><i class="fas fa-clock"></i> ${course.duration}</div>
+        <div class="course-title">${safeTitle}</div>
+        <div class="course-desc">${escapeHtml(course.description || 'No description available')}</div>
+        <div class="course-duration"><i class="fas fa-clock"></i> ${escapeHtml(course.duration)}</div>
         <div class="course-actions">
           ${actionButton}
         </div>
@@ -276,7 +993,7 @@ async function loadCourses() {
 
   } catch (error) {
     console.error("Error loading courses:", error);
-    coursesContainer.innerHTML = `<div style="text-align:center; padding: 40px;"><p style="color: #d32f2f; margin-bottom: 10px;">Failed to load courses</p><p style="color: #777; font-size: 0.9rem;">${error.message}</p></div>`;
+    coursesContainer.innerHTML = `<div style="text-align:center; padding: 40px;"><p style="color: #d32f2f; margin-bottom: 10px;">Failed to load courses</p><p style="color: #777; font-size: 0.9rem;">${escapeHtml(error.message)}</p></div>`;
   }
 }
 
@@ -333,7 +1050,7 @@ if (mobileMenu) {
 }
 
 // ============================================================
-// 🚀 SCROLL-TRIGGERED SEQUENTIAL ANIMATIONS (NO NAVBAR)
+// SCROLL-TRIGGERED SEQUENTIAL ANIMATIONS (NO NAVBAR)
 // ============================================================
 function setupScrollReveal() {
   const observerOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
@@ -418,7 +1135,7 @@ function updateOptionButtonState(panelId) {
   });
 }
 
-// 🚀 Sequential animations when switching tabs
+// Sequential animations when switching tabs
 function revealPanelContents(panelId, panel) {
   if (!panel) return;
   
@@ -477,10 +1194,11 @@ function switchToPanel(panelId) {
   }
   if (window.closeBookingModal && panelId !== "workspace") window.closeBookingModal();
   if (window.closeEnquiryModal) window.closeEnquiryModal();
+  if (window.closeRegisterModal) window.closeRegisterModal();
   setTimeout(() => revealPanelContents(panelId, targetPanel), 100);
 }
 
-// 🚀 Sequential animations for the default loaded Workspace panel
+// Sequential animations for the default loaded Workspace panel
 function initWorkspaceAnimations() {
   const workspacePanel = panels.workspace;
   if (!workspacePanel) return;
@@ -516,7 +1234,7 @@ optionBtns.forEach((btn) => {
   });
 });
 
-// ✅ UPDATED: Always defaults to "workspace" unless a hash is in the URL
+// Always defaults to "workspace" unless a hash is in the URL
 document.addEventListener("DOMContentLoaded", function () {
   loadWorkspacePlans();
   loadCourses(); 
@@ -530,7 +1248,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
   switchToPanel(initialPanel);
   
-  // 🚀 Trigger scroll-based animations (NO NAVBAR)
+  // Trigger scroll-based animations (NO NAVBAR)
   setupScrollReveal();
 });
 
@@ -867,8 +1585,8 @@ if (bookingForm) {
         body: JSON.stringify({
           reference: bookingReference,
           email: email
-          // 🔒 SECURITY: We intentionally DO NOT send 'amount' here. 
-          // The backend securely fetches the real price from the database!
+          // SECURITY: We intentionally DO NOT send 'amount' here. 
+          // The backend securely fetches the real price from the database.
         })
       });
 

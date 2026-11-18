@@ -2,6 +2,9 @@
 // SHARED NAVIGATION LOGIC FOR ALL PAGES
 // ============================================================
 
+// True on offer.html and also on hosts that serve it without the extension (/offer)
+const IS_OFFER_PAGE = /(^|\/)offer(\.html)?\/?$/i.test(window.location.pathname);
+
 // ============================================================
 // MOBILE MENU (shared across all pages)
 // ============================================================
@@ -63,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       // If we're on the offer page and it's a hash link
-      if (panelId && window.location.pathname.includes('offer.html')) {
+      if (panelId && IS_OFFER_PAGE) {
         e.preventDefault();
         
         // Switch to the panel
@@ -109,8 +112,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ============================================================
 // HANDLE HASH ON PAGE LOAD (For offer.html)
+// Used by the "Register Now" button on the home page (offer.html#courses).
+// The browser cannot scroll to #courses by itself (the panels use data-panel,
+// not ids), so this scrolls to the offer section below the fixed header.
 // ============================================================
-if (window.location.pathname.includes('offer.html')) {
+if (IS_OFFER_PAGE) {
   // Wait for DOM and panels to be ready
   document.addEventListener('DOMContentLoaded', function() {
     // Check for hash in URL
@@ -123,7 +129,12 @@ if (window.location.pathname.includes('offer.html')) {
       // Small delay to ensure panels are initialized
       setTimeout(() => {
         if (typeof switchToPanel === 'function') {
-          switchToPanel(hash);
+          // offer.js already switches to the hash panel on load; only switch
+          // here if that did not happen, so animations are not reset twice
+          const targetPanel = document.querySelector(`.offer-panel[data-panel="${hash}"]`);
+          if (!targetPanel || !targetPanel.classList.contains('active')) {
+            switchToPanel(hash);
+          }
           
           // Scroll to offer section
           const offerSection = document.querySelector('.offer');
@@ -140,7 +151,7 @@ if (window.location.pathname.includes('offer.html')) {
 // ============================================================
 // HANDLE HASH CHANGE (For offer.html)
 // ============================================================
-if (window.location.pathname.includes('offer.html')) {
+if (IS_OFFER_PAGE) {
   window.addEventListener('hashchange', function() {
     const hash = window.location.hash.replace('#', '');
     const validPanels = ['workspace', 'privateRoom', 'conferenceRoom', 'podcast', 'courses'];
@@ -164,7 +175,7 @@ if (window.location.pathname.includes('offer.html')) {
 // Store target panel in localStorage when clicking from other pages
 document.addEventListener('DOMContentLoaded', function() {
   // If we're not on offer page, handle service link clicks
-  if (!window.location.pathname.includes('offer.html')) {
+  if (!IS_OFFER_PAGE) {
     const serviceLinks = document.querySelectorAll('.footer a[href*="offer.html#"]');
     
     serviceLinks.forEach(link => {

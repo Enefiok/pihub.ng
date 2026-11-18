@@ -23,6 +23,8 @@
 
     <!-- OFFER CSS -->
     <link rel="stylesheet" href="style/offer.css?v=1.2" />
+    <!-- COURSE REGISTRATION (Register button + registration modal) -->
+    <link rel="stylesheet" href="style/offer-register.css?v=1.0" />
   </head>
 
   <body>
@@ -181,7 +183,8 @@
         <span class="options2-title">Courses</span>
         <span class="options2-desc">Flexible learning programs designed to help you build practical, in-demand skills.</span>
         <div class="options3" id="courses-container">
-          <!-- Courses will be loaded dynamically from the API -->
+          <!-- Courses (with Make Enquiry and Register buttons) are loaded dynamically from the API in offer.js.
+               The registration modal is also built and appended to the body by offer.js, so no markup is needed here. -->
         </div>
       </div>
     </section>
@@ -239,9 +242,9 @@
 <!-- FOOTER -->
 
     
-    <!-- SCRIPTS -->
-    <script src="script/config.js"></script>
-    <script src="script/navigation.js"></script>
-    <script src="script/offer.js?v=3"></script>
+    <!-- SCRIPTS (config.js must load before offer.js; navigation.js before offer.js) -->
+    <script src="script/config.js?v=2"></script>
+    <script src="script/navigation.js?v=2"></script>
+    <script src="script/offer.js?v=4"></script>
   </body>
 </html>

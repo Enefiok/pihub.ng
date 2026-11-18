@@ -2443,3 +2443,707 @@ nav #menuToggle:hover {
     padding: 20px 16px;
   }
 }
+
+
+
+/* ============================================================
+   COURSE REGISTRATION - Register button and registration modal
+   Loaded by offer.html after offer.css.
+   Base modal styles (.modal-overlay, .modal-content, .form-input,
+   .spinner, .success-*) are provided by offer.js and are reused here.
+   ============================================================ */
+
+/* ---------- Course card: two buttons side by side ---------- */
+.course-actions { flex-wrap: wrap; gap: 10px; }
+
+.course-register-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background-color: var(--primary-color, #fa7001);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.25s ease, transform 0.25s ease;
+}
+.course-register-btn:hover { background-color: #e06500; transform: translateY(-2px); }
+.course-register-btn:active { transform: translateY(0); }
+.course-register-btn:focus-visible,
+.course-enquiry-btn:focus-visible {
+  outline: 2px solid var(--bg-black, #111111);
+  outline-offset: 2px;
+}
+
+/* ---------- Modal shell ---------- */
+.register-modal-content { max-width: 560px; }
+.register-modal-content [hidden] { display: none !important; }
+
+.register-modal-content .modal-close-btn:focus-visible {
+  outline: 2px solid var(--primary-color, #fa7001);
+  outline-offset: 2px;
+}
+
+/* ---------- Fields ---------- */
+.reg-field {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 16px;
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.reg-field label,
+.reg-field legend {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-dark, #1a1a1a);
+  margin-bottom: 6px;
+  padding: 0;
+}
+.reg-optional { font-weight: 400; color: #888; }
+
+.reg-field .form-input { margin-bottom: 0; }
+.reg-field .form-input[readonly] { background: #f5f5f5; color: #555; cursor: default; }
+.reg-field .form-input:focus-visible {
+  outline: none;
+  border-color: var(--primary-color, #fa7001);
+  box-shadow: 0 0 0 3px rgba(250, 112, 1, 0.18);
+}
+.reg-field .form-input.has-error { border-color: #d32f2f; }
+.reg-field .form-input.has-error:focus-visible {
+  border-color: #d32f2f;
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.15);
+}
+
+.reg-error { font-size: 0.75rem; color: #d32f2f; margin-top: 5px; line-height: 1.4; }
+.reg-error:empty { display: none; }
+
+/* ---------- Referral code row ---------- */
+.reg-referral-row { display: flex; gap: 10px; }
+.reg-referral-row .form-input { flex: 1; min-width: 0; text-transform: uppercase; }
+.reg-referral-row .form-input::placeholder { text-transform: none; }
+
+.reg-apply-btn {
+  flex-shrink: 0;
+  height: 45px;
+  padding: 0 20px;
+  background: var(--bg-black, #111111);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background-color 0.25s ease;
+}
+.reg-apply-btn:hover:not(:disabled) { background: var(--primary-color, #fa7001); }
+.reg-apply-btn:focus-visible {
+  outline: 2px solid var(--primary-color, #fa7001);
+  outline-offset: 2px;
+}
+.reg-apply-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+.reg-apply-btn .spinner { width: 14px; height: 14px; border-width: 2px; margin-right: 0; }
+
+.reg-referral-msg { font-size: 0.78rem; margin-top: 6px; line-height: 1.4; }
+.reg-referral-msg:empty { display: none; }
+.reg-referral-msg.success { color: #1b8a4b; }
+.reg-referral-msg.error { color: #d32f2f; }
+
+/* ---------- Payment option radio cards ---------- */
+.reg-payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.reg-pay-card {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px;
+  border: 1px solid #dddddd;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 400;
+  margin: 0;
+  transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+}
+.reg-pay-card:hover { border-color: var(--primary-color, #fa7001); }
+.reg-pay-card input {
+  margin-top: 3px;
+  accent-color: var(--primary-color, #fa7001);
+  flex-shrink: 0;
+}
+.reg-pay-card.selected {
+  border-color: var(--primary-color, #fa7001);
+  background: rgba(250, 112, 1, 0.06);
+  box-shadow: 0 0 0 3px rgba(250, 112, 1, 0.12);
+}
+.reg-pay-card:focus-within {
+  border-color: var(--primary-color, #fa7001);
+  box-shadow: 0 0 0 3px rgba(250, 112, 1, 0.28);
+}
+.reg-pay-card.is-disabled { opacity: 0.5; cursor: not-allowed; }
+.reg-pay-card.is-disabled:hover { border-color: #dddddd; }
+
+.reg-pay-body { display: flex; flex-direction: column; gap: 3px; }
+.reg-pay-body strong { font-size: 0.9rem; font-weight: 600; color: var(--text-dark, #1a1a1a); }
+.reg-pay-body small { font-size: 0.72rem; color: #777; line-height: 1.4; }
+
+/* ---------- Price summary ---------- */
+.reg-summary {
+  background: var(--bg-black, #111111);
+  color: #fff;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 4px 0 16px;
+}
+.reg-summary:empty { display: none; }
+.reg-summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.85rem;
+  padding: 4px 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+.reg-summary-row.discount { color: #7be0a4; }
+.reg-summary-row.total {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+.reg-summary-row.total span:last-child {
+  color: var(--primary-color, #fa7001);
+  font-size: 1.15rem;
+}
+
+/* ---------- Error banner ---------- */
+.reg-banner {
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background: #fdecea;
+  color: #b3261e;
+  border: 1px solid #f5c2be;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* ---------- Submit button (default, loading, disabled) ---------- */
+.reg-submit-btn {
+  width: 100%;
+  height: 48px;
+  background: var(--primary-color, #fa7001);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.25s ease;
+}
+.reg-submit-btn:hover:not(:disabled) { background: #e06500; }
+.reg-submit-btn:focus-visible {
+  outline: 2px solid var(--bg-black, #111111);
+  outline-offset: 3px;
+}
+.reg-submit-btn:disabled { opacity: 0.75; cursor: not-allowed; }
+
+/* ---------- Success state (pay later) ---------- */
+.reg-success-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: var(--bg-black, #111111);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+}
+.reg-success-price strong { color: var(--primary-color, #fa7001); font-size: 1.25rem; }
+
+.reg-done-btn {
+  margin-top: 10px;
+  padding: 12px 34px;
+  background: var(--primary-color, #fa7001);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+.reg-done-btn:hover { background: #e06500; }
+.reg-done-btn:focus-visible {
+  outline: 2px solid var(--bg-black, #111111);
+  outline-offset: 3px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 520px) {
+  .register-modal-content { padding: 26px 18px; }
+  .reg-payment-options { grid-template-columns: 1fr; }
+  .course-actions { justify-content: flex-start; }
+}
+
+@media (max-width: 380px) {
+  .reg-referral-row { flex-direction: column; }
+  .reg-apply-btn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-register-btn,
+  .reg-pay-card,
+  .reg-apply-btn,
+  .reg-submit-btn,
+  .reg-done-btn { transition: none; }
+  .course-register-btn:hover { transform: none; }
+}
+
+
+
+/* ============================================================
+   PAYMENT STATUS PAGE
+   Loaded after style/offer.css, which provides the variables,
+   navbar, hero and footer. Nothing here overrides those parts.
+   ============================================================ */
+
+/* Keep the footer at the bottom on tall screens (body is a flex column) */
+body.payment-page {
+  min-height: 100vh;
+}
+
+/* ============================================================
+   SECTION + CARD
+   ============================================================ */
+
+.paymentSection {
+  flex: 1 0 auto;
+
+  min-height: 420px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  padding: 70px var(--container-pad, 7%) 100px;
+
+  background-color: var(--bg-cream, #fff8f3);
+}
+
+.paymentCard {
+  width: 100%;
+  max-width: 520px;
+
+  padding: 44px 36px;
+
+  background-color: var(--natural-color, #ffffff);
+
+  border: 1px solid #f0e6df;
+  border-radius: var(--radius-lg, 20px);
+
+  box-shadow: 0 14px 40px rgba(17, 15, 14, 0.1);
+
+  text-align: center;
+}
+
+.payState {
+  animation: payFadeIn 0.4s ease both;
+}
+
+@keyframes payFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   ICON HOLDERS
+   ============================================================ */
+
+.payIcon {
+  width: 84px;
+  height: 84px;
+
+  margin: 0 auto 22px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+}
+
+.payIcon svg {
+  width: 40px;
+  height: 40px;
+}
+
+.payIcon-loading {
+  background-color: #fff0e5;
+}
+
+.payIcon-success {
+  background-color: #e7f7ee;
+  color: #1b8a4b;
+}
+
+.payIcon-warning {
+  background-color: #fff0e5;
+  color: var(--primary-color, #fa7001);
+}
+
+.payIcon-error {
+  background-color: #fdecea;
+  color: #d32f2f;
+}
+
+/* ============================================================
+   SPINNER (offer.js is not loaded on this page, so it is defined here)
+   ============================================================ */
+
+.spinner {
+  display: inline-block;
+
+  width: 18px;
+  height: 18px;
+
+  border: 3px solid rgba(250, 112, 1, 0.22);
+  border-top-color: var(--primary-color, #fa7001);
+  border-radius: 50%;
+
+  animation: paySpin 0.8s linear infinite;
+
+  vertical-align: middle;
+}
+
+.payBigSpinner {
+  width: 44px;
+  height: 44px;
+
+  border-width: 4px;
+}
+
+@keyframes paySpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================
+   TEXT
+   ============================================================ */
+
+.payTitle {
+  margin-bottom: 10px;
+
+  font-size: clamp(1.4rem, 3vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.25;
+
+  color: var(--text-dark, #1a1a1a);
+}
+
+.payTitle:focus {
+  outline: none;
+}
+
+.payMessage {
+  max-width: 420px;
+
+  margin-inline: auto;
+
+  font-size: 0.92rem;
+  line-height: 1.7;
+
+  color: var(--text-light, #555555);
+}
+
+.payNote {
+  max-width: 420px;
+
+  margin: 20px auto 0;
+
+  font-size: 0.85rem;
+  line-height: 1.6;
+
+  color: var(--text-muted, #777777);
+}
+
+/* ============================================================
+   DETAILS (course, amount, reference)
+   ============================================================ */
+
+.payDetails {
+  margin-top: 24px;
+
+  padding: 4px 18px;
+
+  background-color: #f6f6f6;
+
+  border-radius: 12px;
+
+  text-align: left;
+}
+
+.payDetailRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.payDetailRow:last-child {
+  border-bottom: none;
+}
+
+.payDetailLabel {
+  flex-shrink: 0;
+
+  font-size: 0.8rem;
+
+  color: var(--text-muted, #777777);
+}
+
+.payDetailValue {
+  min-width: 0;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  text-align: right;
+
+  color: var(--text-dark, #1a1a1a);
+
+  overflow-wrap: anywhere;
+}
+
+.payDetailValue-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+
+  color: var(--primary-color, #fa7001);
+}
+
+/* ============================================================
+   BUTTONS + LINKS
+   ============================================================ */
+
+.payActions {
+  margin-top: 28px;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  gap: 12px;
+}
+
+.payBtn {
+  min-height: 46px;
+
+  padding: 0 28px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--primary-color, #fa7001);
+  border-radius: 10px;
+
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.payBtn-primary {
+  background-color: var(--primary-color, #fa7001);
+
+  color: var(--natural-color, #ffffff);
+}
+
+.payBtn-primary:hover {
+  background-color: var(--primary-color-dark, #e26400);
+
+  border-color: var(--primary-color-dark, #e26400);
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 18px rgba(250, 112, 1, 0.25);
+}
+
+.payBtn-secondary {
+  background-color: transparent;
+
+  color: var(--primary-color, #fa7001);
+}
+
+.payBtn-secondary:hover {
+  background-color: var(--primary-color, #fa7001);
+
+  color: var(--natural-color, #ffffff);
+
+  transform: translateY(-2px);
+}
+
+.payBtn:active {
+  transform: translateY(0);
+}
+
+.payBtn:focus-visible,
+.payLink:focus-visible {
+  outline: 2px solid var(--bg-black, #110f0e);
+  outline-offset: 3px;
+}
+
+.payLinks {
+  margin-top: 18px;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  gap: 8px 22px;
+}
+
+.payLink {
+  font-size: 0.85rem;
+
+  color: var(--text-muted, #777777);
+
+  text-decoration: underline;
+  text-underline-offset: 3px;
+
+  transition: color 0.25s ease;
+}
+
+.payLink:hover {
+  color: var(--primary-color, #fa7001);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 767px) {
+  .paymentSection {
+    padding: 40px 6% 70px;
+  }
+
+  .paymentCard {
+    padding: 36px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .paymentSection {
+    padding: 28px 5% 60px;
+  }
+
+  .paymentCard {
+    padding: 30px 18px;
+  }
+
+  .payIcon {
+    width: 72px;
+    height: 72px;
+
+    margin-bottom: 18px;
+  }
+
+  .payIcon svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .payMessage {
+    font-size: 0.88rem;
+  }
+
+  .payActions {
+    flex-direction: column;
+  }
+
+  .payBtn {
+    width: 100%;
+  }
+
+  .payDetailRow {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 2px;
+  }
+
+  .payDetailValue {
+    text-align: left;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   offer.css freezes all animations for this setting. The spinner is
+   the only progress indicator, so it keeps turning, slowly.
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .payState {
+    animation: none;
+  }
+
+  .payBtn,
+  .payLink {
+    transition: none;
+  }
+
+  .payBtn-primary:hover,
+  .payBtn-secondary:hover {
+    transform: none;
+  }
+
+  .spinner {
+    animation-duration: 2.4s !important;
+    animation-iteration-count: infinite !important;
+  }
+}

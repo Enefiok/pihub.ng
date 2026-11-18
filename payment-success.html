@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Payment Status | PIHUB</title>
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <!-- FAVICON -->
+
+    <!-- GOOGLE FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet" href="src/Fontawesome/css/all.min.css" />
+
+    <!-- SHARED SITE STYLES (navbar, hero, footer) then page styles -->
+    <link rel="stylesheet" href="style/offer.css?v=1.2" />
+    <link rel="stylesheet" href="style/payment-success.css?v=1.0" />
+  </head>
+
+  <body class="payment-page">
+    <!-- HERO + NAVBAR -->
+    <section class="heronav">
+      <nav>
+        <a href="index.html">
+          <img src="src/image/logo on black background without background11.png" alt="PIHUB logo" />
+        </a>
+        <div class="links">
+          <a href="index.html" class="page-link">Home</a>
+          <a href="about.html" class="page-link">About</a>
+          <a href="offer.html" class="page-link active">Services</a>
+          <a href="blog.html" class="page-link">Blog</a>
+        </div>
+        <div class="navActions">
+          <a href="contactus.html" id="contactUs" class="page-link">Contact Us</a>
+          <i class="fas fa-bars" id="menuToggle" aria-label="Open menu" role="button" tabindex="0"></i>
+        </div>
+      </nav>
+
+      <div class="mobileMenu" id="mobileMenu">
+        <i class="fas fa-times" id="menuClose" aria-label="Close menu" role="button" tabindex="0"></i>
+        <a href="index.html" class="page-link">Home</a>
+        <a href="about.html" class="page-link">About</a>
+        <a href="offer.html" class="page-link active">Services</a>
+        <a href="blog.html" class="page-link">Blog</a>
+      </div>
+      <div class="menuOverlay" id="menuOverlay"></div>
+
+      <section class="hero">Payment <span>Status</span></section>
+    </section>
+
+    <!-- PAYMENT STATUS -->
+    <main class="paymentSection">
+      <div class="paymentCard" id="paymentCard" aria-live="polite" aria-busy="true">
+        <!-- Filled in by script/payment-success.js -->
+        <div class="payState">
+          <div class="payIcon payIcon-loading"><span class="spinner payBigSpinner"></span></div>
+          <h1 class="payTitle">Confirming your payment</h1>
+          <p class="payMessage">Please wait while we check your payment.</p>
+        </div>
+      </div>
+    </main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footerTop">
+    <div class="footerBrand">
+      <img
+        src="src/image/logo on black background without background11.png"
+        alt="PIHUB logo"
+      />
+    </div>
+    <div class="footerCol">
+      <span class="footerHeading">Other Pages</span>
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="offer.html">Services</a>
+      <a href="contactus.html">Contact</a>
+      <a href="blog.html">Blog</a>
+    </div>
+    <div class="footerCol">
+      <span class="footerHeading">Quick Links</span>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Term of Service</a>
+    </div>
+    <div class="footerCol footerSocial">
+      <span class="footerHeading">Social Media</span>
+      <p>Our Support and Sales team is available 24/7 to answer your queries</p>
+      <div class="footerSocialIcons">
+        <a href="https://www.facebook.com/profile.php?id=61593336062853" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/prestigeinnovationhub?stkn=MWZza2JqZzE3ZjJrdQ==" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://youtube.com/@prestigeinnovationhub-26?si=Dvk8uvWb_Y23xZaS" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.tiktok.com/@prestige.innovati7?_r=1&_t=ZS-9A1r9Rno24q" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+        <a href="https://x.com/pihubng" target="_blank" rel="noopener noreferrer" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+        <a href="https://www.linkedin.com/company/prestige-innovation-hub/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="copyright">
+    <p>&copy; 2026 PIHUB. All rights reserved.</p>
+  </div>
+</footer>
+<!-- FOOTER -->
+
+    <!-- SCRIPTS -->
+    <script src="script/config.js?v=2"></script>
+    <script src="script/navigation.js?v=2"></script>
+    <script src="script/payment-success.js?v=1"></script>
+  </body>
+</html>
