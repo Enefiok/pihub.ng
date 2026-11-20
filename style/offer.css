@@ -1020,6 +1020,9 @@ nav #menuToggle:hover {
   gap: 6px;
 }
 
+/* Bottom row of the course card (.course-actions: Make Enquiry + Register).
+   Layout only. The button styling lives in the
+   "COURSE CARD BUTTONS" section further down. */
 .courseCard > div:nth-child(5) {
   margin:
     auto
@@ -1039,51 +1042,6 @@ nav #menuToggle:hover {
   align-items: center;
 
   gap: 12px;
-}
-
-.courseCard > div:nth-child(5) span:first-child {
-  font-size: 1.05rem;
-
-  font-weight: 600;
-
-  color: var(--text-dark);
-}
-
-.courseCard > div:nth-child(5) span:last-child {
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 6px;
-
-  padding:
-    10px
-    16px;
-
-  background-color: #2e8b57;
-
-  color: var(--natural-color);
-
-  border-radius: 8px;
-
-  font-size: 0.75rem;
-
-  font-weight: 600;
-
-  cursor: pointer;
-
-  white-space: nowrap;
-
-  transition:
-    background-color 0.25s ease,
-    transform 0.25s ease;
-}
-
-.courseCard > div:nth-child(5) span:last-child:hover {
-  background-color: #256e46;
-
-  transform: translateY(-2px);
 }
 
 
@@ -1135,14 +1093,6 @@ nav #menuToggle:hover {
   pointer-events: none;
 }
 */
-
-.courseCard.unavailable > div:nth-child(5) span:last-child {
-  background-color: #999;
-
-  cursor: not-allowed;
-
-  pointer-events: none;
-}
 
 /* Optional: Keep the card looking normal on hover */
 .courseCard.unavailable:hover {
@@ -2221,14 +2171,12 @@ nav #menuToggle:hover {
     margin-inline: auto;
   }
 
+  /* Course buttons stack full width on mobile
+     (the per-button width rule is in "COURSE CARD BUTTONS" below) */
   .courseCard > div:nth-child(5) {
     flex-direction: column;
 
     align-items: stretch;
-  }
-
-  .courseCard > div:nth-child(5) span:last-child {
-    width: 100%;
   }
 
   .bookingForm {
@@ -2447,263 +2395,102 @@ nav #menuToggle:hover {
 
 
 /* ============================================================
-   COURSE REGISTRATION - Register button and registration modal
-   Loaded by offer.html after offer.css.
-   Base modal styles (.modal-overlay, .modal-content, .form-input,
-   .spinner, .success-*) are provided by offer.js and are reused here.
+   COURSE CARD BUTTONS (Make Enquiry + Register)
+   Both buttons share identical sizing. The colours, backgrounds and
+   hover effects still come from the styles injected by offer.js
+   (.course-enquiry-btn is green with white text, .course-register-btn
+   is orange). This block is more specific than those, so it wins on size.
+   For a dark icon/text on Make Enquiry instead of white, add
+   `color: #111;` to the .course-enquiry-btn rule below.
    ============================================================ */
 
-/* ---------- Course card: two buttons side by side ---------- */
-.course-actions { flex-wrap: wrap; gap: 10px; }
+.course-actions .course-enquiry-btn,
+.course-actions .course-register-btn {
+  flex: 1 1 0;
 
-.course-register-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 16px;
-  background-color: var(--primary-color, #fa7001);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-family: inherit;
+  min-height: 40px;
+
+  padding: 0 14px;
+
+  line-height: 1;
+
   font-size: 0.75rem;
   font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background-color 0.25s ease, transform 0.25s ease;
+
+  text-decoration: none;
 }
-.course-register-btn:hover { background-color: #e06500; transform: translateY(-2px); }
-.course-register-btn:active { transform: translateY(0); }
+
+.course-actions .course-enquiry-btn i {
+  color: inherit;
+
+  font-size: 0.95rem;
+}
+
+.course-register-btn:active {
+  transform: translateY(0);
+}
+
 .course-register-btn:focus-visible,
 .course-enquiry-btn:focus-visible {
   outline: 2px solid var(--bg-black, #111111);
   outline-offset: 2px;
 }
 
-/* ---------- Modal shell ---------- */
-.register-modal-content { max-width: 560px; }
-.register-modal-content [hidden] { display: none !important; }
+@media (max-width: 767px) {
+  .course-actions .course-enquiry-btn,
+  .course-actions .course-register-btn {
+    flex: 0 0 auto;
+
+    width: 100%;
+  }
+}
+
+
+/* ============================================================
+   REGISTRATION MODAL — EXTRAS
+   The main registration modal styles are injected by offer.js
+   (id="register-modal-styles"). Only the extras the JS copy does not
+   have (focus outlines, hover guards, tiny-screen layout, reduced
+   motion) are kept here.
+   ============================================================ */
 
 .register-modal-content .modal-close-btn:focus-visible {
   outline: 2px solid var(--primary-color, #fa7001);
   outline-offset: 2px;
 }
 
-/* ---------- Fields ---------- */
-.reg-field {
-  display: flex;
-  flex-direction: column;
-  margin: 0 0 16px;
-  border: 0;
-  padding: 0;
-  min-width: 0;
-}
-.reg-field label,
-.reg-field legend {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-dark, #1a1a1a);
-  margin-bottom: 6px;
-  padding: 0;
-}
-.reg-optional { font-weight: 400; color: #888; }
-
-.reg-field .form-input { margin-bottom: 0; }
-.reg-field .form-input[readonly] { background: #f5f5f5; color: #555; cursor: default; }
 .reg-field .form-input:focus-visible {
   outline: none;
   border-color: var(--primary-color, #fa7001);
   box-shadow: 0 0 0 3px rgba(250, 112, 1, 0.18);
 }
-.reg-field .form-input.has-error { border-color: #d32f2f; }
+
 .reg-field .form-input.has-error:focus-visible {
   border-color: #d32f2f;
   box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.15);
 }
 
-.reg-error { font-size: 0.75rem; color: #d32f2f; margin-top: 5px; line-height: 1.4; }
-.reg-error:empty { display: none; }
-
-/* ---------- Referral code row ---------- */
-.reg-referral-row { display: flex; gap: 10px; }
-.reg-referral-row .form-input { flex: 1; min-width: 0; text-transform: uppercase; }
-.reg-referral-row .form-input::placeholder { text-transform: none; }
-
-.reg-apply-btn {
-  flex-shrink: 0;
-  height: 45px;
-  padding: 0 20px;
-  background: var(--bg-black, #111111);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: background-color 0.25s ease;
-}
-.reg-apply-btn:hover:not(:disabled) { background: var(--primary-color, #fa7001); }
-.reg-apply-btn:focus-visible {
-  outline: 2px solid var(--primary-color, #fa7001);
-  outline-offset: 2px;
-}
-.reg-apply-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-.reg-apply-btn .spinner { width: 14px; height: 14px; border-width: 2px; margin-right: 0; }
-
-.reg-referral-msg { font-size: 0.78rem; margin-top: 6px; line-height: 1.4; }
-.reg-referral-msg:empty { display: none; }
-.reg-referral-msg.success { color: #1b8a4b; }
-.reg-referral-msg.error { color: #d32f2f; }
-
-/* ---------- Payment option radio cards ---------- */
-.reg-payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-.reg-pay-card {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  padding: 12px;
-  border: 1px solid #dddddd;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 400;
-  margin: 0;
-  transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
-}
 .reg-pay-card:hover { border-color: var(--primary-color, #fa7001); }
-.reg-pay-card input {
-  margin-top: 3px;
-  accent-color: var(--primary-color, #fa7001);
-  flex-shrink: 0;
-}
-.reg-pay-card.selected {
-  border-color: var(--primary-color, #fa7001);
-  background: rgba(250, 112, 1, 0.06);
-  box-shadow: 0 0 0 3px rgba(250, 112, 1, 0.12);
-}
+
 .reg-pay-card:focus-within {
   border-color: var(--primary-color, #fa7001);
   box-shadow: 0 0 0 3px rgba(250, 112, 1, 0.28);
 }
-.reg-pay-card.is-disabled { opacity: 0.5; cursor: not-allowed; }
+
 .reg-pay-card.is-disabled:hover { border-color: #dddddd; }
 
-.reg-pay-body { display: flex; flex-direction: column; gap: 3px; }
-.reg-pay-body strong { font-size: 0.9rem; font-weight: 600; color: var(--text-dark, #1a1a1a); }
-.reg-pay-body small { font-size: 0.72rem; color: #777; line-height: 1.4; }
-
-/* ---------- Price summary ---------- */
-.reg-summary {
-  background: var(--bg-black, #111111);
-  color: #fff;
-  border-radius: 12px;
-  padding: 16px 18px;
-  margin: 4px 0 16px;
-}
-.reg-summary:empty { display: none; }
-.reg-summary-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 0.85rem;
-  padding: 4px 0;
-  color: rgba(255, 255, 255, 0.8);
-}
-.reg-summary-row.discount { color: #7be0a4; }
-.reg-summary-row.total {
-  margin-top: 8px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
-  font-size: 1rem;
-  font-weight: 700;
-  color: #fff;
-}
-.reg-summary-row.total span:last-child {
-  color: var(--primary-color, #fa7001);
-  font-size: 1.15rem;
+.reg-apply-btn:focus-visible {
+  outline: 2px solid var(--primary-color, #fa7001);
+  outline-offset: 2px;
 }
 
-/* ---------- Error banner ---------- */
-.reg-banner {
-  padding: 12px 14px;
-  margin-bottom: 14px;
-  border-radius: 10px;
-  background: #fdecea;
-  color: #b3261e;
-  border: 1px solid #f5c2be;
-  font-size: 0.85rem;
-  line-height: 1.5;
-}
-
-/* ---------- Submit button (default, loading, disabled) ---------- */
-.reg-submit-btn {
-  width: 100%;
-  height: 48px;
-  background: var(--primary-color, #fa7001);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: background-color 0.25s ease;
-}
-.reg-submit-btn:hover:not(:disabled) { background: #e06500; }
-.reg-submit-btn:focus-visible {
-  outline: 2px solid var(--bg-black, #111111);
-  outline-offset: 3px;
-}
-.reg-submit-btn:disabled { opacity: 0.75; cursor: not-allowed; }
-
-/* ---------- Success state (pay later) ---------- */
-.reg-success-price {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin: 18px 0;
-  padding: 14px 18px;
-  border-radius: 12px;
-  background: var(--bg-black, #111111);
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
-}
-.reg-success-price strong { color: var(--primary-color, #fa7001); font-size: 1.25rem; }
-
-.reg-done-btn {
-  margin-top: 10px;
-  padding: 12px 34px;
-  background: var(--primary-color, #fa7001);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: background-color 0.25s ease;
-}
-.reg-done-btn:hover { background: #e06500; }
+.reg-submit-btn:focus-visible,
 .reg-done-btn:focus-visible {
   outline: 2px solid var(--bg-black, #111111);
   outline-offset: 3px;
 }
 
-/* ---------- Responsive ---------- */
 @media (max-width: 520px) {
-  .register-modal-content { padding: 26px 18px; }
-  .reg-payment-options { grid-template-columns: 1fr; }
   .course-actions { justify-content: flex-start; }
 }
 

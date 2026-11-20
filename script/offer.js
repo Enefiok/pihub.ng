@@ -23,6 +23,12 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+// Strips HTML tags (e.g. <p>...</p> from the API) and returns plain text
+function stripHtml(html) {
+  const doc = new DOMParser().parseFromString(String(html || ""), "text/html");
+  return (doc.body.textContent || "").trim();
+}
+
 function parsePrice(value) {
   const n = parseFloat(value);
   return isFinite(n) ? n : 0;
@@ -50,7 +56,7 @@ if (!document.getElementById("dynamic-styles")) {
     .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
     .modal-close-btn { position: absolute; top: 15px; right: 15px; background: #f5f5f5; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.4rem; line-height: 1; cursor: pointer; color: var(--text-muted, #777); display: grid; place-items: center; transition: all 0.2s ease; z-index: 10; }
     .modal-close-btn:hover { background: var(--primary-color, #fa7001); color: #fff; }
-    .form-input, .form-select, .form-textarea { width: 100%; height: 45px; padding: 0 14px; border: 1px solid #dddddd; border-radius: 10px; font-family: inherit; color: var(--text-dark, #1a1a1a); background-color: var(--natural-color, #ffffff); transition: border-color 0.25s ease, box-shadow 0.25s ease; margin-bottom: 15px; box-sizing: border-box; }
+    .form-input, .form-select, .form-textarea { width: 100%; height: 45px; padding: 0 14px; font-size: 0.9rem; border: 1px solid #dddddd; border-radius: 10px; font-family: inherit; color: var(--text-dark, #1a1a1a); background-color: var(--natural-color, #ffffff); transition: border-color 0.25s ease, box-shadow 0.25s ease; margin-bottom: 15px; box-sizing: border-box; }
     .form-textarea { height: 100px; padding: 12px 14px; resize: vertical; }
     .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--primary-color, #fa7001); box-shadow: 0 0 0 3px rgba(250, 112, 1, 0.12); }
     .form-select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; }
@@ -155,7 +161,7 @@ if (!document.getElementById("register-modal-styles")) {
     .register-modal-content { max-width: 560px; }
     .register-modal-content [hidden] { display: none !important; }
     .reg-field { display: flex; flex-direction: column; margin: 0 0 16px; border: 0; padding: 0; min-width: 0; }
-    .reg-field label, .reg-field legend { font-size: 0.82rem; font-weight: 600; color: var(--text-dark, #1a1a1a); margin-bottom: 6px; padding: 0; }
+    .reg-field label, .reg-field legend { font-size: 0.82rem; font-weight: 500; color: var(--text-dark, #1a1a1a); margin-bottom: 6px; padding: 0; }
     .reg-optional { font-weight: 400; color: #888; }
     .reg-field .form-input { margin-bottom: 0; }
     .reg-field .form-input[readonly] { background: #f5f5f5; color: #555; cursor: default; }
@@ -175,25 +181,36 @@ if (!document.getElementById("register-modal-styles")) {
     .reg-referral-msg.success { color: #1b8a4b; }
     .reg-referral-msg.error { color: #d32f2f; }
 
-    .reg-payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .reg-pay-card { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border: 1px solid #dddddd; border-radius: 12px; cursor: pointer; font-weight: 400; margin: 0; transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease; }
-    .reg-pay-card input { margin-top: 3px; accent-color: var(--primary-color, #fa7001); flex-shrink: 0; }
-    .reg-pay-card.selected { border-color: var(--primary-color, #fa7001); background: rgba(250, 112, 1, 0.06); box-shadow: 0 0 0 3px rgba(250, 112, 1, 0.12); }
-    .reg-pay-card.is-disabled { opacity: 0.5; cursor: not-allowed; }
-    .reg-pay-body { display: flex; flex-direction: column; gap: 3px; }
-    .reg-pay-body strong { font-size: 0.9rem; font-weight: 600; color: var(--text-dark, #1a1a1a); }
-    .reg-pay-body small { font-size: 0.72rem; color: #777; line-height: 1.4; }
+    /* Payment option: pill switch (Pay now | Pay later) */
+    .reg-pay-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: #f0f0f0; border-radius: 12px; }
+    .reg-pay-seg { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; height: 42px; margin: 0; border-radius: 9px; font-size: 0.88rem; font-weight: 600; color: #6b6b6b; cursor: pointer; user-select: none; transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; }
+    .reg-pay-seg input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: inherit; }
+    .reg-pay-seg i { font-size: 0.8rem; transition: color 0.2s ease; }
+    .reg-pay-seg:hover:not(.selected):not(.is-disabled) { color: #222222; }
+    .reg-pay-seg.selected { background: #ffffff; color: var(--text-dark, #1a1a1a); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14); }
+    .reg-pay-seg.selected i { color: var(--primary-color, #fa7001); }
+    .reg-pay-seg.is-disabled { color: #aaaaaa; cursor: not-allowed; }
+    .reg-pay-seg.is-disabled input { pointer-events: none; }
+    .reg-pay-seg:focus-within { outline: 2px solid rgba(250, 112, 1, 0.5); outline-offset: 1px; }
+    .reg-pay-tag { font-style: normal; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #8a8a8a; background: #e2e2e2; padding: 3px 8px; border-radius: 20px; }
+    .reg-pay-info { margin: 12px 2px 0; font-size: 0.8rem; line-height: 1.5; color: #777777; transition: color 0.2s ease; }
+    .reg-pay-info.notice { color: #b45a00; }
 
-    .reg-summary { background: var(--bg-black, #111111); color: #fff; border-radius: 12px; padding: 16px 18px; margin: 4px 0 16px; }
-    .reg-summary-row { display: flex; justify-content: space-between; gap: 12px; font-size: 0.85rem; padding: 4px 0; color: rgba(255, 255, 255, 0.8); }
-    .reg-summary-row.discount { color: #7be0a4; }
-    .reg-summary-row.total { margin-top: 8px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.18); font-size: 1rem; font-weight: 700; color: #fff; }
-    .reg-summary-row.total span:last-child { color: var(--primary-color, #fa7001); font-size: 1.15rem; }
+    /* Fee summary: light card, hidden when empty (no "Contact for pricing" bar) */
+    .reg-summary { background: #fafafa; border: 1px solid #eeeeee; color: var(--text-dark, #1a1a1a); border-radius: 10px; padding: 12px 16px; margin: 4px 0 16px; }
+    .reg-summary:empty { display: none; }
+    .reg-summary-row { display: flex; justify-content: space-between; gap: 12px; font-size: 0.82rem; padding: 3px 0; color: #666666; }
+    .reg-summary-row.discount { color: #1b8a4b; }
+    .reg-summary-row.total { font-size: 0.95rem; font-weight: 700; color: var(--text-dark, #1a1a1a); }
+    .reg-summary-row + .reg-summary-row.total { margin-top: 6px; padding-top: 10px; border-top: 1px solid #e8e8e8; }
+    .reg-summary-row.total span:last-child { color: var(--primary-color, #fa7001); font-size: 1.05rem; }
 
     .reg-banner { padding: 12px 14px; margin-bottom: 14px; border-radius: 10px; background: #fdecea; color: #b3261e; border: 1px solid #f5c2be; font-size: 0.85rem; line-height: 1.5; }
     .reg-submit-btn { width: 100%; height: 48px; background: var(--primary-color, #fa7001); color: #fff; border: none; border-radius: 10px; font-family: inherit; font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background-color 0.25s ease; }
     .reg-submit-btn:hover:not(:disabled) { background: #e06500; }
     .reg-submit-btn:disabled { opacity: 0.75; cursor: not-allowed; }
+    .reg-submit-btn i { margin-right: 8px; font-size: 0.9rem; }
+    .reg-submit-btn.is-pay-now { box-shadow: 0 8px 20px rgba(250, 112, 1, 0.28); }
 
     .reg-success-price { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 18px 0; padding: 14px 18px; border-radius: 12px; background: var(--bg-black, #111111); color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; }
     .reg-success-price strong { color: var(--primary-color, #fa7001); font-size: 1.25rem; }
@@ -202,7 +219,6 @@ if (!document.getElementById("register-modal-styles")) {
 
     @media (max-width: 520px) {
       .register-modal-content { padding: 26px 18px; }
-      .reg-payment-options { grid-template-columns: 1fr; }
     }
   `;
   document.head.appendChild(regStyle);
@@ -359,22 +375,18 @@ async function loadWorkspacePlans() {
 
           <fieldset class="reg-field">
             <legend>Payment option</legend>
-            <div class="reg-payment-options">
-              <label class="reg-pay-card selected" id="regPayNowCard">
+            <div class="reg-pay-switch" role="radiogroup" aria-label="Payment option">
+              <label class="reg-pay-seg selected" id="regPayNowCard">
                 <input type="radio" name="payment_option" value="pay_now" checked>
-                <span class="reg-pay-body">
-                  <strong>Pay now</strong>
-                  <small id="regPayNowHint">Pay securely online right after you submit.</small>
-                </span>
+                <i class="fas fa-lock" aria-hidden="true"></i><span>Pay now</span>
+                <em class="reg-pay-tag" id="regPayNowTag" hidden>Soon</em>
               </label>
-              <label class="reg-pay-card" id="regPayLaterCard">
+              <label class="reg-pay-seg" id="regPayLaterCard">
                 <input type="radio" name="payment_option" value="pay_later">
-                <span class="reg-pay-body">
-                  <strong>Fill now, pay later</strong>
-                  <small>Submit your details now and our team will contact you to arrange payment.</small>
-                </span>
+                <i class="fas fa-clock" aria-hidden="true"></i><span>Pay later</span>
               </label>
             </div>
+            <p class="reg-pay-info" id="regPayInfo" role="status" aria-live="polite"></p>
             <span class="reg-error" data-error-for="payment_option"></span>
           </fieldset>
 
@@ -405,7 +417,8 @@ async function loadWorkspacePlans() {
     referralMsg: overlay.querySelector("#regReferralMsg"),
     payNowCard: overlay.querySelector("#regPayNowCard"),
     payLaterCard: overlay.querySelector("#regPayLaterCard"),
-    payNowHint: overlay.querySelector("#regPayNowHint"),
+    payNowTag: overlay.querySelector("#regPayNowTag"),
+    payInfo: overlay.querySelector("#regPayInfo"),
     summary: overlay.querySelector("#regSummary"),
     banner: overlay.querySelector("#regBanner"),
     submit: overlay.querySelector("#regSubmit"),
@@ -414,7 +427,9 @@ async function loadWorkspacePlans() {
 
   const payNowInput = els.payNowCard.querySelector("input");
   const payLaterInput = els.payLaterCard.querySelector("input");
-  const PAY_NOW_HINT = els.payNowHint.textContent;
+  const PAY_NOW_INFO = "You'll be taken to our secure checkout right after you submit.";
+  const PAY_LATER_INFO = "No payment today. Our team will contact you to arrange payment.";
+  const PAY_SOON_INFO = "Online payment for this course is coming soon. You can register now and pay later.";
 
   const state = {
     course: null,
@@ -493,8 +508,9 @@ async function loadWorkspacePlans() {
       return;
     }
 
+    // No price set yet: show nothing (the Make Enquiry button already covers pricing questions)
     if (!base) {
-      els.summary.innerHTML = summaryRow("Course fee", "Contact for pricing", "total");
+      els.summary.innerHTML = "";
       return;
     }
 
@@ -516,7 +532,14 @@ async function loadWorkspacePlans() {
     const value = getSelectedPayment();
     els.payNowCard.classList.toggle("selected", value === "pay_now");
     els.payLaterCard.classList.toggle("selected", value === "pay_later");
-    els.submitLabel.textContent = value === "pay_later" ? "Submit registration" : "Continue to payment";
+
+    // The choice drives the info line and the submit button
+    els.payInfo.textContent = value === "pay_later" ? PAY_LATER_INFO : PAY_NOW_INFO;
+    els.payInfo.classList.remove("notice");
+    els.submit.classList.toggle("is-pay-now", value === "pay_now");
+    els.submitLabel.innerHTML = value === "pay_later"
+      ? '<i class="fas fa-check" aria-hidden="true"></i>Reserve my seat'
+      : '<i class="fas fa-lock" aria-hidden="true"></i>Continue to payment';
   }
 
   // ---------- referral code ----------
@@ -642,7 +665,8 @@ async function loadWorkspacePlans() {
     const priced = parsePrice(course.price) > 0;
     payNowInput.disabled = !priced;
     els.payNowCard.classList.toggle("is-disabled", !priced);
-    els.payNowHint.textContent = priced ? PAY_NOW_HINT : "Online payment is not available for this course yet.";
+    // Pay now switches on automatically once the course has a price; until then it shows a "Soon" tag
+    els.payNowTag.hidden = priced;
     if (!priced) payLaterInput.checked = true;
 
     syncPaymentUI();
@@ -672,6 +696,14 @@ async function loadWorkspacePlans() {
       if (err) err.textContent = "";
     });
   });
+
+  // Tapping the greyed-out "Pay now" explains why it can't be chosen yet
+  els.payNowCard.addEventListener("click", () => {
+    if (!payNowInput.disabled) return;
+    els.payInfo.textContent = PAY_SOON_INFO;
+    els.payInfo.classList.add("notice");
+  });
+  els.payLaterCard.addEventListener("click", () => syncPaymentUI());
 
   // ---------- events: clear field errors while typing ----------
   [els.fullName, els.email, els.phone].forEach((input) => {
@@ -978,7 +1010,7 @@ async function loadCourses() {
       courseCard.innerHTML = `
         ${imageHtml}
         <div class="course-title">${safeTitle}</div>
-        <div class="course-desc">${escapeHtml(course.description || 'No description available')}</div>
+        <div class="course-desc">${escapeHtml(stripHtml(course.description) || 'No description available')}</div>
         <div class="course-duration"><i class="fas fa-clock"></i> ${escapeHtml(course.duration)}</div>
         <div class="course-actions">
           ${actionButton}
